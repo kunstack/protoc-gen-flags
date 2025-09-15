@@ -1,0 +1,206 @@
+// Copyright 2021 Aapeli <aapeli.nian@gmail.com>  All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Package flags provides protobuf extensions for generating command-line flag bindings.
+//
+// This package defines extensions that can be used in protobuf files to configure
+// how AddFlags methods are generated for messages and fields. The generated code
+// integrates with the spf13/pflag library to provide POSIX/GNU-style command-line
+// flag parsing.
+//
+// # Message Level Options
+//
+// Message-level options control the overall flag generation behavior for a message:
+//
+//   option (flags.disabled) = true;     // Skip flag generation for this message
+//   option (flags.unexported) = true;   // Generate unexported flag methods
+//   option (flags.allow_empty) = true;  // Generate flags even without field configurations
+//
+// # Field Level Options
+//
+// Field-level options configure individual flag behavior:
+//
+//   string name = 1 [(flags.field) = {
+//     name: "custom-name"
+//     short: "n"
+//     usage: "Custom usage description"
+//   }];
+//
+// # Supported Types
+//
+// All protobuf scalar types are supported, including:
+//   - Numeric types: int32, int64, uint32, uint64, float, double, etc.
+//   - String and bytes
+//   - Boolean
+//   - Enum types
+//   - Repeated fields
+//   - Well-known types: duration, timestamp
+syntax = "proto3";
+
+// buf:lint:ignore PACKAGE_VERSION_SUFFIX
+package flags;
+
+option go_package = "github.com/kunstack/protoc-gen-flags/flags;flags";
+
+import "google/protobuf/descriptor.proto";
+
+// MessageOptions extends google.protobuf.MessageOptions to provide message-level
+// control over flag generation behavior.
+extend google.protobuf.MessageOptions {
+  // Disabled skips generation of flags for this entire message when set to true.
+  // This takes precedence over all other flag generation options.
+  bool disabled = 1171;
+
+  // Unexported generates unexported flag methods for this message when set to true.
+  // This is useful when you want to provide custom exported methods that call
+  // the generated unexported methods.
+  bool unexported = 1172;
+
+  // AllowEmpty allows generation of AddFlags methods even when the message has
+  // no fields configured with flag options. This is useful for messages that
+  // want to provide a consistent interface or may have flags added in the future.
+  bool allow_empty = 1173;
+}
+
+// FieldOptions extends google.protobuf.FieldOptions to provide field-level
+// configuration for flag generation.
+extend google.protobuf.FieldOptions {
+  // Field specifies the flag configuration for this field. When set, the
+  // protoc-gen-flags plugin will generate command-line flag bindings based
+  // on the field type and configuration provided.
+  FieldFlags field = 1171;
+}
+
+// FieldFlags encapsulates the flag configuration for each type of field.
+//
+// The oneof type field ensures type safety and allows the code generator to
+// determine which pflag method to use (StringVarP, IntVarP, etc.) for each
+// field type. Only one of the type fields should be set, corresponding to
+// the actual protobuf field type.
+message FieldFlags {
+  oneof type {
+    // Scalar Field Types - all use PrimitiveFlag configuration
+    PrimitiveFlag float = 1;     // 32-bit floating point
+    PrimitiveFlag double = 2;    // 64-bit floating point
+    PrimitiveFlag int32 = 3;     // 32-bit signed integer
+    PrimitiveFlag int64 = 4;     // 64-bit signed integer
+    PrimitiveFlag uint32 = 5;    // 32-bit unsigned integer
+    PrimitiveFlag uint64 = 6;    // 64-bit unsigned integer
+    PrimitiveFlag sint32 = 7;    // 32-bit signed integer (zigzag encoded)
+    PrimitiveFlag sint64 = 8;    // 64-bit signed integer (zigzag encoded)
+    PrimitiveFlag fixed32 = 9;   // 32-bit fixed-point integer
+    PrimitiveFlag fixed64 = 10;  // 64-bit fixed-point integer
+    PrimitiveFlag sfixed32 = 11; // 32-bit signed fixed-point integer
+    PrimitiveFlag sfixed64 = 12; // 64-bit signed fixed-point integer
+    PrimitiveFlag bool = 13;     // Boolean value
+    PrimitiveFlag string = 14;   // UTF-8 string
+    PrimitiveFlag bytes = 15;    // Arbitrary bytes
+
+    // Complex Field Types
+    PrimitiveFlag enum = 16;      // Enum type
+    RepeatedFlags repeated = 17;  // Repeated field (slice/array)
+    PrimitiveFlag map = 18;        // Map field
+
+    // Well-Known Field Types
+    PrimitiveFlag duration = 19;   // google.protobuf.Duration
+    PrimitiveFlag timestamp = 20;  // google.protobuf.Timestamp
+
+    // Message field type - used for nested message configurations
+    MessageFlag message = 21;
+  }
+}
+
+// PrimitiveFlag contains the core configuration for all primitive flag types.
+//
+// This message provides a comprehensive set of options for customizing flag
+// behavior, appearance, and integration with environment variables.
+message PrimitiveFlag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+}
+
+// MessageFlag contains configuration for message fields that contain nested flag configurations.
+//
+// This message type is used when a protobuf field is itself a message that contains
+// fields with flag configurations. It allows customization of how the nested flags
+// are organized and presented in the command-line interface.
+message MessageFlag {
+  // Nested controls whether to generate AddFlags method calls for this message field.
+  // When set to true, the generated code will call AddFlags on nested message fields
+  // that implement the flags.Interface. When set to false, no flags will be generated
+  // for fields within this message, even if they have flag configurations.
+  bool nested = 1;
+
+  // Prefix specifies a custom prefix for all flags in this message field.
+  // This is useful for organizing flags into logical groups and avoiding
+  // naming conflicts when multiple messages have similarly named fields.
+  //
+  // Examples:
+  //   - prefix "server" would generate "--server.host", "--server.port"
+  //   - prefix "database" would generate "--database.url", "--database.timeout"
+  //   - empty prefix would generate "--host", "--port" (field names directly)
+  //
+  // The prefix is automatically converted to kebab-case format (underscores become hyphens)
+  // and separated from the flag name with a dot.
+  string prefix = 2;
+}
+
+// RepeatedFlags defines configuration for repeated fields (slices/arrays).
+//
+// This allows customization of how repeated values are handled in the CLI.
+// The type oneof field determines the element type of the repeated field.
+message RepeatedFlags {
+  oneof type {
+    // Supported types for repeated fields - each corresponds to a PrimitiveFlag
+    // configuration that controls how individual elements are handled.
+    PrimitiveFlag float = 1;     // Repeated 32-bit floating point
+    PrimitiveFlag double = 2;    // Repeated 64-bit floating point
+    PrimitiveFlag int32 = 3;     // Repeated 32-bit signed integer
+    PrimitiveFlag int64 = 4;     // Repeated 64-bit signed integer
+    PrimitiveFlag uint32 = 5;    // Repeated 32-bit unsigned integer
+    PrimitiveFlag uint64 = 6;    // Repeated 64-bit unsigned integer
+    PrimitiveFlag sint32 = 7;    // Repeated 32-bit signed integer (zigzag)
+    PrimitiveFlag sint64 = 8;    // Repeated 64-bit signed integer (zigzag)
+    PrimitiveFlag fixed32 = 9;   // Repeated 32-bit fixed-point integer
+    PrimitiveFlag fixed64 = 10;  // Repeated 64-bit fixed-point integer
+    PrimitiveFlag sfixed32 = 11; // Repeated 32-bit signed fixed-point integer
+    PrimitiveFlag sfixed64 = 12; // Repeated 64-bit signed fixed-point integer
+    PrimitiveFlag bool = 13;     // Repeated boolean values
+    PrimitiveFlag string = 14;   // Repeated UTF-8 strings
+    PrimitiveFlag bytes = 15;    // Repeated arbitrary bytes
+    PrimitiveFlag enum = 16;     // Repeated enum values
+    PrimitiveFlag map = 17;      // Repeated map entries
+    PrimitiveFlag duration = 18;  // Repeated duration values
+    PrimitiveFlag timestamp = 19; // Repeated timestamp values
+  }
+}
