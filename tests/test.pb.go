@@ -26,6 +26,9 @@ import (
 	_ "github.com/kunstack/protoc-gen-flags/flags"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -38,13 +41,90 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type TestEnum int32
+
+const (
+	TestEnum_UNKNOWN TestEnum = 0
+	TestEnum_VALUE1  TestEnum = 1
+	TestEnum_VALUE2  TestEnum = 2
+	TestEnum_VALUE3  TestEnum = 3
+)
+
+// Enum value maps for TestEnum.
+var (
+	TestEnum_name = map[int32]string{
+		0: "UNKNOWN",
+		1: "VALUE1",
+		2: "VALUE2",
+		3: "VALUE3",
+	}
+	TestEnum_value = map[string]int32{
+		"UNKNOWN": 0,
+		"VALUE1":  1,
+		"VALUE2":  2,
+		"VALUE3":  3,
+	}
+)
+
+func (x TestEnum) Enum() *TestEnum {
+	p := new(TestEnum)
+	*p = x
+	return p
+}
+
+func (x TestEnum) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TestEnum) Descriptor() protoreflect.EnumDescriptor {
+	return file_tests_test_proto_enumTypes[0].Descriptor()
+}
+
+func (TestEnum) Type() protoreflect.EnumType {
+	return &file_tests_test_proto_enumTypes[0]
+}
+
+func (x TestEnum) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TestEnum.Descriptor instead.
+func (TestEnum) EnumDescriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{0}
+}
+
 type TestMessage struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Hello         float32                `protobuf:"fixed32,1,opt,name=hello,proto3" json:"hello,omitempty"`
-	World         []string               `protobuf:"bytes,2,rep,name=world,proto3" json:"world,omitempty"`
-	Greeting      string                 `protobuf:"bytes,3,opt,name=greeting,proto3" json:"greeting,omitempty"`
-	Count         int32                  `protobuf:"varint,4,opt,name=count,proto3" json:"count,omitempty"`
-	Verbose       bool                   `protobuf:"varint,5,opt,name=verbose,proto3" json:"verbose,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Hello    float32                `protobuf:"fixed32,1,opt,name=hello,proto3" json:"hello,omitempty"`
+	World    string                 `protobuf:"bytes,2,opt,name=world,proto3" json:"world,omitempty"`
+	Greeting string                 `protobuf:"bytes,3,opt,name=greeting,proto3" json:"greeting,omitempty"`
+	Count    int32                  `protobuf:"varint,4,opt,name=count,proto3" json:"count,omitempty"`
+	Verbose  bool                   `protobuf:"varint,5,opt,name=verbose,proto3" json:"verbose,omitempty"`
+	Verbose2 int64                  `protobuf:"fixed64,6,opt,name=verbose2,proto3" json:"verbose2,omitempty"`
+	// Additional field types for testing
+	UserId      int64   `protobuf:"varint,7,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Port        uint32  `protobuf:"varint,8,opt,name=port,proto3" json:"port,omitempty"`
+	Size        uint64  `protobuf:"varint,9,opt,name=size,proto3" json:"size,omitempty"`
+	Temperature int32   `protobuf:"zigzag32,10,opt,name=temperature,proto3" json:"temperature,omitempty"`
+	Timestamp   int64   `protobuf:"zigzag64,11,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timeout     uint32  `protobuf:"fixed32,12,opt,name=timeout,proto3" json:"timeout,omitempty"`
+	Bandwidth   uint64  `protobuf:"fixed64,13,opt,name=bandwidth,proto3" json:"bandwidth,omitempty"`
+	Offset      int32   `protobuf:"fixed32,14,opt,name=offset,proto3" json:"offset,omitempty"`
+	Ratio       float64 `protobuf:"fixed64,15,opt,name=ratio,proto3" json:"ratio,omitempty"`
+	Byte        []byte  `protobuf:"bytes,16,opt,name=byte,proto3,oneof" json:"byte,omitempty"`
+	// Test enum type
+	TestEnum TestEnum `protobuf:"varint,17,opt,name=test_enum,json=testEnum,proto3,enum=tests.TestEnum" json:"test_enum,omitempty"`
+	// Test duration type
+	TimeoutDuration *durationpb.Duration `protobuf:"bytes,18,opt,name=timeout_duration,json=timeoutDuration,proto3,oneof" json:"timeout_duration,omitempty"`
+	// Test oneof with duration
+	//
+	// Types that are valid to be assigned to DurationChoice:
+	//
+	//	*TestMessage_ProcessingTime
+	//	*TestMessage_WaitingTime
+	DurationChoice isTestMessage_DurationChoice `protobuf_oneof:"duration_choice"`
+	// Test message field type for *flags.FieldFlags_Message
+	SimpleField   *SimpleMessage `protobuf:"bytes,21,opt,name=simple_field,json=simpleField,proto3" json:"simple_field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -86,11 +166,11 @@ func (x *TestMessage) GetHello() float32 {
 	return 0
 }
 
-func (x *TestMessage) GetWorld() []string {
+func (x *TestMessage) GetWorld() string {
 	if x != nil {
 		return x.World
 	}
-	return nil
+	return ""
 }
 
 func (x *TestMessage) GetGreeting() string {
@@ -113,6 +193,145 @@ func (x *TestMessage) GetVerbose() bool {
 	}
 	return false
 }
+
+func (x *TestMessage) GetVerbose2() int64 {
+	if x != nil {
+		return x.Verbose2
+	}
+	return 0
+}
+
+func (x *TestMessage) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *TestMessage) GetPort() uint32 {
+	if x != nil {
+		return x.Port
+	}
+	return 0
+}
+
+func (x *TestMessage) GetSize() uint64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+func (x *TestMessage) GetTemperature() int32 {
+	if x != nil {
+		return x.Temperature
+	}
+	return 0
+}
+
+func (x *TestMessage) GetTimestamp() int64 {
+	if x != nil {
+		return x.Timestamp
+	}
+	return 0
+}
+
+func (x *TestMessage) GetTimeout() uint32 {
+	if x != nil {
+		return x.Timeout
+	}
+	return 0
+}
+
+func (x *TestMessage) GetBandwidth() uint64 {
+	if x != nil {
+		return x.Bandwidth
+	}
+	return 0
+}
+
+func (x *TestMessage) GetOffset() int32 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+func (x *TestMessage) GetRatio() float64 {
+	if x != nil {
+		return x.Ratio
+	}
+	return 0
+}
+
+func (x *TestMessage) GetByte() []byte {
+	if x != nil {
+		return x.Byte
+	}
+	return nil
+}
+
+func (x *TestMessage) GetTestEnum() TestEnum {
+	if x != nil {
+		return x.TestEnum
+	}
+	return TestEnum_UNKNOWN
+}
+
+func (x *TestMessage) GetTimeoutDuration() *durationpb.Duration {
+	if x != nil {
+		return x.TimeoutDuration
+	}
+	return nil
+}
+
+func (x *TestMessage) GetDurationChoice() isTestMessage_DurationChoice {
+	if x != nil {
+		return x.DurationChoice
+	}
+	return nil
+}
+
+func (x *TestMessage) GetProcessingTime() *durationpb.Duration {
+	if x != nil {
+		if x, ok := x.DurationChoice.(*TestMessage_ProcessingTime); ok {
+			return x.ProcessingTime
+		}
+	}
+	return nil
+}
+
+func (x *TestMessage) GetWaitingTime() *durationpb.Duration {
+	if x != nil {
+		if x, ok := x.DurationChoice.(*TestMessage_WaitingTime); ok {
+			return x.WaitingTime
+		}
+	}
+	return nil
+}
+
+func (x *TestMessage) GetSimpleField() *SimpleMessage {
+	if x != nil {
+		return x.SimpleField
+	}
+	return nil
+}
+
+type isTestMessage_DurationChoice interface {
+	isTestMessage_DurationChoice()
+}
+
+type TestMessage_ProcessingTime struct {
+	ProcessingTime *durationpb.Duration `protobuf:"bytes,19,opt,name=processing_time,json=processingTime,proto3,oneof"`
+}
+
+type TestMessage_WaitingTime struct {
+	WaitingTime *durationpb.Duration `protobuf:"bytes,20,opt,name=waiting_time,json=waitingTime,proto3,oneof"`
+}
+
+func (*TestMessage_ProcessingTime) isTestMessage_DurationChoice() {}
+
+func (*TestMessage_WaitingTime) isTestMessage_DurationChoice() {}
 
 type SimpleMessage struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -162,6 +381,7 @@ type DisabledMessage struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Value         string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
 	SimpleMessage *SimpleMessage         `protobuf:"bytes,2,opt,name=simple_message,json=simpleMessage,proto3" json:"simple_message,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -210,23 +430,332 @@ func (x *DisabledMessage) GetSimpleMessage() *SimpleMessage {
 	return nil
 }
 
+func (x *DisabledMessage) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+type EmptyMessage struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Value         string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EmptyMessage) Reset() {
+	*x = EmptyMessage{}
+	mi := &file_tests_test_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EmptyMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EmptyMessage) ProtoMessage() {}
+
+func (x *EmptyMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EmptyMessage.ProtoReflect.Descriptor instead.
+func (*EmptyMessage) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *EmptyMessage) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
+type EmptyMessage2 struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Value         string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EmptyMessage2) Reset() {
+	*x = EmptyMessage2{}
+	mi := &file_tests_test_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EmptyMessage2) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EmptyMessage2) ProtoMessage() {}
+
+func (x *EmptyMessage2) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EmptyMessage2.ProtoReflect.Descriptor instead.
+func (*EmptyMessage2) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *EmptyMessage2) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
+type WrapperMessage struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Value         *wrapperspb.FloatValue `protobuf:"bytes,1,opt,name=value,proto3,oneof" json:"value,omitempty"`
+	Value2        []string               `protobuf:"bytes,2,rep,name=value2,proto3" json:"value2,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WrapperMessage) Reset() {
+	*x = WrapperMessage{}
+	mi := &file_tests_test_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WrapperMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WrapperMessage) ProtoMessage() {}
+
+func (x *WrapperMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WrapperMessage.ProtoReflect.Descriptor instead.
+func (*WrapperMessage) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *WrapperMessage) GetValue() *wrapperspb.FloatValue {
+	if x != nil {
+		return x.Value
+	}
+	return nil
+}
+
+func (x *WrapperMessage) GetValue2() []string {
+	if x != nil {
+		return x.Value2
+	}
+	return nil
+}
+
+type OneofMessage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to TestOneof:
+	//
+	//	*OneofMessage_StringValue
+	//	*OneofMessage_IntValue
+	//	*OneofMessage_DurationValue
+	//	*OneofMessage_BoolValue
+	TestOneof     isOneofMessage_TestOneof `protobuf_oneof:"test_oneof"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OneofMessage) Reset() {
+	*x = OneofMessage{}
+	mi := &file_tests_test_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OneofMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OneofMessage) ProtoMessage() {}
+
+func (x *OneofMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OneofMessage.ProtoReflect.Descriptor instead.
+func (*OneofMessage) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *OneofMessage) GetTestOneof() isOneofMessage_TestOneof {
+	if x != nil {
+		return x.TestOneof
+	}
+	return nil
+}
+
+func (x *OneofMessage) GetStringValue() string {
+	if x != nil {
+		if x, ok := x.TestOneof.(*OneofMessage_StringValue); ok {
+			return x.StringValue
+		}
+	}
+	return ""
+}
+
+func (x *OneofMessage) GetIntValue() int32 {
+	if x != nil {
+		if x, ok := x.TestOneof.(*OneofMessage_IntValue); ok {
+			return x.IntValue
+		}
+	}
+	return 0
+}
+
+func (x *OneofMessage) GetDurationValue() *durationpb.Duration {
+	if x != nil {
+		if x, ok := x.TestOneof.(*OneofMessage_DurationValue); ok {
+			return x.DurationValue
+		}
+	}
+	return nil
+}
+
+func (x *OneofMessage) GetBoolValue() bool {
+	if x != nil {
+		if x, ok := x.TestOneof.(*OneofMessage_BoolValue); ok {
+			return x.BoolValue
+		}
+	}
+	return false
+}
+
+type isOneofMessage_TestOneof interface {
+	isOneofMessage_TestOneof()
+}
+
+type OneofMessage_StringValue struct {
+	StringValue string `protobuf:"bytes,1,opt,name=string_value,json=stringValue,proto3,oneof"`
+}
+
+type OneofMessage_IntValue struct {
+	IntValue int32 `protobuf:"varint,2,opt,name=int_value,json=intValue,proto3,oneof"`
+}
+
+type OneofMessage_DurationValue struct {
+	DurationValue *durationpb.Duration `protobuf:"bytes,3,opt,name=duration_value,json=durationValue,proto3,oneof"`
+}
+
+type OneofMessage_BoolValue struct {
+	BoolValue bool `protobuf:"varint,4,opt,name=bool_value,json=boolValue,proto3,oneof"`
+}
+
+func (*OneofMessage_StringValue) isOneofMessage_TestOneof() {}
+
+func (*OneofMessage_IntValue) isOneofMessage_TestOneof() {}
+
+func (*OneofMessage_DurationValue) isOneofMessage_TestOneof() {}
+
+func (*OneofMessage_BoolValue) isOneofMessage_TestOneof() {}
+
 var File_tests_test_proto protoreflect.FileDescriptor
 
 const file_tests_test_proto_rawDesc = "" +
 	"\n" +
-	"\x10tests/test.proto\x12\x05flags\x1a\x11flags/flags.proto\"\xe2\x03\n" +
-	"\vTestMessage\x12g\n" +
-	"\x05hello\x18\x01 \x01(\x02BQ\x9aIN\n" +
-	"L\x12\x05hello\"\x10Hello world flag0\x01:/This flag is deprecated, use --greeting insteadR\x05hello\x12\x85\x01\n" +
-	"\x05world\x18\x02 \x03(\tBo\x9aIl\x8a\x01irg\x12\x05world\"-World flags (can be specified multiple times)0\x01:-This flag is deprecated, use --target insteadR\x05world\x12K\n" +
+	"\x10tests/test.proto\x12\x05tests\x1a\x11flags/flags.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xfb\r\n" +
+	"\vTestMessage\x12p\n" +
+	"\x05hello\x18\x01 \x01(\x02BZ\x9aIW\n" +
+	"U\x12\x05hello\x1a\x01h\"\x14Hello world '\"' flag(\x010\x01:/This flag is deprecated, use --greeting insteadR\x05hello\x12\x82\x01\n" +
+	"\x05world\x18\x02 \x01(\tBl\x9aIirg\x12\x05world\"-World flags (can be specified multiple times)0\x01:-This flag is deprecated, use --target insteadR\x05world\x12K\n" +
 	"\bgreeting\x18\x03 \x01(\tB/\x9aI,r*\x12\bgreeting\x1a\x01g\"\x1bGreeting message to displayR\bgreeting\x12L\n" +
 	"\x05count\x18\x04 \x01(\x05B6\x9aI3\x1a1\x12\x05count\x1a\x01c\"%Number of times to repeat the messageR\x05count\x12B\n" +
-	"\averbose\x18\x05 \x01(\bB(\x9aI%j#\x12\averbose\x1a\x01v\"\x15Enable verbose outputR\averbose:\x03\xa8I\x01\"@\n" +
+	"\averbose\x18\x05 \x01(\bB(\x9aI%j#\x12\averbose\x1a\x01v\"\x15Enable verbose outputR\averbose\x12S\n" +
+	"\bverbose2\x18\x06 \x01(\x10B7\x9aI4b2\x12\bverbose2\x1a\x01V\"#Enable verbose output with sfixed64R\bverbose2\x123\n" +
+	"\auser_id\x18\a \x01(\x03B\x1a\x9aI\x17\"\x15\x12\auser-id\x1a\x01u\"\aUser IDR\x06userId\x12/\n" +
+	"\x04port\x18\b \x01(\rB\x1b\x9aI\x18*\x16\x12\x04port\x1a\x01p\"\vPort numberR\x04port\x121\n" +
+	"\x04size\x18\t \x01(\x04B\x1d\x9aI\x1a2\x18\x12\x04size\x1a\x01s\"\rSize in bytesR\x04size\x12J\n" +
+	"\vtemperature\x18\n" +
+	" \x01(\x11B(\x9aI%:#\x12\vtemperature\x1a\x01t\"\x11Temperature valueR\vtemperature\x12B\n" +
+	"\ttimestamp\x18\v \x01(\x12B$\x9aI!B\x1f\x12\ttimestamp\x1a\x01T\"\x0fTimestamp valueR\ttimestamp\x12A\n" +
+	"\atimeout\x18\f \x01(\aB'\x9aI$J\"\x12\atimeout\"\x17Timeout in millisecondsR\atimeout\x12L\n" +
+	"\tbandwidth\x18\r \x01(\x06B.\x9aI+R)\x12\tbandwidth\"\x1cBandwidth in bits per secondR\tbandwidth\x123\n" +
+	"\x06offset\x18\x0e \x01(\x0fB\x1b\x9aI\x18Z\x16\x12\x06offset\"\fOffset valueR\x06offset\x122\n" +
+	"\x05ratio\x18\x0f \x01(\x01B\x1c\x9aI\x19\x12\x17\x12\x05ratio\x1a\x01r\"\vRatio valueR\x05ratio\x12G\n" +
+	"\x04byte\x18\x10 \x01(\fB.\x9aI+z)\x12\x04byte\x1a\x01b\"\x1cByte data in base64 encoding@\x02H\x01R\x04byte\x88\x01\x01\x12S\n" +
+	"\ttest_enum\x18\x11 \x01(\x0e2\x0f.tests.TestEnumB%\x9aI\"\x82\x01\x1f\x12\ttest-enum\x1a\x01e\"\x0fTest enum fieldR\btestEnum\x12\x8c\x01\n" +
+	"\x10timeout_duration\x18\x12 \x01(\v2\x19.google.protobuf.DurationBA\x9aI>\x9a\x01;\x12\x10timeout-duration\x1a\x01d\"$Timeout duration (e.g., 30s, 5m, 1h)H\x02R\x0ftimeoutDuration\x88\x01\x01\x12z\n" +
+	"\x0fprocessing_time\x18\x13 \x01(\v2\x19.google.protobuf.DurationB4\x9aI1\x9a\x01.\x12\x0fprocessing-time\x1a\x01P\"\x18Processing time durationH\x00R\x0eprocessingTime\x12n\n" +
+	"\fwaiting_time\x18\x14 \x01(\v2\x19.google.protobuf.DurationB.\x9aI+\x9a\x01(\x12\fwaiting-time\x1a\x01w\"\x15Waiting time durationH\x00R\vwaitingTime\x12O\n" +
+	"\fsimple_field\x18\x15 \x01(\v2\x14.tests.SimpleMessageB\x16\x9aI\x13\xaa\x01\x10\b\x01\x12\fsimple-fieldR\vsimpleField:\x03\xa8I\x01B\x11\n" +
+	"\x0fduration_choiceB\a\n" +
+	"\x05_byteB\x13\n" +
+	"\x11_timeout_duration\"@\n" +
 	"\rSimpleMessage\x12/\n" +
-	"\x04name\x18\x01 \x01(\tB\x1b\x9aI\x18r\x16\x12\x04name\"\x0eName parameterR\x04name\"\xa7\x01\n" +
+	"\x04name\x18\x01 \x01(\tB\x1b\x9aI\x18r\x16\x12\x04name\"\x0eName parameterR\x04name\"\xf9\x01\n" +
 	"\x0fDisabledMessage\x12B\n" +
-	"\x05value\x18\x01 \x01(\tB,\x9aI)r'\x12\x05value\"\x1eThis should not appear in helpR\x05value\x12K\n" +
-	"\x0esimple_message\x18\x02 \x01(\v2\x14.flags.SimpleMessageB\x0e\x9aI\v\xaa\x01\b\x12\x06simpleR\rsimpleMessage:\x03\x98I\x01B2Z0github.com/kunstack/protoc-gen-flags/tests;testsb\x06proto3"
+	"\x05value\x18\x01 \x01(\tB,\x9aI)r'\x12\x05value\"\x1eThis should not appear in helpR\x05value\x12U\n" +
+	"\x0esimple_message\x18\x02 \x01(\v2\x14.tests.SimpleMessageB\x18\x9aI\x15\xaa\x01\x12\b\x01\x12\x0esimple-messageR\rsimpleMessage\x12F\n" +
+	"\n" +
+	"created_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\v\x9aI\b\xa2\x01\x05B\x03abcR\tcreatedAt:\x03\x98I\x01\")\n" +
+	"\fEmptyMessage\x12\x14\n" +
+	"\x05value\x18\x01 \x01(\tR\x05value:\x03\xa8I\x01\"%\n" +
+	"\rEmptyMessage2\x12\x14\n" +
+	"\x05value\x18\x01 \x01(\tR\x05value\"\xb1\x01\n" +
+	"\x0eWrapperMessage\x12K\n" +
+	"\x05value\x18\x01 \x01(\v2\x1b.google.protobuf.FloatValueB\x13\x9aI\x10\n" +
+	"\x0e\x12\x05value\"\x05helloH\x00R\x05value\x88\x01\x01\x12H\n" +
+	"\x06value2\x18\x02 \x03(\tB0\x9aI-\x8a\x01*r(\x12\x06value2\"\x1eThis should not appear in helpR\x06value2B\b\n" +
+	"\x06_value\"\x88\x03\n" +
+	"\fOneofMessage\x12R\n" +
+	"\fstring_value\x18\x01 \x01(\tB-\x9aI*r(\x12\fstring-value\x1a\x01s\"\x15String value in oneofH\x00R\vstringValue\x12J\n" +
+	"\tint_value\x18\x02 \x01(\x05B+\x9aI(\x1a&\x12\tint-value\x1a\x01i\"\x16Integer value in oneofH\x00R\bintValue\x12v\n" +
+	"\x0eduration_value\x18\x03 \x01(\v2\x19.google.protobuf.DurationB2\x9aI/\x9a\x01,\x12\x0eduration-value\x1a\x01d\"\x17Duration value in oneofH\x00R\rdurationValue\x12M\n" +
+	"\n" +
+	"bool_value\x18\x04 \x01(\bB,\x9aI)j'\x12\n" +
+	"bool-value\x1a\x01b\"\x16Boolean value in oneofH\x00R\tboolValue:\x03\xa8I\x01B\f\n" +
+	"\n" +
+	"test_oneof*;\n" +
+	"\bTestEnum\x12\v\n" +
+	"\aUNKNOWN\x10\x00\x12\n" +
+	"\n" +
+	"\x06VALUE1\x10\x01\x12\n" +
+	"\n" +
+	"\x06VALUE2\x10\x02\x12\n" +
+	"\n" +
+	"\x06VALUE3\x10\x03B2Z0github.com/kunstack/protoc-gen-flags/tests;testsb\x06proto3"
 
 var (
 	file_tests_test_proto_rawDescOnce sync.Once
@@ -240,19 +769,36 @@ func file_tests_test_proto_rawDescGZIP() []byte {
 	return file_tests_test_proto_rawDescData
 }
 
-var file_tests_test_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_tests_test_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_tests_test_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_tests_test_proto_goTypes = []any{
-	(*TestMessage)(nil),     // 0: flags.TestMessage
-	(*SimpleMessage)(nil),   // 1: flags.SimpleMessage
-	(*DisabledMessage)(nil), // 2: flags.DisabledMessage
+	(TestEnum)(0),                 // 0: tests.TestEnum
+	(*TestMessage)(nil),           // 1: tests.TestMessage
+	(*SimpleMessage)(nil),         // 2: tests.SimpleMessage
+	(*DisabledMessage)(nil),       // 3: tests.DisabledMessage
+	(*EmptyMessage)(nil),          // 4: tests.EmptyMessage
+	(*EmptyMessage2)(nil),         // 5: tests.EmptyMessage2
+	(*WrapperMessage)(nil),        // 6: tests.WrapperMessage
+	(*OneofMessage)(nil),          // 7: tests.OneofMessage
+	(*durationpb.Duration)(nil),   // 8: google.protobuf.Duration
+	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
+	(*wrapperspb.FloatValue)(nil), // 10: google.protobuf.FloatValue
 }
 var file_tests_test_proto_depIdxs = []int32{
-	1, // 0: flags.DisabledMessage.simple_message:type_name -> flags.SimpleMessage
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	0,  // 0: tests.TestMessage.test_enum:type_name -> tests.TestEnum
+	8,  // 1: tests.TestMessage.timeout_duration:type_name -> google.protobuf.Duration
+	8,  // 2: tests.TestMessage.processing_time:type_name -> google.protobuf.Duration
+	8,  // 3: tests.TestMessage.waiting_time:type_name -> google.protobuf.Duration
+	2,  // 4: tests.TestMessage.simple_field:type_name -> tests.SimpleMessage
+	2,  // 5: tests.DisabledMessage.simple_message:type_name -> tests.SimpleMessage
+	9,  // 6: tests.DisabledMessage.created_at:type_name -> google.protobuf.Timestamp
+	10, // 7: tests.WrapperMessage.value:type_name -> google.protobuf.FloatValue
+	8,  // 8: tests.OneofMessage.duration_value:type_name -> google.protobuf.Duration
+	9,  // [9:9] is the sub-list for method output_type
+	9,  // [9:9] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_tests_test_proto_init() }
@@ -260,18 +806,30 @@ func file_tests_test_proto_init() {
 	if File_tests_test_proto != nil {
 		return
 	}
+	file_tests_test_proto_msgTypes[0].OneofWrappers = []any{
+		(*TestMessage_ProcessingTime)(nil),
+		(*TestMessage_WaitingTime)(nil),
+	}
+	file_tests_test_proto_msgTypes[5].OneofWrappers = []any{}
+	file_tests_test_proto_msgTypes[6].OneofWrappers = []any{
+		(*OneofMessage_StringValue)(nil),
+		(*OneofMessage_IntValue)(nil),
+		(*OneofMessage_DurationValue)(nil),
+		(*OneofMessage_BoolValue)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tests_test_proto_rawDesc), len(file_tests_test_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   3,
+			NumEnums:      1,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_tests_test_proto_goTypes,
 		DependencyIndexes: file_tests_test_proto_depIdxs,
+		EnumInfos:         file_tests_test_proto_enumTypes,
 		MessageInfos:      file_tests_test_proto_msgTypes,
 	}.Build()
 	File_tests_test_proto = out.File

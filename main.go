@@ -29,7 +29,7 @@ func main() {
 		pgs.DebugEnv("DEBUG"),
 		pgs.SupportedFeatures(&ver),
 	).RegisterModule(
-		module.Flags(),
+		module.Defaults(),
 	).RegisterPostProcessor(
 		pgsgo.GoFmt(),
 	).Render()

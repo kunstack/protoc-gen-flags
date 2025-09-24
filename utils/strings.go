@@ -1,6 +1,9 @@
 package utils
 
-import "strings"
+import (
+	"encoding/csv"
+	"strings"
+)
 
 // BuildFlagName builds a hierarchical configuration flag name from prefix and suffix parts.
 // This is a convenience function for the common case of building configuration flag names.
@@ -42,4 +45,13 @@ func DotJoin(parts ...string) string {
 	}
 
 	return strings.Join(nonEmptyParts, ".")
+}
+
+func ReadAsCSV(val string) ([]string, error) {
+	if val == "" {
+		return []string{}, nil
+	}
+	stringReader := strings.NewReader(val)
+	csvReader := csv.NewReader(stringReader)
+	return csvReader.Read()
 }

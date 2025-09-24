@@ -14,62 +14,235 @@
 
 syntax = "proto3";
 // buf:lint:ignore PACKAGE_VERSION_SUFFIX
-package flags;
+package tests;
+
+import "flags/flags.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
 
 option go_package = "github.com/kunstack/protoc-gen-flags/tests;tests";
 
-import "flags/flags.proto";
-
 message TestMessage {
   option (flags.allow_empty) = true;
-  
-  float hello = 1 [(flags.field).float = {
-    name: "hello",
-    usage: "Hello world flag",
-    deprecated: true,
+
+  float hello = 1 [(flags.value).float = {
+    name: "hello"
+    short: "h"
+    usage: "Hello world '\"' flag"
+    deprecated: true
+    hidden: true
     deprecated_usage: "This flag is deprecated, use --greeting instead"
   }];
-  
-  repeated string world = 2 [(flags.field).repeated.string = {
-    name: "world",
-    usage: "World flags (can be specified multiple times)",
-    deprecated: true,
+
+  string world = 2 [(flags.value).string = {
+    name: "world"
+    usage: "World flags (can be specified multiple times)"
+    deprecated: true
     deprecated_usage: "This flag is deprecated, use --target instead"
   }];
-  
-  string greeting = 3 [(flags.field).string = {
-    name: "greeting",
-    short: "g",
+
+  string greeting = 3 [(flags.value).string = {
+    name: "greeting"
+    short: "g"
     usage: "Greeting message to display"
   }];
-  
-  int32 count = 4 [(flags.field).int32 = {
-    name: "count",
-    short: "c",
+
+  int32 count = 4 [(flags.value).int32 = {
+    name: "count"
+    short: "c"
     usage: "Number of times to repeat the message"
   }];
-  
-  bool verbose = 5 [(flags.field).bool = {
-    name: "verbose",
-    short: "v",
+
+  bool verbose = 5 [(flags.value).bool = {
+    name: "verbose"
+    short: "v"
     usage: "Enable verbose output"
+  }];
+  sfixed64 verbose2 = 6 [(flags.value).sfixed64 = {
+    name: "verbose2"
+    short: "V"
+    usage: "Enable verbose output with sfixed64"
+  }];
+
+  // Additional field types for testing
+  int64 user_id = 7 [(flags.value).int64 = {
+    name: "user-id"
+    short: "u"
+    usage: "User ID"
+  }];
+
+  uint32 port = 8 [(flags.value).uint32 = {
+    name: "port"
+    short: "p"
+    usage: "Port number"
+  }];
+
+  uint64 size = 9 [(flags.value).uint64 = {
+    name: "size"
+    short: "s"
+    usage: "Size in bytes"
+  }];
+
+  sint32 temperature = 10 [(flags.value).sint32 = {
+    name: "temperature"
+    short: "t"
+    usage: "Temperature value"
+  }];
+
+  sint64 timestamp = 11 [(flags.value).sint64 = {
+    name: "timestamp"
+    short: "T"
+    usage: "Timestamp value"
+  }];
+
+  fixed32 timeout = 12 [(flags.value).fixed32 = {
+    name: "timeout"
+    usage: "Timeout in milliseconds"
+  }];
+
+  fixed64 bandwidth = 13 [(flags.value).fixed64 = {
+    name: "bandwidth"
+    usage: "Bandwidth in bits per second"
+  }];
+
+  sfixed32 offset = 14 [(flags.value).sfixed32 = {
+    name: "offset"
+    usage: "Offset value"
+  }];
+
+  double ratio = 15 [(flags.value).double = {
+    name: "ratio"
+    short: "r"
+    usage: "Ratio value"
+  }];
+
+  optional bytes byte = 16 [(flags.value).bytes = {
+    disabled: false
+    name: "byte"
+    short: "b"
+    usage: "Byte data in base64 encoding"
+    hidden: false
+    deprecated: false
+    deprecated_usage: ""
+    encoding: BYTES_ENCODING_TYPE_HEX
+  }];
+
+  // Test enum type
+  TestEnum test_enum = 17 [(flags.value).enum = {
+    name: "test-enum"
+    short: "e"
+    usage: "Test enum field"
+  }];
+
+  // Test duration type
+  optional google.protobuf.Duration timeout_duration = 18 [(flags.value).duration = {
+    name: "timeout-duration"
+    short: "d"
+    usage: "Timeout duration (e.g., 30s, 5m, 1h)"
+  }];
+
+  // Test oneof with duration
+  oneof duration_choice {
+    google.protobuf.Duration processing_time = 19 [(flags.value).duration = {
+      name: "processing-time"
+      short: "P"
+      usage: "Processing time duration"
+    }];
+
+    google.protobuf.Duration waiting_time = 20 [(flags.value).duration = {
+      name: "waiting-time"
+      short: "w"
+      usage: "Waiting time duration"
+    }];
+  }
+
+  // Test message field type for *flags.FieldFlags_Message
+  SimpleMessage simple_field = 21 [(flags.value).message = {
+    name: "simple-field"
+    nested: true
   }];
 }
 
+enum TestEnum {
+  UNKNOWN = 0;
+  VALUE1 = 1;
+  VALUE2 = 2;
+  VALUE3 = 3;
+}
+
 message SimpleMessage {
-  string name = 1 [(flags.field).string = {
-    name: "name",
+  string name = 1 [(flags.value).string = {
+    name: "name"
     usage: "Name parameter"
   }];
 }
 
 message DisabledMessage {
   option (flags.disabled) = true;
-  
-  string value = 1 [(flags.field).string = {
-    name: "value",
+
+  string value = 1 [(flags.value).string = {
+    name: "value"
     usage: "This should not appear in help"
   }];
 
-  SimpleMessage simple_message = 2 [(flags.field).message.prefix="simple"];
+  SimpleMessage simple_message = 2 [(flags.value).message = {
+    nested: true
+    name: "simple-message"
+  }];
+  google.protobuf.Timestamp created_at = 3 [(flags.value).timestamp = {
+    formats: ["abc"]
+  }];
+}
+
+message EmptyMessage {
+  option (flags.allow_empty) = true;
+
+  string value = 1;
+}
+
+message EmptyMessage2 {
+  string value = 1;
+}
+
+message WrapperMessage {
+  optional google.protobuf.FloatValue value = 1 [(flags.value).float = {
+    name: "value"
+    usage: "hello"
+  }];
+
+  repeated string value2 = 2 [(flags.value).repeated.string = {
+    name: "value2"
+    usage: "This should not appear in help"
+  }];
+}
+
+message OneofMessage {
+  option (flags.allow_empty) = true;
+
+  oneof test_oneof {
+    string string_value = 1 [(flags.value).string = {
+      name: "string-value"
+      short: "s"
+      usage: "String value in oneof"
+    }];
+
+    int32 int_value = 2 [(flags.value).int32 = {
+      name: "int-value"
+      short: "i"
+      usage: "Integer value in oneof"
+    }];
+
+    google.protobuf.Duration duration_value = 3 [(flags.value).duration = {
+      name: "duration-value"
+      short: "d"
+      usage: "Duration value in oneof"
+    }];
+
+    bool bool_value = 4 [(flags.value).bool = {
+      name: "bool-value"
+      short: "b"
+      usage: "Boolean value in oneof"
+    }];
+  }
 }

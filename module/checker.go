@@ -46,21 +46,21 @@ func (m *Module) Check(msg pgs.Message) {
 	for _, f := range msg.Fields() {
 		m.Push(f.Name().String())
 
-		var fieldDefaults flags.FieldFlags
-		_, err = f.Extension(flags.E_Field, &fieldDefaults)
+		var field flags.FieldFlags
+		_, err = f.Extension(flags.E_Value, &field)
 		m.CheckErr(err, "unable to read flags from field")
 
-		m.CheckFieldRules(f.Type(), &fieldDefaults)
+		m.CheckFieldRules(f.Type(), &field)
 		m.Pop()
 	}
 }
 
-func (m *Module) CheckFieldRules(typ FieldType, fieldDefaults *flags.FieldFlags) {
-	if fieldDefaults == nil {
+func (m *Module) CheckFieldRules(typ FieldType, field *flags.FieldFlags) {
+	if field == nil {
 		return
 	}
 
-	switch r := fieldDefaults.Type.(type) {
+	switch r := field.Type.(type) {
 	case *flags.FieldFlags_Float:
 		m.MustType(typ, pgs.FloatT, pgs.FloatValueWKT)
 		m.CheckPrimitiveFlag(typ, r.Float)
@@ -105,7 +105,7 @@ func (m *Module) CheckFieldRules(typ FieldType, fieldDefaults *flags.FieldFlags)
 		m.CheckPrimitiveFlag(typ, r.String_)
 	case *flags.FieldFlags_Bytes:
 		m.MustType(typ, pgs.BytesT, pgs.BytesValueWKT)
-		m.CheckPrimitiveFlag(typ, r.Bytes)
+		m.CheckBytes(typ, r.Bytes)
 	case *flags.FieldFlags_Enum:
 		m.MustType(typ, pgs.EnumT, pgs.UnknownWKT)
 		m.CheckEnum(typ, r.Enum)
@@ -115,12 +115,13 @@ func (m *Module) CheckFieldRules(typ FieldType, fieldDefaults *flags.FieldFlags)
 		m.CheckPrimitiveFlag(typ, r.Duration)
 	case *flags.FieldFlags_Timestamp:
 		m.CheckTimestamp(typ, r.Timestamp)
-		m.CheckPrimitiveFlag(typ, r.Timestamp)
-	//case *flags.FieldFlags_Repeated:
-	//	m.MustType(typ, pgs.MessageT, pgs.UnknownWKT)
+	case *flags.FieldFlags_Repeated:
+		m.Debug("test: ", typ)
+	case *flags.FieldFlags_Message:
+		m.MustType(typ, pgs.MessageT, pgs.UnknownWKT)
 	case nil: // noop
 	default:
-		m.Failf("unknown rule type (%T)", fieldDefaults.Type)
+		m.Failf("unknown rule type (%T)", field.Type)
 	}
 }
 
@@ -162,7 +163,7 @@ func (m *Module) CheckMessage(f pgs.Field, flag *flags.FieldFlags) {
 			m.Failf("Timestamp value should be used for Timestamp fields")
 		}
 	}
-	if flag.GetMessage().Disabled {
+	if !flag.GetMessage().Nested {
 		return
 	}
 	current := m.ctx.ImportPath(f.Message()).String()
@@ -178,15 +179,56 @@ func (m *Module) CheckDuration(ft FieldType, r *flags.PrimitiveFlag) {
 }
 
 func (m *Module) CheckPrimitiveFlag(ft FieldType, r *flags.PrimitiveFlag) {
+	if r.Usage == "" {
+		m.Failf("usage is required for flag")
+	}
 	// Check if deprecated flag has proper deprecation usage message
 	if r.Deprecated && r.DeprecatedUsage == "" {
 		m.Failf("deprecated flag must provide deprecated_usage message")
 	}
 }
 
-func (m *Module) CheckTimestamp(ft FieldType, r *flags.PrimitiveFlag) {
+func (m *Module) CheckTimestamp(ft FieldType, r *flags.TimestampFlag) {
 	if embed := ft.Embed(); embed == nil || embed.WellKnownType() != pgs.TimestampWKT {
 		m.Failf("unexpected field type (%T) for Timestamp, expected google.protobuf.Timestamp ", ft)
+	}
+
+	if r.Usage == "" {
+		m.Failf("usage is required for flag")
+	}
+	// Check if deprecated flag has proper deprecation usage message
+	if r.Deprecated && r.DeprecatedUsage == "" {
+		m.Failf("deprecated flag must provide deprecated_usage message")
+	}
+
+	if len(r.Formats) == 0 {
+		m.Failf("at least one format must be specified for timestamp flag")
+	}
+
+	// Validate that formats are not empty strings
+	for i, format := range r.Formats {
+		if format == "" {
+			m.Failf("timestamp format at index %d is empty", i)
+		}
+	}
+
+	// Check for duplicate formats
+	seenFormats := make(map[string]bool)
+	for i, format := range r.Formats {
+		if seenFormats[format] {
+			m.Failf("timestamp format '%s' at index %d is duplicated", format, i)
+		}
+		seenFormats[format] = true
+	}
+}
+
+func (m *Module) CheckBytes(ft FieldType, r *flags.BytesFlag) {
+	if r.Usage == "" {
+		m.Failf("usage is required for flag")
+	}
+	// Check if deprecated flag has proper deprecation usage message
+	if r.Deprecated && r.DeprecatedUsage == "" {
+		m.Failf("deprecated flag must provide deprecated_usage message")
 	}
 }
 

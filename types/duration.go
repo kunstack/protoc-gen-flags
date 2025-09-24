@@ -8,19 +8,18 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-var _ pflag.Value = (*Duration)(nil)
+var _ pflag.Value = (*DurationValue)(nil)
 
-type Duration durationpb.Duration
+type DurationValue durationpb.Duration
 
-func (d *Duration) String() string {
+func (d *DurationValue) String() string {
 	if d == nil {
 		return "0s"
 	}
-	duration := durationpb.Duration(*d)
-	return duration.AsDuration().String()
+	return (*durationpb.Duration)(d).AsDuration().String()
 }
 
-func (d *Duration) Set(s string) error {
+func (d *DurationValue) Set(s string) error {
 	if d == nil {
 		return fmt.Errorf("cannot set nil Duration")
 	}
@@ -28,11 +27,18 @@ func (d *Duration) Set(s string) error {
 	if err != nil {
 		return err
 	}
-	pbDuration := durationpb.New(duration)
-	*d = Duration(*pbDuration)
+	nanos := duration.Nanoseconds()
+	secs := nanos / 1e9
+	nanos -= secs * 1e9
+	d.Seconds = int64(secs)
+	d.Nanos = int32(nanos)
 	return nil
 }
 
-func (d *Duration) Type() string {
-	return "pbduration"
+func (d *DurationValue) Type() string {
+	return "durationValue"
+}
+
+func Duration(value *durationpb.Duration) *DurationValue {
+	return (*DurationValue)(value)
 }

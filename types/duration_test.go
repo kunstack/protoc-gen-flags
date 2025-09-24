@@ -9,14 +9,14 @@ import (
 )
 
 func TestDuration_String(t *testing.T) {
-	duration := Duration(*durationpb.New(5 * time.Minute))
+	duration := DurationValue(*durationpb.New(5 * time.Minute))
 	expected := "5m0s"
 	if got := duration.String(); got != expected {
-		t.Errorf("Duration.String() = %v, want %v", got, expected)
+		t.Errorf("DurationValue.String() = %v, want %v", got, expected)
 	}
 }
 
-func TestDuration_Set(t *testing.T) {
+func TestDurationValue_Set(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
@@ -47,37 +47,36 @@ func TestDuration_Set(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var d Duration
+			var d DurationValue
 			err := d.Set(tt.input)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Duration.Set() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("DurationValue.Set() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !tt.wantErr {
-				pbDuration := durationpb.Duration(d)
-				got := pbDuration.AsDuration()
+				got := (*durationpb.Duration)(&d).AsDuration()
 				if got != tt.want {
-					t.Errorf("Duration.Set() = %v, want %v", got, tt.want)
+					t.Errorf("DurationValue.Set() = %v, want %v", got, tt.want)
 				}
 			}
 		})
 	}
 }
 
-func TestDuration_Type(t *testing.T) {
-	var d Duration
-	if got := d.Type(); got != "pbduration" {
-		t.Errorf("Duration.Type() = %v, want %v", got, "pbduration")
+func TestDurationValue_Type(t *testing.T) {
+	var d DurationValue
+	if got := d.Type(); got != "durationValue" {
+		t.Errorf("DurationValue.Type() = %v, want %v", got, "durationValue")
 	}
 }
 
-func TestDuration_pflagInterface(t *testing.T) {
-	// Test that Duration implements pflag.Value interface
-	var _ pflag.Value = (*Duration)(nil)
+func TestDurationValue_pflagInterface(t *testing.T) {
+	// Test that DurationValue implements pflag.Value interface
+	var _ pflag.Value = (*DurationValue)(nil)
 
 	// Test with actual pflag usage
 	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
-	var d Duration
+	var d DurationValue
 
 	fs.Var(&d, "duration", "Test duration")
 
@@ -88,38 +87,37 @@ func TestDuration_pflagInterface(t *testing.T) {
 	}
 
 	expected := 1*time.Hour + 30*time.Minute
-	pbDuration := durationpb.Duration(d)
-	got := pbDuration.AsDuration()
+	got := (*durationpb.Duration)(&d).AsDuration()
 
 	if got != expected {
 		t.Errorf("Parsed duration = %v, want %v", got, expected)
 	}
 }
 
-func TestDuration_EmptyString(t *testing.T) {
-	var d Duration
+func TestDurationValue_EmptyString(t *testing.T) {
+	var d DurationValue
 	err := d.Set("")
 	if err == nil {
-		t.Error("Duration.Set(\"\") should return an error")
+		t.Error("DurationValue.Set(\"\") should return an error")
 	}
 }
 
-func TestDuration_NilPointer(t *testing.T) {
-	var d *Duration = nil
+func TestDurationValue_NilPointer(t *testing.T) {
+	var d *DurationValue = nil
 
 	// Test String() on nil pointer
 	if got := d.String(); got != "0s" {
-		t.Errorf("Duration.String() on nil = %v, want %v", got, "0s")
+		t.Errorf("DurationValue.String() on nil = %v, want %v", got, "0s")
 	}
 
 	// Test Set() on nil pointer
 	err := d.Set("5m")
 	if err == nil {
-		t.Error("Duration.Set() on nil should return an error")
+		t.Error("DurationValue.Set() on nil should return an error")
 	}
 
 	// Test Type() on nil pointer
-	if got := d.Type(); got != "pbduration" {
-		t.Errorf("Duration.Type() on nil = %v, want %v", got, "pbduration")
+	if got := d.Type(); got != "durationValue" {
+		t.Errorf("DurationValue.Type() on nil = %v, want %v", got, "durationValue")
 	}
 }

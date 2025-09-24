@@ -31,7 +31,7 @@
 //
 // Field-level options configure individual flag behavior:
 //
-//   string name = 1 [(flags.field) = {
+//   string name = 1 [(flags.value).string = {
 //     name: "custom-name"
 //     short: "n"
 //     usage: "Custom usage description"
@@ -54,6 +54,7 @@
 // source: flags/flags.proto
 
 // buf:lint:ignore PACKAGE_VERSION_SUFFIX
+// buf:lint:ignore PACKAGE_SAME_DIRECTORY
 
 package flags
 
@@ -72,6 +73,173 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// BytesEncodingType specifies the encoding format for bytes fields in command-line flags.
+type BytesEncodingType int32
+
+const (
+	// BYTES_ENCODING_TYPE_UNSPECIFIED uses the default base64 encoding.
+	BytesEncodingType_BYTES_ENCODING_TYPE_UNSPECIFIED BytesEncodingType = 0
+	// BYTES_ENCODING_TYPE_BASE64 uses standard base64 encoding for bytes fields.
+	BytesEncodingType_BYTES_ENCODING_TYPE_BASE64 BytesEncodingType = 1
+	// BYTES_ENCODING_TYPE_HEX uses hexadecimal encoding for bytes fields.
+	BytesEncodingType_BYTES_ENCODING_TYPE_HEX BytesEncodingType = 2
+)
+
+// Enum value maps for BytesEncodingType.
+var (
+	BytesEncodingType_name = map[int32]string{
+		0: "BYTES_ENCODING_TYPE_UNSPECIFIED",
+		1: "BYTES_ENCODING_TYPE_BASE64",
+		2: "BYTES_ENCODING_TYPE_HEX",
+	}
+	BytesEncodingType_value = map[string]int32{
+		"BYTES_ENCODING_TYPE_UNSPECIFIED": 0,
+		"BYTES_ENCODING_TYPE_BASE64":      1,
+		"BYTES_ENCODING_TYPE_HEX":         2,
+	}
+)
+
+func (x BytesEncodingType) Enum() *BytesEncodingType {
+	p := new(BytesEncodingType)
+	*p = x
+	return p
+}
+
+func (x BytesEncodingType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (BytesEncodingType) Descriptor() protoreflect.EnumDescriptor {
+	return file_flags_flags_proto_enumTypes[0].Descriptor()
+}
+
+func (BytesEncodingType) Type() protoreflect.EnumType {
+	return &file_flags_flags_proto_enumTypes[0]
+}
+
+func (x BytesEncodingType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use BytesEncodingType.Descriptor instead.
+func (BytesEncodingType) EnumDescriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{0}
+}
+
+// BytesFlag contains configuration specifically for bytes fields with encoding type selection.
+//
+// This message allows customization of how bytes fields are encoded and decoded
+// in command-line flags, supporting both base64 and hexadecimal formats.
+type BytesFlag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Encoding specifies the encoding format for bytes fields. When unspecified,
+	// defaults to base64 encoding.
+	Encoding      BytesEncodingType `protobuf:"varint,8,opt,name=encoding,proto3,enum=flags.BytesEncodingType" json:"encoding,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BytesFlag) Reset() {
+	*x = BytesFlag{}
+	mi := &file_flags_flags_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BytesFlag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BytesFlag) ProtoMessage() {}
+
+func (x *BytesFlag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BytesFlag.ProtoReflect.Descriptor instead.
+func (*BytesFlag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *BytesFlag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *BytesFlag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *BytesFlag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *BytesFlag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *BytesFlag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *BytesFlag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *BytesFlag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *BytesFlag) GetEncoding() BytesEncodingType {
+	if x != nil {
+		return x.Encoding
+	}
+	return BytesEncodingType_BYTES_ENCODING_TYPE_UNSPECIFIED
+}
 
 // FieldFlags encapsulates the flag configuration for each type of field.
 //
@@ -111,7 +279,7 @@ type FieldFlags struct {
 
 func (x *FieldFlags) Reset() {
 	*x = FieldFlags{}
-	mi := &file_flags_flags_proto_msgTypes[0]
+	mi := &file_flags_flags_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -123,7 +291,7 @@ func (x *FieldFlags) String() string {
 func (*FieldFlags) ProtoMessage() {}
 
 func (x *FieldFlags) ProtoReflect() protoreflect.Message {
-	mi := &file_flags_flags_proto_msgTypes[0]
+	mi := &file_flags_flags_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -136,7 +304,7 @@ func (x *FieldFlags) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FieldFlags.ProtoReflect.Descriptor instead.
 func (*FieldFlags) Descriptor() ([]byte, []int) {
-	return file_flags_flags_proto_rawDescGZIP(), []int{0}
+	return file_flags_flags_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *FieldFlags) GetType() isFieldFlags_Type {
@@ -272,7 +440,7 @@ func (x *FieldFlags) GetString_() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetBytes() *PrimitiveFlag {
+func (x *FieldFlags) GetBytes() *BytesFlag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Bytes); ok {
 			return x.Bytes
@@ -317,7 +485,7 @@ func (x *FieldFlags) GetDuration() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetTimestamp() *PrimitiveFlag {
+func (x *FieldFlags) GetTimestamp() *TimestampFlag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Timestamp); ok {
 			return x.Timestamp
@@ -397,7 +565,8 @@ type FieldFlags_String_ struct {
 }
 
 type FieldFlags_Bytes struct {
-	Bytes *PrimitiveFlag `protobuf:"bytes,15,opt,name=bytes,proto3,oneof"` // Arbitrary bytes
+	// Bytes field type with encoding type selection
+	Bytes *BytesFlag `protobuf:"bytes,15,opt,name=bytes,proto3,oneof"` // Arbitrary bytes with encoding format
 }
 
 type FieldFlags_Enum struct {
@@ -419,7 +588,7 @@ type FieldFlags_Duration struct {
 }
 
 type FieldFlags_Timestamp struct {
-	Timestamp *PrimitiveFlag `protobuf:"bytes,20,opt,name=timestamp,proto3,oneof"` // google.protobuf.Timestamp
+	Timestamp *TimestampFlag `protobuf:"bytes,20,opt,name=timestamp,proto3,oneof"` // google.protobuf.Timestamp
 }
 
 type FieldFlags_Message struct {
@@ -496,7 +665,7 @@ type PrimitiveFlag struct {
 
 func (x *PrimitiveFlag) Reset() {
 	*x = PrimitiveFlag{}
-	mi := &file_flags_flags_proto_msgTypes[1]
+	mi := &file_flags_flags_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -508,7 +677,7 @@ func (x *PrimitiveFlag) String() string {
 func (*PrimitiveFlag) ProtoMessage() {}
 
 func (x *PrimitiveFlag) ProtoReflect() protoreflect.Message {
-	mi := &file_flags_flags_proto_msgTypes[1]
+	mi := &file_flags_flags_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -521,7 +690,7 @@ func (x *PrimitiveFlag) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrimitiveFlag.ProtoReflect.Descriptor instead.
 func (*PrimitiveFlag) Descriptor() ([]byte, []int) {
-	return file_flags_flags_proto_rawDescGZIP(), []int{1}
+	return file_flags_flags_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *PrimitiveFlag) GetDisabled() bool {
@@ -573,6 +742,118 @@ func (x *PrimitiveFlag) GetDeprecatedUsage() string {
 	return ""
 }
 
+// TimestampFlag contains the core configuration for all Timestamp flag types.
+//
+// This message provides a comprehensive set of options for customizing flag
+// behavior, appearance, and integration with environment variables.
+type TimestampFlag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string   `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	Formats         []string `protobuf:"bytes,8,rep,name=formats,proto3" json:"formats,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *TimestampFlag) Reset() {
+	*x = TimestampFlag{}
+	mi := &file_flags_flags_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TimestampFlag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TimestampFlag) ProtoMessage() {}
+
+func (x *TimestampFlag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TimestampFlag.ProtoReflect.Descriptor instead.
+func (*TimestampFlag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *TimestampFlag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *TimestampFlag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *TimestampFlag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *TimestampFlag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *TimestampFlag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *TimestampFlag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *TimestampFlag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *TimestampFlag) GetFormats() []string {
+	if x != nil {
+		return x.Formats
+	}
+	return nil
+}
+
 // MessageFlag contains configuration for message fields that contain nested flag configurations.
 //
 // This message type is used when a protobuf field is itself a message that contains
@@ -585,25 +866,25 @@ type MessageFlag struct {
 	// that implement the flags.Interface. When set to false, no flags will be generated
 	// for fields within this message, even if they have flag configurations.
 	Nested bool `protobuf:"varint,1,opt,name=nested,proto3" json:"nested,omitempty"`
-	// Prefix specifies a custom prefix for all flags in this message field.
+	// Name specifies a custom name prefix for all flags in this message field.
 	// This is useful for organizing flags into logical groups and avoiding
 	// naming conflicts when multiple messages have similarly named fields.
 	//
 	// Examples:
-	//   - prefix "server" would generate "--server.host", "--server.port"
-	//   - prefix "database" would generate "--database.url", "--database.timeout"
-	//   - empty prefix would generate "--host", "--port" (field names directly)
+	//   - name "server" would generate "--server.host", "--server.port"
+	//   - name "database" would generate "--database.url", "--database.timeout"
+	//   - empty name would generate "--host", "--port" (field names directly)
 	//
-	// The prefix is automatically converted to kebab-case format (underscores become hyphens)
+	// The name is automatically converted to kebab-case format (underscores become hyphens)
 	// and separated from the flag name with a dot.
-	Prefix        string `protobuf:"bytes,2,opt,name=prefix,proto3" json:"prefix,omitempty"`
+	Name          string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *MessageFlag) Reset() {
 	*x = MessageFlag{}
-	mi := &file_flags_flags_proto_msgTypes[2]
+	mi := &file_flags_flags_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -615,7 +896,7 @@ func (x *MessageFlag) String() string {
 func (*MessageFlag) ProtoMessage() {}
 
 func (x *MessageFlag) ProtoReflect() protoreflect.Message {
-	mi := &file_flags_flags_proto_msgTypes[2]
+	mi := &file_flags_flags_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -628,7 +909,7 @@ func (x *MessageFlag) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageFlag.ProtoReflect.Descriptor instead.
 func (*MessageFlag) Descriptor() ([]byte, []int) {
-	return file_flags_flags_proto_rawDescGZIP(), []int{2}
+	return file_flags_flags_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *MessageFlag) GetNested() bool {
@@ -638,9 +919,9 @@ func (x *MessageFlag) GetNested() bool {
 	return false
 }
 
-func (x *MessageFlag) GetPrefix() string {
+func (x *MessageFlag) GetName() string {
 	if x != nil {
-		return x.Prefix
+		return x.Name
 	}
 	return ""
 }
@@ -679,7 +960,7 @@ type RepeatedFlags struct {
 
 func (x *RepeatedFlags) Reset() {
 	*x = RepeatedFlags{}
-	mi := &file_flags_flags_proto_msgTypes[3]
+	mi := &file_flags_flags_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -691,7 +972,7 @@ func (x *RepeatedFlags) String() string {
 func (*RepeatedFlags) ProtoMessage() {}
 
 func (x *RepeatedFlags) ProtoReflect() protoreflect.Message {
-	mi := &file_flags_flags_proto_msgTypes[3]
+	mi := &file_flags_flags_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -704,7 +985,7 @@ func (x *RepeatedFlags) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepeatedFlags.ProtoReflect.Descriptor instead.
 func (*RepeatedFlags) Descriptor() ([]byte, []int) {
-	return file_flags_flags_proto_rawDescGZIP(), []int{3}
+	return file_flags_flags_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *RepeatedFlags) GetType() isRepeatedFlags_Type {
@@ -840,7 +1121,7 @@ func (x *RepeatedFlags) GetString_() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetBytes() *PrimitiveFlag {
+func (x *RepeatedFlags) GetBytes() *BytesFlag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Bytes); ok {
 			return x.Bytes
@@ -876,7 +1157,7 @@ func (x *RepeatedFlags) GetDuration() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetTimestamp() *PrimitiveFlag {
+func (x *RepeatedFlags) GetTimestamp() *TimestampFlag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Timestamp); ok {
 			return x.Timestamp
@@ -948,7 +1229,8 @@ type RepeatedFlags_String_ struct {
 }
 
 type RepeatedFlags_Bytes struct {
-	Bytes *PrimitiveFlag `protobuf:"bytes,15,opt,name=bytes,proto3,oneof"` // Repeated arbitrary bytes
+	// Bytes field type with encoding type selection
+	Bytes *BytesFlag `protobuf:"bytes,15,opt,name=bytes,proto3,oneof"` // Repeated arbitrary bytes with encoding format
 }
 
 type RepeatedFlags_Enum struct {
@@ -964,7 +1246,7 @@ type RepeatedFlags_Duration struct {
 }
 
 type RepeatedFlags_Timestamp struct {
-	Timestamp *PrimitiveFlag `protobuf:"bytes,19,opt,name=timestamp,proto3,oneof"` // Repeated timestamp values
+	Timestamp *TimestampFlag `protobuf:"bytes,19,opt,name=timestamp,proto3,oneof"` // Repeated timestamp values
 }
 
 func (*RepeatedFlags_Float) isRepeatedFlags_Type() {}
@@ -1034,8 +1316,8 @@ var file_flags_flags_proto_extTypes = []protoimpl.ExtensionInfo{
 		ExtendedType:  (*descriptorpb.FieldOptions)(nil),
 		ExtensionType: (*FieldFlags)(nil),
 		Field:         1171,
-		Name:          "flags.field",
-		Tag:           "bytes,1171,opt,name=field",
+		Name:          "flags.value",
+		Tag:           "bytes,1171,opt,name=value",
 		Filename:      "flags/flags.proto",
 	},
 }
@@ -1063,19 +1345,30 @@ var (
 
 // Extension fields to descriptorpb.FieldOptions.
 var (
-	// Field specifies the flag configuration for this field. When set, the
+	// Value specifies the flag configuration for this field. When set, the
 	// protoc-gen-flags plugin will generate command-line flag bindings based
 	// on the field type and configuration provided.
 	//
-	// optional flags.FieldFlags field = 1171;
-	E_Field = &file_flags_flags_proto_extTypes[3]
+	// optional flags.FieldFlags value = 1171;
+	E_Value = &file_flags_flags_proto_extTypes[3]
 )
 
 var File_flags_flags_proto protoreflect.FileDescriptor
 
 const file_flags_flags_proto_rawDesc = "" +
 	"\n" +
-	"\x11flags/flags.proto\x12\x05flags\x1a google/protobuf/descriptor.proto\"\x88\b\n" +
+	"\x11flags/flags.proto\x12\x05flags\x1a google/protobuf/descriptor.proto\"\x80\x02\n" +
+	"\tBytesFlag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x124\n" +
+	"\bencoding\x18\b \x01(\x0e2\x18.flags.BytesEncodingTypeR\bencoding\"\x84\b\n" +
 	"\n" +
 	"FieldFlags\x12,\n" +
 	"\x05float\x18\x01 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x05float\x12.\n" +
@@ -1092,13 +1385,13 @@ const file_flags_flags_proto_rawDesc = "" +
 	"\bsfixed32\x18\v \x01(\v2\x14.flags.PrimitiveFlagH\x00R\bsfixed32\x122\n" +
 	"\bsfixed64\x18\f \x01(\v2\x14.flags.PrimitiveFlagH\x00R\bsfixed64\x12*\n" +
 	"\x04bool\x18\r \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x04bool\x12.\n" +
-	"\x06string\x18\x0e \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06string\x12,\n" +
-	"\x05bytes\x18\x0f \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x05bytes\x12*\n" +
+	"\x06string\x18\x0e \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06string\x12(\n" +
+	"\x05bytes\x18\x0f \x01(\v2\x10.flags.BytesFlagH\x00R\x05bytes\x12*\n" +
 	"\x04enum\x18\x10 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x04enum\x122\n" +
 	"\brepeated\x18\x11 \x01(\v2\x14.flags.RepeatedFlagsH\x00R\brepeated\x12(\n" +
 	"\x03map\x18\x12 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x03map\x122\n" +
 	"\bduration\x18\x13 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\bduration\x124\n" +
-	"\ttimestamp\x18\x14 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\ttimestamp\x12.\n" +
+	"\ttimestamp\x18\x14 \x01(\v2\x14.flags.TimestampFlagH\x00R\ttimestamp\x12.\n" +
 	"\amessage\x18\x15 \x01(\v2\x12.flags.MessageFlagH\x00R\amessageB\x06\n" +
 	"\x04type\"\xce\x01\n" +
 	"\rPrimitiveFlag\x12\x1a\n" +
@@ -1110,10 +1403,21 @@ const file_flags_flags_proto_rawDesc = "" +
 	"\n" +
 	"deprecated\x18\x06 \x01(\bR\n" +
 	"deprecated\x12)\n" +
-	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\"=\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\"\xe8\x01\n" +
+	"\rTimestampFlag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\aformats\x18\b \x03(\tR\aformats\"9\n" +
 	"\vMessageFlag\x12\x16\n" +
-	"\x06nested\x18\x01 \x01(\bR\x06nested\x12\x16\n" +
-	"\x06prefix\x18\x02 \x01(\tR\x06prefix\"\xa7\a\n" +
+	"\x06nested\x18\x01 \x01(\bR\x06nested\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"\xa3\a\n" +
 	"\rRepeatedFlags\x12,\n" +
 	"\x05float\x18\x01 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x05float\x12.\n" +
 	"\x06double\x18\x02 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06double\x12,\n" +
@@ -1129,20 +1433,24 @@ const file_flags_flags_proto_rawDesc = "" +
 	"\bsfixed32\x18\v \x01(\v2\x14.flags.PrimitiveFlagH\x00R\bsfixed32\x122\n" +
 	"\bsfixed64\x18\f \x01(\v2\x14.flags.PrimitiveFlagH\x00R\bsfixed64\x12*\n" +
 	"\x04bool\x18\r \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x04bool\x12.\n" +
-	"\x06string\x18\x0e \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06string\x12,\n" +
-	"\x05bytes\x18\x0f \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x05bytes\x12*\n" +
+	"\x06string\x18\x0e \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06string\x12(\n" +
+	"\x05bytes\x18\x0f \x01(\v2\x10.flags.BytesFlagH\x00R\x05bytes\x12*\n" +
 	"\x04enum\x18\x10 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x04enum\x12(\n" +
 	"\x03map\x18\x11 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x03map\x122\n" +
 	"\bduration\x18\x12 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\bduration\x124\n" +
-	"\ttimestamp\x18\x13 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\ttimestampB\x06\n" +
-	"\x04type:<\n" +
+	"\ttimestamp\x18\x13 \x01(\v2\x14.flags.TimestampFlagH\x00R\ttimestampB\x06\n" +
+	"\x04type*u\n" +
+	"\x11BytesEncodingType\x12#\n" +
+	"\x1fBYTES_ENCODING_TYPE_UNSPECIFIED\x10\x00\x12\x1e\n" +
+	"\x1aBYTES_ENCODING_TYPE_BASE64\x10\x01\x12\x1b\n" +
+	"\x17BYTES_ENCODING_TYPE_HEX\x10\x02:<\n" +
 	"\bdisabled\x12\x1f.google.protobuf.MessageOptions\x18\x93\t \x01(\bR\bdisabled:@\n" +
 	"\n" +
 	"unexported\x12\x1f.google.protobuf.MessageOptions\x18\x94\t \x01(\bR\n" +
 	"unexported:A\n" +
 	"\vallow_empty\x12\x1f.google.protobuf.MessageOptions\x18\x95\t \x01(\bR\n" +
 	"allowEmpty:G\n" +
-	"\x05field\x12\x1d.google.protobuf.FieldOptions\x18\x93\t \x01(\v2\x11.flags.FieldFlagsR\x05fieldB2Z0github.com/kunstack/protoc-gen-flags/flags;flagsb\x06proto3"
+	"\x05value\x12\x1d.google.protobuf.FieldOptions\x18\x93\t \x01(\v2\x11.flags.FieldFlagsR\x05valueB2Z0github.com/kunstack/protoc-gen-flags/flags;flagsb\x06proto3"
 
 var (
 	file_flags_flags_proto_rawDescOnce sync.Once
@@ -1156,66 +1464,71 @@ func file_flags_flags_proto_rawDescGZIP() []byte {
 	return file_flags_flags_proto_rawDescData
 }
 
-var file_flags_flags_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_flags_flags_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_flags_flags_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_flags_flags_proto_goTypes = []any{
-	(*FieldFlags)(nil),                  // 0: flags.FieldFlags
-	(*PrimitiveFlag)(nil),               // 1: flags.PrimitiveFlag
-	(*MessageFlag)(nil),                 // 2: flags.MessageFlag
-	(*RepeatedFlags)(nil),               // 3: flags.RepeatedFlags
-	(*descriptorpb.MessageOptions)(nil), // 4: google.protobuf.MessageOptions
-	(*descriptorpb.FieldOptions)(nil),   // 5: google.protobuf.FieldOptions
+	(BytesEncodingType)(0),              // 0: flags.BytesEncodingType
+	(*BytesFlag)(nil),                   // 1: flags.BytesFlag
+	(*FieldFlags)(nil),                  // 2: flags.FieldFlags
+	(*PrimitiveFlag)(nil),               // 3: flags.PrimitiveFlag
+	(*TimestampFlag)(nil),               // 4: flags.TimestampFlag
+	(*MessageFlag)(nil),                 // 5: flags.MessageFlag
+	(*RepeatedFlags)(nil),               // 6: flags.RepeatedFlags
+	(*descriptorpb.MessageOptions)(nil), // 7: google.protobuf.MessageOptions
+	(*descriptorpb.FieldOptions)(nil),   // 8: google.protobuf.FieldOptions
 }
 var file_flags_flags_proto_depIdxs = []int32{
-	1,  // 0: flags.FieldFlags.float:type_name -> flags.PrimitiveFlag
-	1,  // 1: flags.FieldFlags.double:type_name -> flags.PrimitiveFlag
-	1,  // 2: flags.FieldFlags.int32:type_name -> flags.PrimitiveFlag
-	1,  // 3: flags.FieldFlags.int64:type_name -> flags.PrimitiveFlag
-	1,  // 4: flags.FieldFlags.uint32:type_name -> flags.PrimitiveFlag
-	1,  // 5: flags.FieldFlags.uint64:type_name -> flags.PrimitiveFlag
-	1,  // 6: flags.FieldFlags.sint32:type_name -> flags.PrimitiveFlag
-	1,  // 7: flags.FieldFlags.sint64:type_name -> flags.PrimitiveFlag
-	1,  // 8: flags.FieldFlags.fixed32:type_name -> flags.PrimitiveFlag
-	1,  // 9: flags.FieldFlags.fixed64:type_name -> flags.PrimitiveFlag
-	1,  // 10: flags.FieldFlags.sfixed32:type_name -> flags.PrimitiveFlag
-	1,  // 11: flags.FieldFlags.sfixed64:type_name -> flags.PrimitiveFlag
-	1,  // 12: flags.FieldFlags.bool:type_name -> flags.PrimitiveFlag
-	1,  // 13: flags.FieldFlags.string:type_name -> flags.PrimitiveFlag
-	1,  // 14: flags.FieldFlags.bytes:type_name -> flags.PrimitiveFlag
-	1,  // 15: flags.FieldFlags.enum:type_name -> flags.PrimitiveFlag
-	3,  // 16: flags.FieldFlags.repeated:type_name -> flags.RepeatedFlags
-	1,  // 17: flags.FieldFlags.map:type_name -> flags.PrimitiveFlag
-	1,  // 18: flags.FieldFlags.duration:type_name -> flags.PrimitiveFlag
-	1,  // 19: flags.FieldFlags.timestamp:type_name -> flags.PrimitiveFlag
-	2,  // 20: flags.FieldFlags.message:type_name -> flags.MessageFlag
-	1,  // 21: flags.RepeatedFlags.float:type_name -> flags.PrimitiveFlag
-	1,  // 22: flags.RepeatedFlags.double:type_name -> flags.PrimitiveFlag
-	1,  // 23: flags.RepeatedFlags.int32:type_name -> flags.PrimitiveFlag
-	1,  // 24: flags.RepeatedFlags.int64:type_name -> flags.PrimitiveFlag
-	1,  // 25: flags.RepeatedFlags.uint32:type_name -> flags.PrimitiveFlag
-	1,  // 26: flags.RepeatedFlags.uint64:type_name -> flags.PrimitiveFlag
-	1,  // 27: flags.RepeatedFlags.sint32:type_name -> flags.PrimitiveFlag
-	1,  // 28: flags.RepeatedFlags.sint64:type_name -> flags.PrimitiveFlag
-	1,  // 29: flags.RepeatedFlags.fixed32:type_name -> flags.PrimitiveFlag
-	1,  // 30: flags.RepeatedFlags.fixed64:type_name -> flags.PrimitiveFlag
-	1,  // 31: flags.RepeatedFlags.sfixed32:type_name -> flags.PrimitiveFlag
-	1,  // 32: flags.RepeatedFlags.sfixed64:type_name -> flags.PrimitiveFlag
-	1,  // 33: flags.RepeatedFlags.bool:type_name -> flags.PrimitiveFlag
-	1,  // 34: flags.RepeatedFlags.string:type_name -> flags.PrimitiveFlag
-	1,  // 35: flags.RepeatedFlags.bytes:type_name -> flags.PrimitiveFlag
-	1,  // 36: flags.RepeatedFlags.enum:type_name -> flags.PrimitiveFlag
-	1,  // 37: flags.RepeatedFlags.map:type_name -> flags.PrimitiveFlag
-	1,  // 38: flags.RepeatedFlags.duration:type_name -> flags.PrimitiveFlag
-	1,  // 39: flags.RepeatedFlags.timestamp:type_name -> flags.PrimitiveFlag
-	4,  // 40: flags.disabled:extendee -> google.protobuf.MessageOptions
-	4,  // 41: flags.unexported:extendee -> google.protobuf.MessageOptions
-	4,  // 42: flags.allow_empty:extendee -> google.protobuf.MessageOptions
-	5,  // 43: flags.field:extendee -> google.protobuf.FieldOptions
-	0,  // 44: flags.field:type_name -> flags.FieldFlags
-	45, // [45:45] is the sub-list for method output_type
-	45, // [45:45] is the sub-list for method input_type
-	44, // [44:45] is the sub-list for extension type_name
-	40, // [40:44] is the sub-list for extension extendee
-	0,  // [0:40] is the sub-list for field type_name
+	0,  // 0: flags.BytesFlag.encoding:type_name -> flags.BytesEncodingType
+	3,  // 1: flags.FieldFlags.float:type_name -> flags.PrimitiveFlag
+	3,  // 2: flags.FieldFlags.double:type_name -> flags.PrimitiveFlag
+	3,  // 3: flags.FieldFlags.int32:type_name -> flags.PrimitiveFlag
+	3,  // 4: flags.FieldFlags.int64:type_name -> flags.PrimitiveFlag
+	3,  // 5: flags.FieldFlags.uint32:type_name -> flags.PrimitiveFlag
+	3,  // 6: flags.FieldFlags.uint64:type_name -> flags.PrimitiveFlag
+	3,  // 7: flags.FieldFlags.sint32:type_name -> flags.PrimitiveFlag
+	3,  // 8: flags.FieldFlags.sint64:type_name -> flags.PrimitiveFlag
+	3,  // 9: flags.FieldFlags.fixed32:type_name -> flags.PrimitiveFlag
+	3,  // 10: flags.FieldFlags.fixed64:type_name -> flags.PrimitiveFlag
+	3,  // 11: flags.FieldFlags.sfixed32:type_name -> flags.PrimitiveFlag
+	3,  // 12: flags.FieldFlags.sfixed64:type_name -> flags.PrimitiveFlag
+	3,  // 13: flags.FieldFlags.bool:type_name -> flags.PrimitiveFlag
+	3,  // 14: flags.FieldFlags.string:type_name -> flags.PrimitiveFlag
+	1,  // 15: flags.FieldFlags.bytes:type_name -> flags.BytesFlag
+	3,  // 16: flags.FieldFlags.enum:type_name -> flags.PrimitiveFlag
+	6,  // 17: flags.FieldFlags.repeated:type_name -> flags.RepeatedFlags
+	3,  // 18: flags.FieldFlags.map:type_name -> flags.PrimitiveFlag
+	3,  // 19: flags.FieldFlags.duration:type_name -> flags.PrimitiveFlag
+	4,  // 20: flags.FieldFlags.timestamp:type_name -> flags.TimestampFlag
+	5,  // 21: flags.FieldFlags.message:type_name -> flags.MessageFlag
+	3,  // 22: flags.RepeatedFlags.float:type_name -> flags.PrimitiveFlag
+	3,  // 23: flags.RepeatedFlags.double:type_name -> flags.PrimitiveFlag
+	3,  // 24: flags.RepeatedFlags.int32:type_name -> flags.PrimitiveFlag
+	3,  // 25: flags.RepeatedFlags.int64:type_name -> flags.PrimitiveFlag
+	3,  // 26: flags.RepeatedFlags.uint32:type_name -> flags.PrimitiveFlag
+	3,  // 27: flags.RepeatedFlags.uint64:type_name -> flags.PrimitiveFlag
+	3,  // 28: flags.RepeatedFlags.sint32:type_name -> flags.PrimitiveFlag
+	3,  // 29: flags.RepeatedFlags.sint64:type_name -> flags.PrimitiveFlag
+	3,  // 30: flags.RepeatedFlags.fixed32:type_name -> flags.PrimitiveFlag
+	3,  // 31: flags.RepeatedFlags.fixed64:type_name -> flags.PrimitiveFlag
+	3,  // 32: flags.RepeatedFlags.sfixed32:type_name -> flags.PrimitiveFlag
+	3,  // 33: flags.RepeatedFlags.sfixed64:type_name -> flags.PrimitiveFlag
+	3,  // 34: flags.RepeatedFlags.bool:type_name -> flags.PrimitiveFlag
+	3,  // 35: flags.RepeatedFlags.string:type_name -> flags.PrimitiveFlag
+	1,  // 36: flags.RepeatedFlags.bytes:type_name -> flags.BytesFlag
+	3,  // 37: flags.RepeatedFlags.enum:type_name -> flags.PrimitiveFlag
+	3,  // 38: flags.RepeatedFlags.map:type_name -> flags.PrimitiveFlag
+	3,  // 39: flags.RepeatedFlags.duration:type_name -> flags.PrimitiveFlag
+	4,  // 40: flags.RepeatedFlags.timestamp:type_name -> flags.TimestampFlag
+	7,  // 41: flags.disabled:extendee -> google.protobuf.MessageOptions
+	7,  // 42: flags.unexported:extendee -> google.protobuf.MessageOptions
+	7,  // 43: flags.allow_empty:extendee -> google.protobuf.MessageOptions
+	8,  // 44: flags.value:extendee -> google.protobuf.FieldOptions
+	2,  // 45: flags.value:type_name -> flags.FieldFlags
+	46, // [46:46] is the sub-list for method output_type
+	46, // [46:46] is the sub-list for method input_type
+	45, // [45:46] is the sub-list for extension type_name
+	41, // [41:45] is the sub-list for extension extendee
+	0,  // [0:41] is the sub-list for field type_name
 }
 
 func init() { file_flags_flags_proto_init() }
@@ -1223,7 +1536,7 @@ func file_flags_flags_proto_init() {
 	if File_flags_flags_proto != nil {
 		return
 	}
-	file_flags_flags_proto_msgTypes[0].OneofWrappers = []any{
+	file_flags_flags_proto_msgTypes[1].OneofWrappers = []any{
 		(*FieldFlags_Float)(nil),
 		(*FieldFlags_Double)(nil),
 		(*FieldFlags_Int32)(nil),
@@ -1246,7 +1559,7 @@ func file_flags_flags_proto_init() {
 		(*FieldFlags_Timestamp)(nil),
 		(*FieldFlags_Message)(nil),
 	}
-	file_flags_flags_proto_msgTypes[3].OneofWrappers = []any{
+	file_flags_flags_proto_msgTypes[5].OneofWrappers = []any{
 		(*RepeatedFlags_Float)(nil),
 		(*RepeatedFlags_Double)(nil),
 		(*RepeatedFlags_Int32)(nil),
@@ -1272,13 +1585,14 @@ func file_flags_flags_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_flags_flags_proto_rawDesc), len(file_flags_flags_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   4,
+			NumEnums:      1,
+			NumMessages:   6,
 			NumExtensions: 4,
 			NumServices:   0,
 		},
 		GoTypes:           file_flags_flags_proto_goTypes,
 		DependencyIndexes: file_flags_flags_proto_depIdxs,
+		EnumInfos:         file_flags_flags_proto_enumTypes,
 		MessageInfos:      file_flags_flags_proto_msgTypes,
 		ExtensionInfos:    file_flags_flags_proto_extTypes,
 	}.Build()
