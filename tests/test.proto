@@ -17,8 +17,8 @@ syntax = "proto3";
 package tests;
 
 import "flags/flags.proto";
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
 option go_package = "github.com/kunstack/protoc-gen-flags/tests;tests";
@@ -128,6 +128,37 @@ message TestMessage {
     encoding: BYTES_ENCODING_TYPE_HEX
   }];
 
+  // Additional native bytes fields with different configurations
+  optional bytes config_data = 33 [(flags.value).bytes = {
+    name: "config-data"
+    short: "cd"
+    usage: "Configuration data in base64 format"
+    encoding: BYTES_ENCODING_TYPE_BASE64
+  }];
+
+  optional bytes secret_key = 34 [(flags.value).bytes = {
+    name: "secret-key"
+    short: "sk"
+    usage: "Secret key in hex format"
+    hidden: true
+    encoding: BYTES_ENCODING_TYPE_HEX
+  }];
+
+  // Repeated native bytes
+  repeated bytes file_chunks = 35 [(flags.value).repeated.bytes = {
+    name: "file-chunks"
+    short: "fc"
+    usage: "File chunks in base64 format"
+    encoding: BYTES_ENCODING_TYPE_BASE64
+  }];
+
+  repeated bytes hex_chunks = 36 [(flags.value).repeated.bytes = {
+    name: "hex-chunks"
+    short: "hc"
+    usage: "Data chunks in hex format"
+    encoding: BYTES_ENCODING_TYPE_HEX
+  }];
+
   // Test enum type
   TestEnum test_enum = 17 [(flags.value).enum = {
     name: "test-enum"
@@ -162,6 +193,101 @@ message TestMessage {
     name: "simple-field"
     nested: true
   }];
+
+  // Test map field type
+  map<string, string> labels = 22 [(flags.value).map = {
+    name: "labels"
+    short: "l"
+    usage: "Key-value labels (JSON format)"
+    format: MAP_FORMAT_TYPE_STRING_TO_STRING
+  }];
+
+  map<string, int32> counters = 23 [(flags.value).map = {
+    name: "counters"
+    usage: "String-to-integer counters (JSON format)"
+  }];
+
+  // Test different map formats
+  map<string, string> string_map = 24 [(flags.value).map = {
+    name: "string-map"
+    short: "sm"
+    usage: "String-to-string map using native format"
+    format: MAP_FORMAT_TYPE_STRING_TO_STRING
+  }];
+  map<string, int32> int32_map = 25 [(flags.value).map = {
+    name: "int32-map"
+    short: "i32"
+    usage: "String-to-int32 map using native format"
+    format: MAP_FORMAT_TYPE_STRING_TO_INT
+  }];
+
+  map<string, int64> int64_map = 26 [(flags.value).map = {
+    name: "int64-map"
+    short: "i64"
+    usage: "String-to-int64 map using native format"
+    format: MAP_FORMAT_TYPE_STRING_TO_INT
+  }];
+
+  map<string, uint32> uint32_map = 27 [(flags.value).map = {
+    name: "uint32-map"
+    short: "u32"
+    usage: "String-to-uint32 map using native format"
+    format: MAP_FORMAT_TYPE_STRING_TO_INT
+  }];
+
+  map<string, uint64> uint64_map = 28 [(flags.value).map = {
+    name: "uint64-map"
+    short: "u64"
+    usage: "String-to-uint64 map using native format"
+    format: MAP_FORMAT_TYPE_STRING_TO_INT
+  }];
+
+  map<string, sfixed32> sfixed32_map = 29 [(flags.value).map = {
+    name: "sfixed32-map"
+    short: "sf32"
+    usage: "String-to-sfixed32 map using native format"
+    format: MAP_FORMAT_TYPE_STRING_TO_INT
+  }];
+
+  map<string, sfixed64> sfixed64_map = 30 [(flags.value).map = {
+    name: "sfixed64-map"
+    short: "sf64"
+    usage: "String-to-sfixed64 map using native format"
+    format: MAP_FORMAT_TYPE_STRING_TO_INT
+  }];
+
+  map<string, string> json_map = 31 [(flags.value).map = {
+    name: "json-map"
+    short: "j"
+    usage: "Generic JSON map format"
+    format: MAP_FORMAT_TYPE_JSON
+  }];
+
+  // Test repeated string slice for comparison
+  repeated string repeated_strings = 32 [(flags.value).repeated.string = {
+    name: "repeated-strings"
+    short: "rs"
+    usage: "Repeated strings for comparison"
+  }];
+
+  // Test repeated duration fields for DurationSlice functionality
+  repeated google.protobuf.Duration delays = 37 [(flags.value).repeated.duration = {
+    name: "delays"
+    short: "d"
+    usage: "Delay durations (e.g., 1s, 2m, 3h)"
+  }];
+
+  repeated google.protobuf.Duration intervals = 38 [(flags.value).repeated.duration = {
+    name: "intervals"
+    short: "i"
+    usage: "Time intervals between events"
+  }];
+
+  repeated google.protobuf.Duration timeouts = 39 [(flags.value).repeated.duration = {
+    name: "timeouts"
+    short: "t"
+    usage: "Timeout durations for operations"
+  }];
 }
 
 enum TestEnum {
@@ -175,6 +301,145 @@ message SimpleMessage {
   string name = 1 [(flags.value).string = {
     name: "name"
     usage: "Name parameter"
+  }];
+}
+
+message WrapperValueMessage {
+  repeated google.protobuf.BoolValue name = 1 [(flags.value).repeated.bool = {
+    name: "name"
+    usage: "Name parameter"
+  }];
+
+  // Test DoubleValue wrapper type
+  optional google.protobuf.DoubleValue double_value = 2 [(flags.value).double = {
+    name: "double-value"
+    short: "dv"
+    usage: "Double value wrapper"
+  }];
+
+  // Test DoubleSliceValue for repeated DoubleValue
+  repeated google.protobuf.DoubleValue double_values = 3 [(flags.value).repeated.double = {
+    name: "double-values"
+    short: "dvs"
+    usage: "Multiple double values"
+  }];
+
+  // Test BytesValue wrapper type with base64 encoding
+  optional google.protobuf.BytesValue bytes_value = 4 [(flags.value).bytes = {
+    name: "bytes-value"
+    short: "bv"
+    usage: "Bytes value wrapper (base64 encoded)"
+    encoding: BYTES_ENCODING_TYPE_BASE64
+  }];
+
+  // Test BytesSliceValue for repeated BytesValue with base64 encoding
+  repeated google.protobuf.BytesValue bytes_values = 5 [(flags.value).repeated.bytes = {
+    name: "bytes-values"
+    short: "bvs"
+    usage: "Multiple bytes values (base64 encoded)"
+    encoding: BYTES_ENCODING_TYPE_BASE64
+  }];
+
+  // Test BytesHexSliceValue for repeated BytesValue with hex encoding
+  repeated google.protobuf.BytesValue bytes_hex_values = 6 [(flags.value).repeated.bytes = {
+    name: "bytes-hex-values"
+    short: "bhx"
+    usage: "Multiple bytes values (hex encoded)"
+    encoding: BYTES_ENCODING_TYPE_HEX
+  }];
+}
+
+// Dedicated message for testing DoubleSliceValue functionality
+message DoubleSliceTestMessage {
+  option (flags.allow_empty) = true;
+
+  // Test various double slice configurations
+  repeated google.protobuf.DoubleValue measurements = 1 [(flags.value).repeated.double = {
+    name: "measurements"
+    short: "m"
+    usage: "Scientific measurements (e.g., 3.14159, 2.71828, 1.41421)"
+  }];
+
+  repeated google.protobuf.DoubleValue scientific_values = 2 [(flags.value).repeated.double = {
+    name: "scientific-values"
+    short: "sv"
+    usage: "Scientific notation values (e.g., 1.23e-4, 5.67e+8)"
+  }];
+
+  repeated google.protobuf.DoubleValue temperature_readings = 3 [(flags.value).repeated.double = {
+    name: "temperature-readings"
+    short: "t"
+    usage: "Temperature readings in Celsius"
+  }];
+
+  repeated google.protobuf.DoubleValue coordinates = 4 [(flags.value).repeated.double = {
+    name: "coordinates"
+    short: "c"
+    usage: "GPS coordinates (lat, lon pairs)"
+  }];
+}
+
+// Dedicated message for testing BytesSliceValue functionality
+message BytesSliceTestMessage {
+  option (flags.allow_empty) = true;
+
+  // Test various bytes slice configurations with base64 encoding
+  repeated google.protobuf.BytesValue data_chunks = 1 [(flags.value).repeated.bytes = {
+    name: "data-chunks"
+    short: "dc"
+    usage: "Data chunks in base64 format"
+    encoding: BYTES_ENCODING_TYPE_BASE64
+  }];
+
+  repeated google.protobuf.BytesValue file_contents = 2 [(flags.value).repeated.bytes = {
+    name: "file-contents"
+    short: "fc"
+    usage: "File contents in base64 format"
+    encoding: BYTES_ENCODING_TYPE_BASE64
+  }];
+
+  repeated google.protobuf.BytesValue hex_data = 3 [(flags.value).repeated.bytes = {
+    name: "hex-data"
+    short: "hd"
+    usage: "Data in hexadecimal format"
+    encoding: BYTES_ENCODING_TYPE_HEX
+  }];
+
+  repeated google.protobuf.BytesValue binary_payloads = 4 [(flags.value).repeated.bytes = {
+    name: "binary-payloads"
+    short: "bp"
+    usage: "Binary payloads in hex format"
+    encoding: BYTES_ENCODING_TYPE_HEX
+  }];
+}
+
+// Dedicated message for testing DurationSliceValue functionality
+message DurationSliceTestMessage {
+  option (flags.allow_empty) = true;
+
+  // Test various duration slice configurations
+  repeated google.protobuf.Duration delays = 1 [(flags.value).repeated.duration = {
+    name: "delays"
+    short: "d"
+    usage: "Delay durations (e.g., 1s, 2m, 3h)"
+  }];
+
+  repeated google.protobuf.Duration intervals = 2 [(flags.value).repeated.duration = {
+    name: "intervals"
+    short: "i"
+    usage: "Time intervals between events (e.g., 500ms, 10s, 5m)"
+  }];
+
+  repeated google.protobuf.Duration timeouts = 3 [(flags.value).repeated.duration = {
+    name: "timeouts"
+    short: "t"
+    usage: "Timeout durations for operations (e.g., 30s, 5m, 1h)"
+  }];
+
+  repeated google.protobuf.Duration polling_intervals = 4 [(flags.value).repeated.duration = {
+    name: "polling-intervals"
+    short: "p"
+    usage: "Polling intervals for monitoring (e.g., 100ms, 5s, 1m)"
   }];
 }
 

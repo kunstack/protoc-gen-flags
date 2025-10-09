@@ -35,6 +35,7 @@
 //     name: "custom-name"
 //     short: "n"
 //     usage: "Custom usage description"
+//     default: "default-value"
 //   }];
 //
 // # Supported Types
@@ -136,32 +137,32 @@ message BytesFlag {
 // the actual protobuf field type.
 message FieldFlags {
   oneof type {
-    // Scalar Field Types - all use PrimitiveFlag configuration
-    PrimitiveFlag float = 1; // 32-bit floating point
-    PrimitiveFlag double = 2; // 64-bit floating point
-    PrimitiveFlag int32 = 3; // 32-bit signed integer
-    PrimitiveFlag int64 = 4; // 64-bit signed integer
-    PrimitiveFlag uint32 = 5; // 32-bit unsigned integer
-    PrimitiveFlag uint64 = 6; // 64-bit unsigned integer
-    PrimitiveFlag sint32 = 7; // 32-bit signed integer (zigzag encoded)
-    PrimitiveFlag sint64 = 8; // 64-bit signed integer (zigzag encoded)
-    PrimitiveFlag fixed32 = 9; // 32-bit fixed-point integer
-    PrimitiveFlag fixed64 = 10; // 64-bit fixed-point integer
-    PrimitiveFlag sfixed32 = 11; // 32-bit signed fixed-point integer
-    PrimitiveFlag sfixed64 = 12; // 64-bit signed fixed-point integer
-    PrimitiveFlag bool = 13; // Boolean value
-    PrimitiveFlag string = 14; // UTF-8 string
+    // Scalar Field Types - each type has its own flag configuration with default value support
+    FloatFlag float = 1; // 32-bit floating point
+    DoubleFlag double = 2; // 64-bit floating point
+    Int32Flag int32 = 3; // 32-bit signed integer
+    Int64Flag int64 = 4; // 64-bit signed integer
+    Uint32Flag uint32 = 5; // 32-bit unsigned integer
+    Uint64Flag uint64 = 6; // 64-bit unsigned integer
+    Sint32Flag sint32 = 7; // 32-bit signed integer (zigzag encoded)
+    Sint64Flag sint64 = 8; // 64-bit signed integer (zigzag encoded)
+    Fixed32Flag fixed32 = 9; // 32-bit fixed-point integer
+    Fixed64Flag fixed64 = 10; // 64-bit fixed-point integer
+    Sfixed32Flag sfixed32 = 11; // 32-bit signed fixed-point integer
+    Sfixed64Flag sfixed64 = 12; // 64-bit signed fixed-point integer
+    BoolFlag bool = 13; // Boolean value
+    StringFlag string = 14; // UTF-8 string
 
     // Bytes field type with encoding type selection
     BytesFlag bytes = 15; // Arbitrary bytes with encoding format
 
     // Complex Field Types
-    PrimitiveFlag enum = 16; // Enum type
+    EnumFlag enum = 16; // Enum type
     RepeatedFlags repeated = 17; // Repeated field (slice/array)
-    PrimitiveFlag map = 18; // Map field
+    MapFlag map = 18; // Map field
 
     // Well-Known Field Types
-    PrimitiveFlag duration = 19; // google.protobuf.Duration
+    DurationFlag duration = 19; // google.protobuf.Duration
     TimestampFlag timestamp = 20; // google.protobuf.Timestamp
 
     // Message field type - used for nested message configurations
@@ -195,6 +196,501 @@ message PrimitiveFlag {
 
   // DeprecatedUsage provides additional context shown in help output for deprecated flags.
   string deprecated_usage = 7;
+}
+
+// FloatFlag contains configuration for float32 fields with default value support.
+message FloatFlag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  float default = 8;
+}
+
+// DoubleFlag contains configuration for float64 fields with default value support.
+message DoubleFlag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  double default = 8;
+}
+
+// Int32Flag contains configuration for int32 fields with default value support.
+message Int32Flag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  int32 default = 8;
+}
+
+// Int64Flag contains configuration for int64 fields with default value support.
+message Int64Flag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  int64 default = 8;
+}
+
+// Uint32Flag contains configuration for uint32 fields with default value support.
+message Uint32Flag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  uint32 default = 8;
+}
+
+// Uint64Flag contains configuration for uint64 fields with default value support.
+message Uint64Flag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  uint64 default = 8;
+}
+
+// Sint32Flag contains configuration for sint32 fields with default value support.
+message Sint32Flag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  int32 default = 8;
+}
+
+// Sint64Flag contains configuration for sint64 fields with default value support.
+message Sint64Flag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  int64 default = 8;
+}
+
+// Fixed32Flag contains configuration for fixed32 fields with default value support.
+message Fixed32Flag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  fixed32 default = 8;
+}
+
+// Fixed64Flag contains configuration for fixed64 fields with default value support.
+message Fixed64Flag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  fixed64 default = 8;
+}
+
+// Sfixed32Flag contains configuration for sfixed32 fields with default value support.
+message Sfixed32Flag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  sfixed32 default = 8;
+}
+
+// Sfixed64Flag contains configuration for sfixed64 fields with default value support.
+message Sfixed64Flag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  sfixed64 default = 8;
+}
+
+// BoolFlag contains configuration for bool fields with default value support.
+message BoolFlag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  bool default = 8;
+}
+
+// StringFlag contains configuration for string fields with default value support.
+message StringFlag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag as a JSON string.
+  string default = 8;
+}
+
+// EnumFlag contains configuration for enum fields with default value support.
+message EnumFlag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag as an int32.
+  int32 default = 8;
+}
+
+// MapFormatType specifies the format for map fields in command-line flags.
+enum MapFormatType {
+  // MAP_FORMAT_TYPE_UNSPECIFIED uses the default format (JSON).
+  MAP_FORMAT_TYPE_UNSPECIFIED = 0;
+
+  // MAP_FORMAT_TYPE_JSON uses JSON format for the entire map.
+  MAP_FORMAT_TYPE_JSON = 1;
+
+  // MAP_FORMAT_TYPE_STRING_TO_STRING uses string keys and string values.
+  MAP_FORMAT_TYPE_STRING_TO_STRING = 2;
+
+  // MAP_FORMAT_TYPE_STRING_TO_INT uses string keys and int values.
+  MAP_FORMAT_TYPE_STRING_TO_INT = 3;
+}
+
+// MapFlag contains configuration for map fields with default value support.
+message MapFlag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  string default = 8;
+
+  // Format specifies the format for map fields. When unspecified,
+  // defaults to JSON format.
+  MapFormatType format = 9;
+}
+
+// DurationFlag contains configuration for duration fields with default value support.
+message DurationFlag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Default specifies the default value for this flag.
+  string default = 8;
 }
 
 // TimestampFlag contains the core configuration for all Timestamp flag types.
@@ -259,29 +755,28 @@ message MessageFlag {
 // The type oneof field determines the element type of the repeated field.
 message RepeatedFlags {
   oneof type {
-    // Supported types for repeated fields - each corresponds to a PrimitiveFlag
+    // Supported types for repeated fields - each corresponds to its specific flag type
     // configuration that controls how individual elements are handled.
-    PrimitiveFlag float = 1; // Repeated 32-bit floating point
-    PrimitiveFlag double = 2; // Repeated 64-bit floating point
-    PrimitiveFlag int32 = 3; // Repeated 32-bit signed integer
-    PrimitiveFlag int64 = 4; // Repeated 64-bit signed integer
-    PrimitiveFlag uint32 = 5; // Repeated 32-bit unsigned integer
-    PrimitiveFlag uint64 = 6; // Repeated 64-bit unsigned integer
-    PrimitiveFlag sint32 = 7; // Repeated 32-bit signed integer (zigzag)
-    PrimitiveFlag sint64 = 8; // Repeated 64-bit signed integer (zigzag)
-    PrimitiveFlag fixed32 = 9; // Repeated 32-bit fixed-point integer
-    PrimitiveFlag fixed64 = 10; // Repeated 64-bit fixed-point integer
-    PrimitiveFlag sfixed32 = 11; // Repeated 32-bit signed fixed-point integer
-    PrimitiveFlag sfixed64 = 12; // Repeated 64-bit signed fixed-point integer
-    PrimitiveFlag bool = 13; // Repeated boolean values
-    PrimitiveFlag string = 14; // Repeated UTF-8 strings
+    FloatFlag float = 1; // Repeated 32-bit floating point
+    DoubleFlag double = 2; // Repeated 64-bit floating point
+    Int32Flag int32 = 3; // Repeated 32-bit signed integer
+    Int64Flag int64 = 4; // Repeated 64-bit signed integer
+    Uint32Flag uint32 = 5; // Repeated 32-bit unsigned integer
+    Uint64Flag uint64 = 6; // Repeated 64-bit unsigned integer
+    Sint32Flag sint32 = 7; // Repeated 32-bit signed integer (zigzag)
+    Sint64Flag sint64 = 8; // Repeated 64-bit signed integer (zigzag)
+    Fixed32Flag fixed32 = 9; // Repeated 32-bit fixed-point integer
+    Fixed64Flag fixed64 = 10; // Repeated 64-bit fixed-point integer
+    Sfixed32Flag sfixed32 = 11; // Repeated 32-bit signed fixed-point integer
+    Sfixed64Flag sfixed64 = 12; // Repeated 64-bit signed fixed-point integer
+    BoolFlag bool = 13; // Repeated boolean values
+    StringFlag string = 14; // Repeated UTF-8 strings
 
     // Bytes field type with encoding type selection
     BytesFlag bytes = 15; // Repeated arbitrary bytes with encoding format
 
-    PrimitiveFlag enum = 16; // Repeated enum values
-    PrimitiveFlag map = 17; // Repeated map entries
-    PrimitiveFlag duration = 18; // Repeated duration values
-    TimestampFlag timestamp = 19; // Repeated timestamp values
+    EnumFlag enum = 16; // Repeated enum values
+    DurationFlag duration = 17; // Repeated duration values
+    TimestampFlag timestamp = 18; // Repeated timestamp values
   }
 }

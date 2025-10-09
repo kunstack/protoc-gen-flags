@@ -146,6 +146,7 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/kunstack/protoc-gen-flags/utils"
     "github.com/kunstack/protoc-gen-flags/types"
+    "github.com/kunstack/protoc-gen-flags/flags"
 
 	{{ imports }}
 )
@@ -154,6 +155,7 @@ var (
 	_ = pflag.NewFlagSet
 	_ = utils.BuildFlagName
     _ = types.Bool
+    _ = flags.Interface(nil)
 )
 
 {{ range .AllMessages }}

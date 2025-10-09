@@ -112,6 +112,12 @@ type TestMessage struct {
 	Offset      int32   `protobuf:"fixed32,14,opt,name=offset,proto3" json:"offset,omitempty"`
 	Ratio       float64 `protobuf:"fixed64,15,opt,name=ratio,proto3" json:"ratio,omitempty"`
 	Byte        []byte  `protobuf:"bytes,16,opt,name=byte,proto3,oneof" json:"byte,omitempty"`
+	// Additional native bytes fields with different configurations
+	ConfigData []byte `protobuf:"bytes,33,opt,name=config_data,json=configData,proto3,oneof" json:"config_data,omitempty"`
+	SecretKey  []byte `protobuf:"bytes,34,opt,name=secret_key,json=secretKey,proto3,oneof" json:"secret_key,omitempty"`
+	// Repeated native bytes
+	FileChunks [][]byte `protobuf:"bytes,35,rep,name=file_chunks,json=fileChunks,proto3" json:"file_chunks,omitempty"`
+	HexChunks  [][]byte `protobuf:"bytes,36,rep,name=hex_chunks,json=hexChunks,proto3" json:"hex_chunks,omitempty"`
 	// Test enum type
 	TestEnum TestEnum `protobuf:"varint,17,opt,name=test_enum,json=testEnum,proto3,enum=tests.TestEnum" json:"test_enum,omitempty"`
 	// Test duration type
@@ -124,7 +130,25 @@ type TestMessage struct {
 	//	*TestMessage_WaitingTime
 	DurationChoice isTestMessage_DurationChoice `protobuf_oneof:"duration_choice"`
 	// Test message field type for *flags.FieldFlags_Message
-	SimpleField   *SimpleMessage `protobuf:"bytes,21,opt,name=simple_field,json=simpleField,proto3" json:"simple_field,omitempty"`
+	SimpleField *SimpleMessage `protobuf:"bytes,21,opt,name=simple_field,json=simpleField,proto3" json:"simple_field,omitempty"`
+	// Test map field type
+	Labels   map[string]string `protobuf:"bytes,22,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Counters map[string]int32  `protobuf:"bytes,23,rep,name=counters,proto3" json:"counters,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	// Test different map formats
+	StringMap   map[string]string `protobuf:"bytes,24,rep,name=string_map,json=stringMap,proto3" json:"string_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Int32Map    map[string]int32  `protobuf:"bytes,25,rep,name=int32_map,json=int32Map,proto3" json:"int32_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Int64Map    map[string]int64  `protobuf:"bytes,26,rep,name=int64_map,json=int64Map,proto3" json:"int64_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Uint32Map   map[string]uint32 `protobuf:"bytes,27,rep,name=uint32_map,json=uint32Map,proto3" json:"uint32_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Uint64Map   map[string]uint64 `protobuf:"bytes,28,rep,name=uint64_map,json=uint64Map,proto3" json:"uint64_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	Sfixed32Map map[string]int32  `protobuf:"bytes,29,rep,name=sfixed32_map,json=sfixed32Map,proto3" json:"sfixed32_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"fixed32,2,opt,name=value"`
+	Sfixed64Map map[string]int64  `protobuf:"bytes,30,rep,name=sfixed64_map,json=sfixed64Map,proto3" json:"sfixed64_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	JsonMap     map[string]string `protobuf:"bytes,31,rep,name=json_map,json=jsonMap,proto3" json:"json_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Test repeated string slice for comparison
+	RepeatedStrings []string `protobuf:"bytes,32,rep,name=repeated_strings,json=repeatedStrings,proto3" json:"repeated_strings,omitempty"`
+	// Test repeated duration fields for DurationSlice functionality
+	Delays        []*durationpb.Duration `protobuf:"bytes,37,rep,name=delays,proto3" json:"delays,omitempty"`
+	Intervals     []*durationpb.Duration `protobuf:"bytes,38,rep,name=intervals,proto3" json:"intervals,omitempty"`
+	Timeouts      []*durationpb.Duration `protobuf:"bytes,39,rep,name=timeouts,proto3" json:"timeouts,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -271,6 +295,34 @@ func (x *TestMessage) GetByte() []byte {
 	return nil
 }
 
+func (x *TestMessage) GetConfigData() []byte {
+	if x != nil {
+		return x.ConfigData
+	}
+	return nil
+}
+
+func (x *TestMessage) GetSecretKey() []byte {
+	if x != nil {
+		return x.SecretKey
+	}
+	return nil
+}
+
+func (x *TestMessage) GetFileChunks() [][]byte {
+	if x != nil {
+		return x.FileChunks
+	}
+	return nil
+}
+
+func (x *TestMessage) GetHexChunks() [][]byte {
+	if x != nil {
+		return x.HexChunks
+	}
+	return nil
+}
+
 func (x *TestMessage) GetTestEnum() TestEnum {
 	if x != nil {
 		return x.TestEnum
@@ -313,6 +365,104 @@ func (x *TestMessage) GetWaitingTime() *durationpb.Duration {
 func (x *TestMessage) GetSimpleField() *SimpleMessage {
 	if x != nil {
 		return x.SimpleField
+	}
+	return nil
+}
+
+func (x *TestMessage) GetLabels() map[string]string {
+	if x != nil {
+		return x.Labels
+	}
+	return nil
+}
+
+func (x *TestMessage) GetCounters() map[string]int32 {
+	if x != nil {
+		return x.Counters
+	}
+	return nil
+}
+
+func (x *TestMessage) GetStringMap() map[string]string {
+	if x != nil {
+		return x.StringMap
+	}
+	return nil
+}
+
+func (x *TestMessage) GetInt32Map() map[string]int32 {
+	if x != nil {
+		return x.Int32Map
+	}
+	return nil
+}
+
+func (x *TestMessage) GetInt64Map() map[string]int64 {
+	if x != nil {
+		return x.Int64Map
+	}
+	return nil
+}
+
+func (x *TestMessage) GetUint32Map() map[string]uint32 {
+	if x != nil {
+		return x.Uint32Map
+	}
+	return nil
+}
+
+func (x *TestMessage) GetUint64Map() map[string]uint64 {
+	if x != nil {
+		return x.Uint64Map
+	}
+	return nil
+}
+
+func (x *TestMessage) GetSfixed32Map() map[string]int32 {
+	if x != nil {
+		return x.Sfixed32Map
+	}
+	return nil
+}
+
+func (x *TestMessage) GetSfixed64Map() map[string]int64 {
+	if x != nil {
+		return x.Sfixed64Map
+	}
+	return nil
+}
+
+func (x *TestMessage) GetJsonMap() map[string]string {
+	if x != nil {
+		return x.JsonMap
+	}
+	return nil
+}
+
+func (x *TestMessage) GetRepeatedStrings() []string {
+	if x != nil {
+		return x.RepeatedStrings
+	}
+	return nil
+}
+
+func (x *TestMessage) GetDelays() []*durationpb.Duration {
+	if x != nil {
+		return x.Delays
+	}
+	return nil
+}
+
+func (x *TestMessage) GetIntervals() []*durationpb.Duration {
+	if x != nil {
+		return x.Intervals
+	}
+	return nil
+}
+
+func (x *TestMessage) GetTimeouts() []*durationpb.Duration {
+	if x != nil {
+		return x.Timeouts
 	}
 	return nil
 }
@@ -377,6 +527,235 @@ func (x *SimpleMessage) GetName() string {
 	return ""
 }
 
+type WrapperValueMessage struct {
+	state protoimpl.MessageState  `protogen:"open.v1"`
+	Name  []*wrapperspb.BoolValue `protobuf:"bytes,1,rep,name=name,proto3" json:"name,omitempty"`
+	// Test DoubleValue wrapper type
+	DoubleValue *wrapperspb.DoubleValue `protobuf:"bytes,2,opt,name=double_value,json=doubleValue,proto3,oneof" json:"double_value,omitempty"`
+	// Test DoubleSliceValue for repeated DoubleValue
+	DoubleValues []*wrapperspb.DoubleValue `protobuf:"bytes,3,rep,name=double_values,json=doubleValues,proto3" json:"double_values,omitempty"`
+	// Test BytesValue wrapper type with base64 encoding
+	BytesValue *wrapperspb.BytesValue `protobuf:"bytes,4,opt,name=bytes_value,json=bytesValue,proto3,oneof" json:"bytes_value,omitempty"`
+	// Test BytesSliceValue for repeated BytesValue with base64 encoding
+	BytesValues []*wrapperspb.BytesValue `protobuf:"bytes,5,rep,name=bytes_values,json=bytesValues,proto3" json:"bytes_values,omitempty"`
+	// Test BytesHexSliceValue for repeated BytesValue with hex encoding
+	BytesHexValues []*wrapperspb.BytesValue `protobuf:"bytes,6,rep,name=bytes_hex_values,json=bytesHexValues,proto3" json:"bytes_hex_values,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *WrapperValueMessage) Reset() {
+	*x = WrapperValueMessage{}
+	mi := &file_tests_test_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WrapperValueMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WrapperValueMessage) ProtoMessage() {}
+
+func (x *WrapperValueMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WrapperValueMessage.ProtoReflect.Descriptor instead.
+func (*WrapperValueMessage) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *WrapperValueMessage) GetName() []*wrapperspb.BoolValue {
+	if x != nil {
+		return x.Name
+	}
+	return nil
+}
+
+func (x *WrapperValueMessage) GetDoubleValue() *wrapperspb.DoubleValue {
+	if x != nil {
+		return x.DoubleValue
+	}
+	return nil
+}
+
+func (x *WrapperValueMessage) GetDoubleValues() []*wrapperspb.DoubleValue {
+	if x != nil {
+		return x.DoubleValues
+	}
+	return nil
+}
+
+func (x *WrapperValueMessage) GetBytesValue() *wrapperspb.BytesValue {
+	if x != nil {
+		return x.BytesValue
+	}
+	return nil
+}
+
+func (x *WrapperValueMessage) GetBytesValues() []*wrapperspb.BytesValue {
+	if x != nil {
+		return x.BytesValues
+	}
+	return nil
+}
+
+func (x *WrapperValueMessage) GetBytesHexValues() []*wrapperspb.BytesValue {
+	if x != nil {
+		return x.BytesHexValues
+	}
+	return nil
+}
+
+// Dedicated message for testing DoubleSliceValue functionality
+type DoubleSliceTestMessage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Test various double slice configurations
+	Measurements        []*wrapperspb.DoubleValue `protobuf:"bytes,1,rep,name=measurements,proto3" json:"measurements,omitempty"`
+	ScientificValues    []*wrapperspb.DoubleValue `protobuf:"bytes,2,rep,name=scientific_values,json=scientificValues,proto3" json:"scientific_values,omitempty"`
+	TemperatureReadings []*wrapperspb.DoubleValue `protobuf:"bytes,3,rep,name=temperature_readings,json=temperatureReadings,proto3" json:"temperature_readings,omitempty"`
+	Coordinates         []*wrapperspb.DoubleValue `protobuf:"bytes,4,rep,name=coordinates,proto3" json:"coordinates,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *DoubleSliceTestMessage) Reset() {
+	*x = DoubleSliceTestMessage{}
+	mi := &file_tests_test_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DoubleSliceTestMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DoubleSliceTestMessage) ProtoMessage() {}
+
+func (x *DoubleSliceTestMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DoubleSliceTestMessage.ProtoReflect.Descriptor instead.
+func (*DoubleSliceTestMessage) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *DoubleSliceTestMessage) GetMeasurements() []*wrapperspb.DoubleValue {
+	if x != nil {
+		return x.Measurements
+	}
+	return nil
+}
+
+func (x *DoubleSliceTestMessage) GetScientificValues() []*wrapperspb.DoubleValue {
+	if x != nil {
+		return x.ScientificValues
+	}
+	return nil
+}
+
+func (x *DoubleSliceTestMessage) GetTemperatureReadings() []*wrapperspb.DoubleValue {
+	if x != nil {
+		return x.TemperatureReadings
+	}
+	return nil
+}
+
+func (x *DoubleSliceTestMessage) GetCoordinates() []*wrapperspb.DoubleValue {
+	if x != nil {
+		return x.Coordinates
+	}
+	return nil
+}
+
+// Dedicated message for testing BytesSliceValue functionality
+type BytesSliceTestMessage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Test various bytes slice configurations with base64 encoding
+	DataChunks     []*wrapperspb.BytesValue `protobuf:"bytes,1,rep,name=data_chunks,json=dataChunks,proto3" json:"data_chunks,omitempty"`
+	FileContents   []*wrapperspb.BytesValue `protobuf:"bytes,2,rep,name=file_contents,json=fileContents,proto3" json:"file_contents,omitempty"`
+	HexData        []*wrapperspb.BytesValue `protobuf:"bytes,3,rep,name=hex_data,json=hexData,proto3" json:"hex_data,omitempty"`
+	BinaryPayloads []*wrapperspb.BytesValue `protobuf:"bytes,4,rep,name=binary_payloads,json=binaryPayloads,proto3" json:"binary_payloads,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *BytesSliceTestMessage) Reset() {
+	*x = BytesSliceTestMessage{}
+	mi := &file_tests_test_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BytesSliceTestMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BytesSliceTestMessage) ProtoMessage() {}
+
+func (x *BytesSliceTestMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BytesSliceTestMessage.ProtoReflect.Descriptor instead.
+func (*BytesSliceTestMessage) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *BytesSliceTestMessage) GetDataChunks() []*wrapperspb.BytesValue {
+	if x != nil {
+		return x.DataChunks
+	}
+	return nil
+}
+
+func (x *BytesSliceTestMessage) GetFileContents() []*wrapperspb.BytesValue {
+	if x != nil {
+		return x.FileContents
+	}
+	return nil
+}
+
+func (x *BytesSliceTestMessage) GetHexData() []*wrapperspb.BytesValue {
+	if x != nil {
+		return x.HexData
+	}
+	return nil
+}
+
+func (x *BytesSliceTestMessage) GetBinaryPayloads() []*wrapperspb.BytesValue {
+	if x != nil {
+		return x.BinaryPayloads
+	}
+	return nil
+}
+
 type DisabledMessage struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Value         string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
@@ -388,7 +767,7 @@ type DisabledMessage struct {
 
 func (x *DisabledMessage) Reset() {
 	*x = DisabledMessage{}
-	mi := &file_tests_test_proto_msgTypes[2]
+	mi := &file_tests_test_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -400,7 +779,7 @@ func (x *DisabledMessage) String() string {
 func (*DisabledMessage) ProtoMessage() {}
 
 func (x *DisabledMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_tests_test_proto_msgTypes[2]
+	mi := &file_tests_test_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -413,7 +792,7 @@ func (x *DisabledMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DisabledMessage.ProtoReflect.Descriptor instead.
 func (*DisabledMessage) Descriptor() ([]byte, []int) {
-	return file_tests_test_proto_rawDescGZIP(), []int{2}
+	return file_tests_test_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *DisabledMessage) GetValue() string {
@@ -446,7 +825,7 @@ type EmptyMessage struct {
 
 func (x *EmptyMessage) Reset() {
 	*x = EmptyMessage{}
-	mi := &file_tests_test_proto_msgTypes[3]
+	mi := &file_tests_test_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -458,7 +837,7 @@ func (x *EmptyMessage) String() string {
 func (*EmptyMessage) ProtoMessage() {}
 
 func (x *EmptyMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_tests_test_proto_msgTypes[3]
+	mi := &file_tests_test_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -471,7 +850,7 @@ func (x *EmptyMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EmptyMessage.ProtoReflect.Descriptor instead.
 func (*EmptyMessage) Descriptor() ([]byte, []int) {
-	return file_tests_test_proto_rawDescGZIP(), []int{3}
+	return file_tests_test_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *EmptyMessage) GetValue() string {
@@ -490,7 +869,7 @@ type EmptyMessage2 struct {
 
 func (x *EmptyMessage2) Reset() {
 	*x = EmptyMessage2{}
-	mi := &file_tests_test_proto_msgTypes[4]
+	mi := &file_tests_test_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -502,7 +881,7 @@ func (x *EmptyMessage2) String() string {
 func (*EmptyMessage2) ProtoMessage() {}
 
 func (x *EmptyMessage2) ProtoReflect() protoreflect.Message {
-	mi := &file_tests_test_proto_msgTypes[4]
+	mi := &file_tests_test_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -515,7 +894,7 @@ func (x *EmptyMessage2) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EmptyMessage2.ProtoReflect.Descriptor instead.
 func (*EmptyMessage2) Descriptor() ([]byte, []int) {
-	return file_tests_test_proto_rawDescGZIP(), []int{4}
+	return file_tests_test_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *EmptyMessage2) GetValue() string {
@@ -535,7 +914,7 @@ type WrapperMessage struct {
 
 func (x *WrapperMessage) Reset() {
 	*x = WrapperMessage{}
-	mi := &file_tests_test_proto_msgTypes[5]
+	mi := &file_tests_test_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -547,7 +926,7 @@ func (x *WrapperMessage) String() string {
 func (*WrapperMessage) ProtoMessage() {}
 
 func (x *WrapperMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_tests_test_proto_msgTypes[5]
+	mi := &file_tests_test_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -560,7 +939,7 @@ func (x *WrapperMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WrapperMessage.ProtoReflect.Descriptor instead.
 func (*WrapperMessage) Descriptor() ([]byte, []int) {
-	return file_tests_test_proto_rawDescGZIP(), []int{5}
+	return file_tests_test_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *WrapperMessage) GetValue() *wrapperspb.FloatValue {
@@ -592,7 +971,7 @@ type OneofMessage struct {
 
 func (x *OneofMessage) Reset() {
 	*x = OneofMessage{}
-	mi := &file_tests_test_proto_msgTypes[6]
+	mi := &file_tests_test_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -604,7 +983,7 @@ func (x *OneofMessage) String() string {
 func (*OneofMessage) ProtoMessage() {}
 
 func (x *OneofMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_tests_test_proto_msgTypes[6]
+	mi := &file_tests_test_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -617,7 +996,7 @@ func (x *OneofMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OneofMessage.ProtoReflect.Descriptor instead.
 func (*OneofMessage) Descriptor() ([]byte, []int) {
-	return file_tests_test_proto_rawDescGZIP(), []int{6}
+	return file_tests_test_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *OneofMessage) GetTestOneof() isOneofMessage_TestOneof {
@@ -695,7 +1074,7 @@ var File_tests_test_proto protoreflect.FileDescriptor
 
 const file_tests_test_proto_rawDesc = "" +
 	"\n" +
-	"\x10tests/test.proto\x12\x05tests\x1a\x11flags/flags.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xfb\r\n" +
+	"\x10tests/test.proto\x12\x05tests\x1a\x11flags/flags.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xc3#\n" +
 	"\vTestMessage\x12p\n" +
 	"\x05hello\x18\x01 \x01(\x02BZ\x9aIW\n" +
 	"U\x12\x05hello\x1a\x01h\"\x14Hello world '\"' flag(\x010\x01:/This flag is deprecated, use --greeting insteadR\x05hello\x12\x82\x01\n" +
@@ -714,17 +1093,100 @@ const file_tests_test_proto_rawDesc = "" +
 	"\tbandwidth\x18\r \x01(\x06B.\x9aI+R)\x12\tbandwidth\"\x1cBandwidth in bits per secondR\tbandwidth\x123\n" +
 	"\x06offset\x18\x0e \x01(\x0fB\x1b\x9aI\x18Z\x16\x12\x06offset\"\fOffset valueR\x06offset\x122\n" +
 	"\x05ratio\x18\x0f \x01(\x01B\x1c\x9aI\x19\x12\x17\x12\x05ratio\x1a\x01r\"\vRatio valueR\x05ratio\x12G\n" +
-	"\x04byte\x18\x10 \x01(\fB.\x9aI+z)\x12\x04byte\x1a\x01b\"\x1cByte data in base64 encoding@\x02H\x01R\x04byte\x88\x01\x01\x12S\n" +
+	"\x04byte\x18\x10 \x01(\fB.\x9aI+z)\x12\x04byte\x1a\x01b\"\x1cByte data in base64 encoding@\x02H\x01R\x04byte\x88\x01\x01\x12c\n" +
+	"\vconfig_data\x18! \x01(\fB=\x9aI:z8\x12\vconfig-data\x1a\x02cd\"#Configuration data in base64 format@\x01H\x02R\n" +
+	"configData\x88\x01\x01\x12W\n" +
+	"\n" +
+	"secret_key\x18\" \x01(\fB3\x9aI0z.\x12\n" +
+	"secret-key\x1a\x02sk\"\x18Secret key in hex format(\x01@\x02H\x03R\tsecretKey\x88\x01\x01\x12Z\n" +
+	"\vfile_chunks\x18# \x03(\fB9\x9aI6\x8a\x013z1\x12\vfile-chunks\x1a\x02fc\"\x1cFile chunks in base64 format@\x01R\n" +
+	"fileChunks\x12T\n" +
+	"\n" +
+	"hex_chunks\x18$ \x03(\fB5\x9aI2\x8a\x01/z-\x12\n" +
+	"hex-chunks\x1a\x02hc\"\x19Data chunks in hex format@\x02R\thexChunks\x12S\n" +
 	"\ttest_enum\x18\x11 \x01(\x0e2\x0f.tests.TestEnumB%\x9aI\"\x82\x01\x1f\x12\ttest-enum\x1a\x01e\"\x0fTest enum fieldR\btestEnum\x12\x8c\x01\n" +
-	"\x10timeout_duration\x18\x12 \x01(\v2\x19.google.protobuf.DurationBA\x9aI>\x9a\x01;\x12\x10timeout-duration\x1a\x01d\"$Timeout duration (e.g., 30s, 5m, 1h)H\x02R\x0ftimeoutDuration\x88\x01\x01\x12z\n" +
+	"\x10timeout_duration\x18\x12 \x01(\v2\x19.google.protobuf.DurationBA\x9aI>\x9a\x01;\x12\x10timeout-duration\x1a\x01d\"$Timeout duration (e.g., 30s, 5m, 1h)H\x04R\x0ftimeoutDuration\x88\x01\x01\x12z\n" +
 	"\x0fprocessing_time\x18\x13 \x01(\v2\x19.google.protobuf.DurationB4\x9aI1\x9a\x01.\x12\x0fprocessing-time\x1a\x01P\"\x18Processing time durationH\x00R\x0eprocessingTime\x12n\n" +
 	"\fwaiting_time\x18\x14 \x01(\v2\x19.google.protobuf.DurationB.\x9aI+\x9a\x01(\x12\fwaiting-time\x1a\x01w\"\x15Waiting time durationH\x00R\vwaitingTime\x12O\n" +
-	"\fsimple_field\x18\x15 \x01(\v2\x14.tests.SimpleMessageB\x16\x9aI\x13\xaa\x01\x10\b\x01\x12\fsimple-fieldR\vsimpleField:\x03\xa8I\x01B\x11\n" +
+	"\fsimple_field\x18\x15 \x01(\v2\x14.tests.SimpleMessageB\x16\x9aI\x13\xaa\x01\x10\b\x01\x12\fsimple-fieldR\vsimpleField\x12k\n" +
+	"\x06labels\x18\x16 \x03(\v2\x1e.tests.TestMessage.LabelsEntryB3\x9aI0\x92\x01-\x12\x06labels\x1a\x01l\"\x1eKey-value labels (JSON format)H\x02R\x06labels\x12x\n" +
+	"\bcounters\x18\x17 \x03(\v2 .tests.TestMessage.CountersEntryB:\x9aI7\x92\x014\x12\bcounters\"(String-to-integer counters (JSON format)R\bcounters\x12\x84\x01\n" +
+	"\n" +
+	"string_map\x18\x18 \x03(\v2!.tests.TestMessage.StringMapEntryBB\x9aI?\x92\x01<\x12\n" +
+	"string-map\x1a\x02sm\"(String-to-string map using native formatH\x02R\tstringMap\x12\x80\x01\n" +
+	"\tint32_map\x18\x19 \x03(\v2 .tests.TestMessage.Int32MapEntryBA\x9aI>\x92\x01;\x12\tint32-map\x1a\x03i32\"'String-to-int32 map using native formatH\x03R\bint32Map\x12\x80\x01\n" +
+	"\tint64_map\x18\x1a \x03(\v2 .tests.TestMessage.Int64MapEntryBA\x9aI>\x92\x01;\x12\tint64-map\x1a\x03i64\"'String-to-int64 map using native formatH\x03R\bint64Map\x12\x85\x01\n" +
+	"\n" +
+	"uint32_map\x18\x1b \x03(\v2!.tests.TestMessage.Uint32MapEntryBC\x9aI@\x92\x01=\x12\n" +
+	"uint32-map\x1a\x03u32\"(String-to-uint32 map using native formatH\x03R\tuint32Map\x12\x85\x01\n" +
+	"\n" +
+	"uint64_map\x18\x1c \x03(\v2!.tests.TestMessage.Uint64MapEntryBC\x9aI@\x92\x01=\x12\n" +
+	"uint64-map\x1a\x03u64\"(String-to-uint64 map using native formatH\x03R\tuint64Map\x12\x90\x01\n" +
+	"\fsfixed32_map\x18\x1d \x03(\v2#.tests.TestMessage.Sfixed32MapEntryBH\x9aIE\x92\x01B\x12\fsfixed32-map\x1a\x04sf32\"*String-to-sfixed32 map using native formatH\x03R\vsfixed32Map\x12\x90\x01\n" +
+	"\fsfixed64_map\x18\x1e \x03(\v2#.tests.TestMessage.Sfixed64MapEntryBH\x9aIE\x92\x01B\x12\fsfixed64-map\x1a\x04sf64\"*String-to-sfixed64 map using native formatH\x03R\vsfixed64Map\x12j\n" +
+	"\bjson_map\x18\x1f \x03(\v2\x1f.tests.TestMessage.JsonMapEntryB.\x9aI+\x92\x01(\x12\bjson-map\x1a\x01j\"\x17Generic JSON map formatH\x01R\ajsonMap\x12j\n" +
+	"\x10repeated_strings\x18  \x03(\tB?\x9aI<\x8a\x019r7\x12\x10repeated-strings\x1a\x02rs\"\x1fRepeated strings for comparisonR\x0frepeatedStrings\x12k\n" +
+	"\x06delays\x18% \x03(\v2\x19.google.protobuf.DurationB8\x9aI5\x8a\x012\x8a\x01/\x12\x06delays\x1a\x01d\"\"Delay durations (e.g., 1s, 2m, 3h)R\x06delays\x12o\n" +
+	"\tintervals\x18& \x03(\v2\x19.google.protobuf.DurationB6\x9aI3\x8a\x010\x8a\x01-\x12\tintervals\x1a\x01i\"\x1dTime intervals between eventsR\tintervals\x12o\n" +
+	"\btimeouts\x18' \x03(\v2\x19.google.protobuf.DurationB8\x9aI5\x8a\x012\x8a\x01/\x12\btimeouts\x1a\x01t\" Timeout durations for operationsR\btimeouts\x1a9\n" +
+	"\vLabelsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a;\n" +
+	"\rCountersEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a<\n" +
+	"\x0eStringMapEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a;\n" +
+	"\rInt32MapEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a;\n" +
+	"\rInt64MapEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01\x1a<\n" +
+	"\x0eUint32MapEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1a<\n" +
+	"\x0eUint64MapEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x04R\x05value:\x028\x01\x1a>\n" +
+	"\x10Sfixed32MapEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x0fR\x05value:\x028\x01\x1a>\n" +
+	"\x10Sfixed64MapEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x10R\x05value:\x028\x01\x1a:\n" +
+	"\fJsonMapEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x03\xa8I\x01B\x11\n" +
 	"\x0fduration_choiceB\a\n" +
-	"\x05_byteB\x13\n" +
+	"\x05_byteB\x0e\n" +
+	"\f_config_dataB\r\n" +
+	"\v_secret_keyB\x13\n" +
 	"\x11_timeout_duration\"@\n" +
 	"\rSimpleMessage\x12/\n" +
-	"\x04name\x18\x01 \x01(\tB\x1b\x9aI\x18r\x16\x12\x04name\"\x0eName parameterR\x04name\"\xf9\x01\n" +
+	"\x04name\x18\x01 \x01(\tB\x1b\x9aI\x18r\x16\x12\x04name\"\x0eName parameterR\x04name\"\x90\x06\n" +
+	"\x13WrapperValueMessage\x12N\n" +
+	"\x04name\x18\x01 \x03(\v2\x1a.google.protobuf.BoolValueB\x1e\x9aI\x1b\x8a\x01\x18j\x16\x12\x04name\"\x0eName parameterR\x04name\x12s\n" +
+	"\fdouble_value\x18\x02 \x01(\v2\x1c.google.protobuf.DoubleValueB-\x9aI*\x12(\x12\fdouble-value\x1a\x02dv\"\x14Double value wrapperH\x00R\vdoubleValue\x88\x01\x01\x12w\n" +
+	"\rdouble_values\x18\x03 \x03(\v2\x1c.google.protobuf.DoubleValueB4\x9aI1\x8a\x01.\x12,\x12\rdouble-values\x1a\x03dvs\"\x16Multiple double valuesR\fdoubleValues\x12\x81\x01\n" +
+	"\vbytes_value\x18\x04 \x01(\v2\x1b.google.protobuf.BytesValueB>\x9aI;z9\x12\vbytes-value\x1a\x02bv\"$Bytes value wrapper (base64 encoded)@\x01H\x01R\n" +
+	"bytesValue\x88\x01\x01\x12\x85\x01\n" +
+	"\fbytes_values\x18\x05 \x03(\v2\x1b.google.protobuf.BytesValueBE\x9aIB\x8a\x01?z=\x12\fbytes-values\x1a\x03bvs\"&Multiple bytes values (base64 encoded)@\x01R\vbytesValues\x12\x8d\x01\n" +
+	"\x10bytes_hex_values\x18\x06 \x03(\v2\x1b.google.protobuf.BytesValueBF\x9aIC\x8a\x01@z>\x12\x10bytes-hex-values\x1a\x03bhx\"#Multiple bytes values (hex encoded)@\x02R\x0ebytesHexValuesB\x0f\n" +
+	"\r_double_valueB\x0e\n" +
+	"\f_bytes_value\"\xea\x04\n" +
+	"\x16DoubleSliceTestMessage\x12\x96\x01\n" +
+	"\fmeasurements\x18\x01 \x03(\v2\x1c.google.protobuf.DoubleValueBT\x9aIQ\x8a\x01N\x12L\x12\fmeasurements\x1a\x01m\"9Scientific measurements (e.g., 3.14159, 2.71828, 1.41421)R\fmeasurements\x12\x9f\x01\n" +
+	"\x11scientific_values\x18\x02 \x03(\v2\x1c.google.protobuf.DoubleValueBT\x9aIQ\x8a\x01N\x12L\x12\x11scientific-values\x1a\x02sv\"3Scientific notation values (e.g., 1.23e-4, 5.67e+8)R\x10scientificValues\x12\x93\x01\n" +
+	"\x14temperature_readings\x18\x03 \x03(\v2\x1c.google.protobuf.DoubleValueBB\x9aI?\x8a\x01<\x12:\x12\x14temperature-readings\x1a\x01t\"\x1fTemperature readings in CelsiusR\x13temperatureReadings\x12z\n" +
+	"\vcoordinates\x18\x04 \x03(\v2\x1c.google.protobuf.DoubleValueB:\x9aI7\x8a\x014\x122\x12\vcoordinates\x1a\x01c\" GPS coordinates (lat, lon pairs)R\vcoordinates:\x03\xa8I\x01\"\x8b\x04\n" +
+	"\x15BytesSliceTestMessage\x12w\n" +
+	"\vdata_chunks\x18\x01 \x03(\v2\x1b.google.protobuf.BytesValueB9\x9aI6\x8a\x013z1\x12\vdata-chunks\x1a\x02dc\"\x1cData chunks in base64 format@\x01R\n" +
+	"dataChunks\x12\x7f\n" +
+	"\rfile_contents\x18\x02 \x03(\v2\x1b.google.protobuf.BytesValueB=\x9aI:\x8a\x017z5\x12\rfile-contents\x1a\x02fc\"\x1eFile contents in base64 format@\x01R\ffileContents\x12l\n" +
+	"\bhex_data\x18\x03 \x03(\v2\x1b.google.protobuf.BytesValueB4\x9aI1\x8a\x01.z,\x12\bhex-data\x1a\x02hd\"\x1aData in hexadecimal format@\x02R\ahexData\x12\x84\x01\n" +
+	"\x0fbinary_payloads\x18\x04 \x03(\v2\x1b.google.protobuf.BytesValueB>\x9aI;\x8a\x018z6\x12\x0fbinary-payloads\x1a\x02bp\"\x1dBinary payloads in hex format@\x02R\x0ebinaryPayloads:\x03\xa8I\x01\"\xf9\x01\n" +
 	"\x0fDisabledMessage\x12B\n" +
 	"\x05value\x18\x01 \x01(\tB,\x9aI)r'\x12\x05value\"\x1eThis should not appear in helpR\x05value\x12U\n" +
 	"\x0esimple_message\x18\x02 \x01(\v2\x14.tests.SimpleMessageB\x18\x9aI\x15\xaa\x01\x12\b\x01\x12\x0esimple-messageR\rsimpleMessage\x12F\n" +
@@ -770,35 +1232,78 @@ func file_tests_test_proto_rawDescGZIP() []byte {
 }
 
 var file_tests_test_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_tests_test_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_tests_test_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_tests_test_proto_goTypes = []any{
-	(TestEnum)(0),                 // 0: tests.TestEnum
-	(*TestMessage)(nil),           // 1: tests.TestMessage
-	(*SimpleMessage)(nil),         // 2: tests.SimpleMessage
-	(*DisabledMessage)(nil),       // 3: tests.DisabledMessage
-	(*EmptyMessage)(nil),          // 4: tests.EmptyMessage
-	(*EmptyMessage2)(nil),         // 5: tests.EmptyMessage2
-	(*WrapperMessage)(nil),        // 6: tests.WrapperMessage
-	(*OneofMessage)(nil),          // 7: tests.OneofMessage
-	(*durationpb.Duration)(nil),   // 8: google.protobuf.Duration
-	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
-	(*wrapperspb.FloatValue)(nil), // 10: google.protobuf.FloatValue
+	(TestEnum)(0),                  // 0: tests.TestEnum
+	(*TestMessage)(nil),            // 1: tests.TestMessage
+	(*SimpleMessage)(nil),          // 2: tests.SimpleMessage
+	(*WrapperValueMessage)(nil),    // 3: tests.WrapperValueMessage
+	(*DoubleSliceTestMessage)(nil), // 4: tests.DoubleSliceTestMessage
+	(*BytesSliceTestMessage)(nil),  // 5: tests.BytesSliceTestMessage
+	(*DisabledMessage)(nil),        // 6: tests.DisabledMessage
+	(*EmptyMessage)(nil),           // 7: tests.EmptyMessage
+	(*EmptyMessage2)(nil),          // 8: tests.EmptyMessage2
+	(*WrapperMessage)(nil),         // 9: tests.WrapperMessage
+	(*OneofMessage)(nil),           // 10: tests.OneofMessage
+	nil,                            // 11: tests.TestMessage.LabelsEntry
+	nil,                            // 12: tests.TestMessage.CountersEntry
+	nil,                            // 13: tests.TestMessage.StringMapEntry
+	nil,                            // 14: tests.TestMessage.Int32MapEntry
+	nil,                            // 15: tests.TestMessage.Int64MapEntry
+	nil,                            // 16: tests.TestMessage.Uint32MapEntry
+	nil,                            // 17: tests.TestMessage.Uint64MapEntry
+	nil,                            // 18: tests.TestMessage.Sfixed32MapEntry
+	nil,                            // 19: tests.TestMessage.Sfixed64MapEntry
+	nil,                            // 20: tests.TestMessage.JsonMapEntry
+	(*durationpb.Duration)(nil),    // 21: google.protobuf.Duration
+	(*wrapperspb.BoolValue)(nil),   // 22: google.protobuf.BoolValue
+	(*wrapperspb.DoubleValue)(nil), // 23: google.protobuf.DoubleValue
+	(*wrapperspb.BytesValue)(nil),  // 24: google.protobuf.BytesValue
+	(*timestamppb.Timestamp)(nil),  // 25: google.protobuf.Timestamp
+	(*wrapperspb.FloatValue)(nil),  // 26: google.protobuf.FloatValue
 }
 var file_tests_test_proto_depIdxs = []int32{
 	0,  // 0: tests.TestMessage.test_enum:type_name -> tests.TestEnum
-	8,  // 1: tests.TestMessage.timeout_duration:type_name -> google.protobuf.Duration
-	8,  // 2: tests.TestMessage.processing_time:type_name -> google.protobuf.Duration
-	8,  // 3: tests.TestMessage.waiting_time:type_name -> google.protobuf.Duration
+	21, // 1: tests.TestMessage.timeout_duration:type_name -> google.protobuf.Duration
+	21, // 2: tests.TestMessage.processing_time:type_name -> google.protobuf.Duration
+	21, // 3: tests.TestMessage.waiting_time:type_name -> google.protobuf.Duration
 	2,  // 4: tests.TestMessage.simple_field:type_name -> tests.SimpleMessage
-	2,  // 5: tests.DisabledMessage.simple_message:type_name -> tests.SimpleMessage
-	9,  // 6: tests.DisabledMessage.created_at:type_name -> google.protobuf.Timestamp
-	10, // 7: tests.WrapperMessage.value:type_name -> google.protobuf.FloatValue
-	8,  // 8: tests.OneofMessage.duration_value:type_name -> google.protobuf.Duration
-	9,  // [9:9] is the sub-list for method output_type
-	9,  // [9:9] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	11, // 5: tests.TestMessage.labels:type_name -> tests.TestMessage.LabelsEntry
+	12, // 6: tests.TestMessage.counters:type_name -> tests.TestMessage.CountersEntry
+	13, // 7: tests.TestMessage.string_map:type_name -> tests.TestMessage.StringMapEntry
+	14, // 8: tests.TestMessage.int32_map:type_name -> tests.TestMessage.Int32MapEntry
+	15, // 9: tests.TestMessage.int64_map:type_name -> tests.TestMessage.Int64MapEntry
+	16, // 10: tests.TestMessage.uint32_map:type_name -> tests.TestMessage.Uint32MapEntry
+	17, // 11: tests.TestMessage.uint64_map:type_name -> tests.TestMessage.Uint64MapEntry
+	18, // 12: tests.TestMessage.sfixed32_map:type_name -> tests.TestMessage.Sfixed32MapEntry
+	19, // 13: tests.TestMessage.sfixed64_map:type_name -> tests.TestMessage.Sfixed64MapEntry
+	20, // 14: tests.TestMessage.json_map:type_name -> tests.TestMessage.JsonMapEntry
+	21, // 15: tests.TestMessage.delays:type_name -> google.protobuf.Duration
+	21, // 16: tests.TestMessage.intervals:type_name -> google.protobuf.Duration
+	21, // 17: tests.TestMessage.timeouts:type_name -> google.protobuf.Duration
+	22, // 18: tests.WrapperValueMessage.name:type_name -> google.protobuf.BoolValue
+	23, // 19: tests.WrapperValueMessage.double_value:type_name -> google.protobuf.DoubleValue
+	23, // 20: tests.WrapperValueMessage.double_values:type_name -> google.protobuf.DoubleValue
+	24, // 21: tests.WrapperValueMessage.bytes_value:type_name -> google.protobuf.BytesValue
+	24, // 22: tests.WrapperValueMessage.bytes_values:type_name -> google.protobuf.BytesValue
+	24, // 23: tests.WrapperValueMessage.bytes_hex_values:type_name -> google.protobuf.BytesValue
+	23, // 24: tests.DoubleSliceTestMessage.measurements:type_name -> google.protobuf.DoubleValue
+	23, // 25: tests.DoubleSliceTestMessage.scientific_values:type_name -> google.protobuf.DoubleValue
+	23, // 26: tests.DoubleSliceTestMessage.temperature_readings:type_name -> google.protobuf.DoubleValue
+	23, // 27: tests.DoubleSliceTestMessage.coordinates:type_name -> google.protobuf.DoubleValue
+	24, // 28: tests.BytesSliceTestMessage.data_chunks:type_name -> google.protobuf.BytesValue
+	24, // 29: tests.BytesSliceTestMessage.file_contents:type_name -> google.protobuf.BytesValue
+	24, // 30: tests.BytesSliceTestMessage.hex_data:type_name -> google.protobuf.BytesValue
+	24, // 31: tests.BytesSliceTestMessage.binary_payloads:type_name -> google.protobuf.BytesValue
+	2,  // 32: tests.DisabledMessage.simple_message:type_name -> tests.SimpleMessage
+	25, // 33: tests.DisabledMessage.created_at:type_name -> google.protobuf.Timestamp
+	26, // 34: tests.WrapperMessage.value:type_name -> google.protobuf.FloatValue
+	21, // 35: tests.OneofMessage.duration_value:type_name -> google.protobuf.Duration
+	36, // [36:36] is the sub-list for method output_type
+	36, // [36:36] is the sub-list for method input_type
+	36, // [36:36] is the sub-list for extension type_name
+	36, // [36:36] is the sub-list for extension extendee
+	0,  // [0:36] is the sub-list for field type_name
 }
 
 func init() { file_tests_test_proto_init() }
@@ -810,8 +1315,9 @@ func file_tests_test_proto_init() {
 		(*TestMessage_ProcessingTime)(nil),
 		(*TestMessage_WaitingTime)(nil),
 	}
-	file_tests_test_proto_msgTypes[5].OneofWrappers = []any{}
-	file_tests_test_proto_msgTypes[6].OneofWrappers = []any{
+	file_tests_test_proto_msgTypes[2].OneofWrappers = []any{}
+	file_tests_test_proto_msgTypes[8].OneofWrappers = []any{}
+	file_tests_test_proto_msgTypes[9].OneofWrappers = []any{
 		(*OneofMessage_StringValue)(nil),
 		(*OneofMessage_IntValue)(nil),
 		(*OneofMessage_DurationValue)(nil),
@@ -823,7 +1329,7 @@ func file_tests_test_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tests_test_proto_rawDesc), len(file_tests_test_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   7,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

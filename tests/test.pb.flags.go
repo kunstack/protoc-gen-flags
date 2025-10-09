@@ -27,6 +27,7 @@ var (
 	_ = pflag.NewFlagSet
 	_ = utils.BuildFlagName
 	_ = types.Bool
+	_ = flags.Interface(nil)
 )
 
 func (x *TestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
@@ -210,6 +211,55 @@ func (x *TestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 	// }
 	fs.BytesHexVarP(&x.Byte, utils.BuildFlagName(prefix, "byte"), "b", x.Byte, "Byte data in base64 encoding")
 
+	// ConfigData flag generated for (flags.value).bytes = {
+	//  disabled: false,
+	//     name: "config-data",
+	//     short: "cd",
+	//     usage: "Configuration data in base64 format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     encoding: BYTES_ENCODING_TYPE_BASE64
+	// }
+	fs.BytesBase64VarP(&x.ConfigData, utils.BuildFlagName(prefix, "config-data"), "cd", x.ConfigData, "Configuration data in base64 format")
+
+	// SecretKey flag generated for (flags.value).bytes = {
+	//  disabled: false,
+	//     name: "secret-key",
+	//     short: "sk",
+	//     usage: "Secret key in hex format",
+	//     hidden: true,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     encoding: BYTES_ENCODING_TYPE_HEX
+	// }
+	fs.BytesHexVarP(&x.SecretKey, utils.BuildFlagName(prefix, "secret-key"), "sk", x.SecretKey, "Secret key in hex format")
+	fs.MarkHidden("secret-key")
+
+	// FileChunks flag generated for (flags.value).bytes = {
+	//  disabled: false,
+	//     name: "file-chunks",
+	//     short: "fc",
+	//     usage: "File chunks in base64 format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     encoding: BYTES_ENCODING_TYPE_BASE64
+	// }
+	fs.VarP(types.BytesSlice(x.FileChunks), utils.BuildFlagName(prefix, "file-chunks"), "fc", "File chunks in base64 format")
+
+	// HexChunks flag generated for (flags.value).bytes = {
+	//  disabled: false,
+	//     name: "hex-chunks",
+	//     short: "hc",
+	//     usage: "Data chunks in hex format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     encoding: BYTES_ENCODING_TYPE_HEX
+	// }
+	fs.VarP(types.BytesHexSlice(x.HexChunks), utils.BuildFlagName(prefix, "hex-chunks"), "hc", "Data chunks in hex format")
+
 	// TestEnum flag generated for [(flags.value).enum = {
 	//     disabled: false,
 	//     name: "test-enum",
@@ -260,6 +310,170 @@ func (x *TestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 	if v, ok := interface{}(x.SimpleField).(flags.Interface); ok && x.SimpleField != nil {
 		v.AddFlags(fs, "simple-field")
 	}
+	// Labels flag generated for [(flags.value).map = {
+	//     disabled: false,
+	//     name: "labels",
+	//     short: "l",
+	//     usage: "Key-value labels (JSON format)",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     format: MAP_FORMAT_TYPE_STRING_TO_STRING
+	// }]
+	fs.StringToStringVarP(&x.Labels, utils.BuildFlagName(prefix, "labels"), "l", x.Labels, "Key-value labels (JSON format)")
+
+	// Counters flag generated for [(flags.value).map = {
+	//     disabled: false,
+	//     name: "counters",
+	//     short: "",
+	//     usage: "String-to-integer counters (JSON format)",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     format: MAP_FORMAT_TYPE_UNSPECIFIED
+	// }]
+	fs.VarP(types.JSON(&x.Counters), utils.BuildFlagName(prefix, "counters"), "", "String-to-integer counters (JSON format)")
+
+	// StringMap flag generated for [(flags.value).map = {
+	//     disabled: false,
+	//     name: "string-map",
+	//     short: "sm",
+	//     usage: "String-to-string map using native format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     format: MAP_FORMAT_TYPE_STRING_TO_STRING
+	// }]
+	fs.StringToStringVarP(&x.StringMap, utils.BuildFlagName(prefix, "string-map"), "sm", x.StringMap, "String-to-string map using native format")
+
+	// Int32Map flag generated for [(flags.value).map = {
+	//     disabled: false,
+	//     name: "int32-map",
+	//     short: "i32",
+	//     usage: "String-to-int32 map using native format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     format: MAP_FORMAT_TYPE_STRING_TO_INT
+	// }]
+	fs.VarP(types.StringToInt32(&x.Int32Map), utils.BuildFlagName(prefix, "int32-map"), "i32", "String-to-int32 map using native format")
+
+	// Int64Map flag generated for [(flags.value).map = {
+	//     disabled: false,
+	//     name: "int64-map",
+	//     short: "i64",
+	//     usage: "String-to-int64 map using native format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     format: MAP_FORMAT_TYPE_STRING_TO_INT
+	// }]
+	fs.StringToInt64VarP(&x.Int64Map, utils.BuildFlagName(prefix, "int64-map"), "i64", x.Int64Map, "String-to-int64 map using native format")
+
+	// Uint32Map flag generated for [(flags.value).map = {
+	//     disabled: false,
+	//     name: "uint32-map",
+	//     short: "u32",
+	//     usage: "String-to-uint32 map using native format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     format: MAP_FORMAT_TYPE_STRING_TO_INT
+	// }]
+	fs.VarP(types.StringToUint32(&x.Uint32Map), utils.BuildFlagName(prefix, "uint32-map"), "u32", "String-to-uint32 map using native format")
+
+	// Uint64Map flag generated for [(flags.value).map = {
+	//     disabled: false,
+	//     name: "uint64-map",
+	//     short: "u64",
+	//     usage: "String-to-uint64 map using native format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     format: MAP_FORMAT_TYPE_STRING_TO_INT
+	// }]
+	fs.VarP(types.StringToUint64(&x.Uint64Map), utils.BuildFlagName(prefix, "uint64-map"), "u64", "String-to-uint64 map using native format")
+
+	// Sfixed32Map flag generated for [(flags.value).map = {
+	//     disabled: false,
+	//     name: "sfixed32-map",
+	//     short: "sf32",
+	//     usage: "String-to-sfixed32 map using native format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     format: MAP_FORMAT_TYPE_STRING_TO_INT
+	// }]
+	fs.VarP(types.StringToInt32(&x.Sfixed32Map), utils.BuildFlagName(prefix, "sfixed32-map"), "sf32", "String-to-sfixed32 map using native format")
+
+	// Sfixed64Map flag generated for [(flags.value).map = {
+	//     disabled: false,
+	//     name: "sfixed64-map",
+	//     short: "sf64",
+	//     usage: "String-to-sfixed64 map using native format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     format: MAP_FORMAT_TYPE_STRING_TO_INT
+	// }]
+	fs.StringToInt64VarP(&x.Sfixed64Map, utils.BuildFlagName(prefix, "sfixed64-map"), "sf64", x.Sfixed64Map, "String-to-sfixed64 map using native format")
+
+	// JsonMap flag generated for [(flags.value).map = {
+	//     disabled: false,
+	//     name: "json-map",
+	//     short: "j",
+	//     usage: "Generic JSON map format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     format: MAP_FORMAT_TYPE_JSON
+	// }]
+	fs.VarP(types.JSON(&x.JsonMap), utils.BuildFlagName(prefix, "json-map"), "j", "Generic JSON map format")
+
+	// RepeatedStrings flag generated for [(flags.value).string = {
+	//     disabled: false,
+	//     name: "repeated-strings",
+	//     short: "rs",
+	//     usage: "Repeated strings for comparison",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	// }]
+	fs.StringSliceVarP(&x.RepeatedStrings, utils.BuildFlagName(prefix, "repeated-strings"), "rs", x.RepeatedStrings, "Repeated strings for comparison")
+
+	// Delays flag generated for [(flags.value).repeated.duration = {
+	//     disabled: false,
+	//     name: "delays",
+	//     short: "d",
+	//     usage: "Delay durations (e.g., 1s, 2m, 3h)",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	// }]
+	fs.VarP(types.DurationSlice(x.Delays), utils.BuildFlagName(prefix, "delays"), "d", "Delay durations (e.g., 1s, 2m, 3h)")
+
+	// Intervals flag generated for [(flags.value).repeated.duration = {
+	//     disabled: false,
+	//     name: "intervals",
+	//     short: "i",
+	//     usage: "Time intervals between events",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	// }]
+	fs.VarP(types.DurationSlice(x.Intervals), utils.BuildFlagName(prefix, "intervals"), "i", "Time intervals between events")
+
+	// Timeouts flag generated for [(flags.value).repeated.duration = {
+	//     disabled: false,
+	//     name: "timeouts",
+	//     short: "t",
+	//     usage: "Timeout durations for operations",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	// }]
+	fs.VarP(types.DurationSlice(x.Timeouts), utils.BuildFlagName(prefix, "timeouts"), "t", "Timeout durations for operations")
+
 }
 
 func (x *SimpleMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
@@ -273,6 +487,176 @@ func (x *SimpleMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 	//     deprecated_usage: "",
 	// }]
 	fs.StringVarP(&x.Name, utils.BuildFlagName(prefix, "name"), "", x.Name, "Name parameter")
+
+}
+
+func (x *WrapperValueMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
+	// Name flag generated for [(flags.value).bool = {
+	//     disabled: false,
+	//     name: "name",
+	//     short: "",
+	//     usage: "Name parameter",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	// }]
+	fs.VarP(types.BoolSlice(x.Name), utils.BuildFlagName(prefix, "name"), "", "Name parameter")
+
+	// DoubleValue flag generated for [(flags.value).double = {
+	//     disabled: false,
+	//     name: "double-value",
+	//     short: "dv",
+	//     usage: "Double value wrapper",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	// }]
+	fs.VarP(types.Double(x.DoubleValue), utils.BuildFlagName(prefix, "double-value"), "dv", "Double value wrapper")
+
+	// DoubleValues flag generated for [(flags.value).double = {
+	//     disabled: false,
+	//     name: "double-values",
+	//     short: "dvs",
+	//     usage: "Multiple double values",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	// }]
+	fs.VarP(types.DoubleSlice(x.DoubleValues), utils.BuildFlagName(prefix, "double-values"), "dvs", "Multiple double values")
+
+	// BytesValue flag generated for (flags.value).bytes = {
+	//  disabled: false,
+	//     name: "bytes-value",
+	//     short: "bv",
+	//     usage: "Bytes value wrapper (base64 encoded)",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     encoding: BYTES_ENCODING_TYPE_BASE64
+	// }
+	fs.VarP(types.Bytes(x.BytesValue), utils.BuildFlagName(prefix, "bytes-value"), "bv", "Bytes value wrapper (base64 encoded)")
+
+	// BytesValues flag generated for (flags.value).bytes = {
+	//  disabled: false,
+	//     name: "bytes-values",
+	//     short: "bvs",
+	//     usage: "Multiple bytes values (base64 encoded)",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     encoding: BYTES_ENCODING_TYPE_BASE64
+	// }
+	fs.VarP(types.BytesSlice(x.BytesValues), utils.BuildFlagName(prefix, "bytes-values"), "bvs", "Multiple bytes values (base64 encoded)")
+
+	// BytesHexValues flag generated for (flags.value).bytes = {
+	//  disabled: false,
+	//     name: "bytes-hex-values",
+	//     short: "bhx",
+	//     usage: "Multiple bytes values (hex encoded)",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     encoding: BYTES_ENCODING_TYPE_HEX
+	// }
+	fs.VarP(types.BytesHexSlice(x.BytesHexValues), utils.BuildFlagName(prefix, "bytes-hex-values"), "bhx", "Multiple bytes values (hex encoded)")
+
+}
+
+func (x *DoubleSliceTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
+	// Measurements flag generated for [(flags.value).double = {
+	//     disabled: false,
+	//     name: "measurements",
+	//     short: "m",
+	//     usage: "Scientific measurements (e.g., 3.14159, 2.71828, 1.41421)",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	// }]
+	fs.VarP(types.DoubleSlice(x.Measurements), utils.BuildFlagName(prefix, "measurements"), "m", "Scientific measurements (e.g., 3.14159, 2.71828, 1.41421)")
+
+	// ScientificValues flag generated for [(flags.value).double = {
+	//     disabled: false,
+	//     name: "scientific-values",
+	//     short: "sv",
+	//     usage: "Scientific notation values (e.g., 1.23e-4, 5.67e+8)",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	// }]
+	fs.VarP(types.DoubleSlice(x.ScientificValues), utils.BuildFlagName(prefix, "scientific-values"), "sv", "Scientific notation values (e.g., 1.23e-4, 5.67e+8)")
+
+	// TemperatureReadings flag generated for [(flags.value).double = {
+	//     disabled: false,
+	//     name: "temperature-readings",
+	//     short: "t",
+	//     usage: "Temperature readings in Celsius",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	// }]
+	fs.VarP(types.DoubleSlice(x.TemperatureReadings), utils.BuildFlagName(prefix, "temperature-readings"), "t", "Temperature readings in Celsius")
+
+	// Coordinates flag generated for [(flags.value).double = {
+	//     disabled: false,
+	//     name: "coordinates",
+	//     short: "c",
+	//     usage: "GPS coordinates (lat, lon pairs)",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	// }]
+	fs.VarP(types.DoubleSlice(x.Coordinates), utils.BuildFlagName(prefix, "coordinates"), "c", "GPS coordinates (lat, lon pairs)")
+
+}
+
+func (x *BytesSliceTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
+	// DataChunks flag generated for (flags.value).bytes = {
+	//  disabled: false,
+	//     name: "data-chunks",
+	//     short: "dc",
+	//     usage: "Data chunks in base64 format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     encoding: BYTES_ENCODING_TYPE_BASE64
+	// }
+	fs.VarP(types.BytesSlice(x.DataChunks), utils.BuildFlagName(prefix, "data-chunks"), "dc", "Data chunks in base64 format")
+
+	// FileContents flag generated for (flags.value).bytes = {
+	//  disabled: false,
+	//     name: "file-contents",
+	//     short: "fc",
+	//     usage: "File contents in base64 format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     encoding: BYTES_ENCODING_TYPE_BASE64
+	// }
+	fs.VarP(types.BytesSlice(x.FileContents), utils.BuildFlagName(prefix, "file-contents"), "fc", "File contents in base64 format")
+
+	// HexData flag generated for (flags.value).bytes = {
+	//  disabled: false,
+	//     name: "hex-data",
+	//     short: "hd",
+	//     usage: "Data in hexadecimal format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     encoding: BYTES_ENCODING_TYPE_HEX
+	// }
+	fs.VarP(types.BytesHexSlice(x.HexData), utils.BuildFlagName(prefix, "hex-data"), "hd", "Data in hexadecimal format")
+
+	// BinaryPayloads flag generated for (flags.value).bytes = {
+	//  disabled: false,
+	//     name: "binary-payloads",
+	//     short: "bp",
+	//     usage: "Binary payloads in hex format",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	//     encoding: BYTES_ENCODING_TYPE_HEX
+	// }
+	fs.VarP(types.BytesHexSlice(x.BinaryPayloads), utils.BuildFlagName(prefix, "binary-payloads"), "bp", "Binary payloads in hex format")
 
 }
 
@@ -291,7 +675,17 @@ func (x *WrapperMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 	// }]
 	fs.VarP(types.Float(x.Value), utils.BuildFlagName(prefix, "value"), "", "hello")
 
-	// value2
+	// Value2 flag generated for [(flags.value).string = {
+	//     disabled: false,
+	//     name: "value2",
+	//     short: "",
+	//     usage: "This should not appear in help",
+	//     hidden: false,
+	//     deprecated: false,
+	//     deprecated_usage: "",
+	// }]
+	fs.StringSliceVarP(&x.Value2, utils.BuildFlagName(prefix, "value2"), "", x.Value2, "This should not appear in help")
+
 }
 
 func (x *OneofMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {

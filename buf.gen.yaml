@@ -9,5 +9,6 @@ plugins:
     out: .
     opt:
       - paths=source_relative
-    types:
-      - "tests"
+
+    exclude_types:
+      - "flags"

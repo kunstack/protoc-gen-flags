@@ -74,7 +74,7 @@ func (t *TimestampValue) Set(s string) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("invalid time layout `%s` must be one of: %s", s, strings.Join(t.layouts, ","))
+	return fmt.Errorf("invalid time format `%s` must be one of: %s", s, strings.Join(t.layouts, ","))
 }
 
 func (t *TimestampValue) Type() string {

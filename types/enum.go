@@ -20,8 +20,8 @@ var _ pflag.Value = (*EnumValue)(nil)
 // It provides string representation and parsing capabilities for enum values,
 // allowing them to be used as command-line flags.
 type EnumValue struct {
-	allowedTypes []string         // List of valid enum value names
-	wrap         protoreflect.Enum // Pointer to the actual enum value (int32)
+	allowedTypes []string                          // List of valid enum value names
+	wrap         protoreflect.Enum                 // Pointer to the actual enum value (int32)
 	descriptors  protoreflect.EnumValueDescriptors // Enum value descriptors for validation
 }
 

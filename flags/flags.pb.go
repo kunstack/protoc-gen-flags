@@ -35,6 +35,7 @@
 //     name: "custom-name"
 //     short: "n"
 //     usage: "Custom usage description"
+//     default: "default-value"
 //   }];
 //
 // # Supported Types
@@ -125,6 +126,63 @@ func (x BytesEncodingType) Number() protoreflect.EnumNumber {
 // Deprecated: Use BytesEncodingType.Descriptor instead.
 func (BytesEncodingType) EnumDescriptor() ([]byte, []int) {
 	return file_flags_flags_proto_rawDescGZIP(), []int{0}
+}
+
+// MapFormatType specifies the format for map fields in command-line flags.
+type MapFormatType int32
+
+const (
+	// MAP_FORMAT_TYPE_UNSPECIFIED uses the default format (JSON).
+	MapFormatType_MAP_FORMAT_TYPE_UNSPECIFIED MapFormatType = 0
+	// MAP_FORMAT_TYPE_JSON uses JSON format for the entire map.
+	MapFormatType_MAP_FORMAT_TYPE_JSON MapFormatType = 1
+	// MAP_FORMAT_TYPE_STRING_TO_STRING uses string keys and string values.
+	MapFormatType_MAP_FORMAT_TYPE_STRING_TO_STRING MapFormatType = 2
+	// MAP_FORMAT_TYPE_STRING_TO_INT uses string keys and int values.
+	MapFormatType_MAP_FORMAT_TYPE_STRING_TO_INT MapFormatType = 3
+)
+
+// Enum value maps for MapFormatType.
+var (
+	MapFormatType_name = map[int32]string{
+		0: "MAP_FORMAT_TYPE_UNSPECIFIED",
+		1: "MAP_FORMAT_TYPE_JSON",
+		2: "MAP_FORMAT_TYPE_STRING_TO_STRING",
+		3: "MAP_FORMAT_TYPE_STRING_TO_INT",
+	}
+	MapFormatType_value = map[string]int32{
+		"MAP_FORMAT_TYPE_UNSPECIFIED":      0,
+		"MAP_FORMAT_TYPE_JSON":             1,
+		"MAP_FORMAT_TYPE_STRING_TO_STRING": 2,
+		"MAP_FORMAT_TYPE_STRING_TO_INT":    3,
+	}
+)
+
+func (x MapFormatType) Enum() *MapFormatType {
+	p := new(MapFormatType)
+	*p = x
+	return p
+}
+
+func (x MapFormatType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (MapFormatType) Descriptor() protoreflect.EnumDescriptor {
+	return file_flags_flags_proto_enumTypes[1].Descriptor()
+}
+
+func (MapFormatType) Type() protoreflect.EnumType {
+	return &file_flags_flags_proto_enumTypes[1]
+}
+
+func (x MapFormatType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use MapFormatType.Descriptor instead.
+func (MapFormatType) EnumDescriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{1}
 }
 
 // BytesFlag contains configuration specifically for bytes fields with encoding type selection.
@@ -314,7 +372,7 @@ func (x *FieldFlags) GetType() isFieldFlags_Type {
 	return nil
 }
 
-func (x *FieldFlags) GetFloat() *PrimitiveFlag {
+func (x *FieldFlags) GetFloat() *FloatFlag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Float); ok {
 			return x.Float
@@ -323,7 +381,7 @@ func (x *FieldFlags) GetFloat() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetDouble() *PrimitiveFlag {
+func (x *FieldFlags) GetDouble() *DoubleFlag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Double); ok {
 			return x.Double
@@ -332,7 +390,7 @@ func (x *FieldFlags) GetDouble() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetInt32() *PrimitiveFlag {
+func (x *FieldFlags) GetInt32() *Int32Flag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Int32); ok {
 			return x.Int32
@@ -341,7 +399,7 @@ func (x *FieldFlags) GetInt32() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetInt64() *PrimitiveFlag {
+func (x *FieldFlags) GetInt64() *Int64Flag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Int64); ok {
 			return x.Int64
@@ -350,7 +408,7 @@ func (x *FieldFlags) GetInt64() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetUint32() *PrimitiveFlag {
+func (x *FieldFlags) GetUint32() *Uint32Flag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Uint32); ok {
 			return x.Uint32
@@ -359,7 +417,7 @@ func (x *FieldFlags) GetUint32() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetUint64() *PrimitiveFlag {
+func (x *FieldFlags) GetUint64() *Uint64Flag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Uint64); ok {
 			return x.Uint64
@@ -368,7 +426,7 @@ func (x *FieldFlags) GetUint64() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetSint32() *PrimitiveFlag {
+func (x *FieldFlags) GetSint32() *Sint32Flag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Sint32); ok {
 			return x.Sint32
@@ -377,7 +435,7 @@ func (x *FieldFlags) GetSint32() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetSint64() *PrimitiveFlag {
+func (x *FieldFlags) GetSint64() *Sint64Flag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Sint64); ok {
 			return x.Sint64
@@ -386,7 +444,7 @@ func (x *FieldFlags) GetSint64() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetFixed32() *PrimitiveFlag {
+func (x *FieldFlags) GetFixed32() *Fixed32Flag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Fixed32); ok {
 			return x.Fixed32
@@ -395,7 +453,7 @@ func (x *FieldFlags) GetFixed32() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetFixed64() *PrimitiveFlag {
+func (x *FieldFlags) GetFixed64() *Fixed64Flag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Fixed64); ok {
 			return x.Fixed64
@@ -404,7 +462,7 @@ func (x *FieldFlags) GetFixed64() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetSfixed32() *PrimitiveFlag {
+func (x *FieldFlags) GetSfixed32() *Sfixed32Flag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Sfixed32); ok {
 			return x.Sfixed32
@@ -413,7 +471,7 @@ func (x *FieldFlags) GetSfixed32() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetSfixed64() *PrimitiveFlag {
+func (x *FieldFlags) GetSfixed64() *Sfixed64Flag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Sfixed64); ok {
 			return x.Sfixed64
@@ -422,7 +480,7 @@ func (x *FieldFlags) GetSfixed64() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetBool() *PrimitiveFlag {
+func (x *FieldFlags) GetBool() *BoolFlag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Bool); ok {
 			return x.Bool
@@ -431,7 +489,7 @@ func (x *FieldFlags) GetBool() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetString_() *PrimitiveFlag {
+func (x *FieldFlags) GetString_() *StringFlag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_String_); ok {
 			return x.String_
@@ -449,7 +507,7 @@ func (x *FieldFlags) GetBytes() *BytesFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetEnum() *PrimitiveFlag {
+func (x *FieldFlags) GetEnum() *EnumFlag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Enum); ok {
 			return x.Enum
@@ -467,7 +525,7 @@ func (x *FieldFlags) GetRepeated() *RepeatedFlags {
 	return nil
 }
 
-func (x *FieldFlags) GetMap() *PrimitiveFlag {
+func (x *FieldFlags) GetMap() *MapFlag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Map); ok {
 			return x.Map
@@ -476,7 +534,7 @@ func (x *FieldFlags) GetMap() *PrimitiveFlag {
 	return nil
 }
 
-func (x *FieldFlags) GetDuration() *PrimitiveFlag {
+func (x *FieldFlags) GetDuration() *DurationFlag {
 	if x != nil {
 		if x, ok := x.Type.(*FieldFlags_Duration); ok {
 			return x.Duration
@@ -508,60 +566,60 @@ type isFieldFlags_Type interface {
 }
 
 type FieldFlags_Float struct {
-	// Scalar Field Types - all use PrimitiveFlag configuration
-	Float *PrimitiveFlag `protobuf:"bytes,1,opt,name=float,proto3,oneof"` // 32-bit floating point
+	// Scalar Field Types - each type has its own flag configuration with default value support
+	Float *FloatFlag `protobuf:"bytes,1,opt,name=float,proto3,oneof"` // 32-bit floating point
 }
 
 type FieldFlags_Double struct {
-	Double *PrimitiveFlag `protobuf:"bytes,2,opt,name=double,proto3,oneof"` // 64-bit floating point
+	Double *DoubleFlag `protobuf:"bytes,2,opt,name=double,proto3,oneof"` // 64-bit floating point
 }
 
 type FieldFlags_Int32 struct {
-	Int32 *PrimitiveFlag `protobuf:"bytes,3,opt,name=int32,proto3,oneof"` // 32-bit signed integer
+	Int32 *Int32Flag `protobuf:"bytes,3,opt,name=int32,proto3,oneof"` // 32-bit signed integer
 }
 
 type FieldFlags_Int64 struct {
-	Int64 *PrimitiveFlag `protobuf:"bytes,4,opt,name=int64,proto3,oneof"` // 64-bit signed integer
+	Int64 *Int64Flag `protobuf:"bytes,4,opt,name=int64,proto3,oneof"` // 64-bit signed integer
 }
 
 type FieldFlags_Uint32 struct {
-	Uint32 *PrimitiveFlag `protobuf:"bytes,5,opt,name=uint32,proto3,oneof"` // 32-bit unsigned integer
+	Uint32 *Uint32Flag `protobuf:"bytes,5,opt,name=uint32,proto3,oneof"` // 32-bit unsigned integer
 }
 
 type FieldFlags_Uint64 struct {
-	Uint64 *PrimitiveFlag `protobuf:"bytes,6,opt,name=uint64,proto3,oneof"` // 64-bit unsigned integer
+	Uint64 *Uint64Flag `protobuf:"bytes,6,opt,name=uint64,proto3,oneof"` // 64-bit unsigned integer
 }
 
 type FieldFlags_Sint32 struct {
-	Sint32 *PrimitiveFlag `protobuf:"bytes,7,opt,name=sint32,proto3,oneof"` // 32-bit signed integer (zigzag encoded)
+	Sint32 *Sint32Flag `protobuf:"bytes,7,opt,name=sint32,proto3,oneof"` // 32-bit signed integer (zigzag encoded)
 }
 
 type FieldFlags_Sint64 struct {
-	Sint64 *PrimitiveFlag `protobuf:"bytes,8,opt,name=sint64,proto3,oneof"` // 64-bit signed integer (zigzag encoded)
+	Sint64 *Sint64Flag `protobuf:"bytes,8,opt,name=sint64,proto3,oneof"` // 64-bit signed integer (zigzag encoded)
 }
 
 type FieldFlags_Fixed32 struct {
-	Fixed32 *PrimitiveFlag `protobuf:"bytes,9,opt,name=fixed32,proto3,oneof"` // 32-bit fixed-point integer
+	Fixed32 *Fixed32Flag `protobuf:"bytes,9,opt,name=fixed32,proto3,oneof"` // 32-bit fixed-point integer
 }
 
 type FieldFlags_Fixed64 struct {
-	Fixed64 *PrimitiveFlag `protobuf:"bytes,10,opt,name=fixed64,proto3,oneof"` // 64-bit fixed-point integer
+	Fixed64 *Fixed64Flag `protobuf:"bytes,10,opt,name=fixed64,proto3,oneof"` // 64-bit fixed-point integer
 }
 
 type FieldFlags_Sfixed32 struct {
-	Sfixed32 *PrimitiveFlag `protobuf:"bytes,11,opt,name=sfixed32,proto3,oneof"` // 32-bit signed fixed-point integer
+	Sfixed32 *Sfixed32Flag `protobuf:"bytes,11,opt,name=sfixed32,proto3,oneof"` // 32-bit signed fixed-point integer
 }
 
 type FieldFlags_Sfixed64 struct {
-	Sfixed64 *PrimitiveFlag `protobuf:"bytes,12,opt,name=sfixed64,proto3,oneof"` // 64-bit signed fixed-point integer
+	Sfixed64 *Sfixed64Flag `protobuf:"bytes,12,opt,name=sfixed64,proto3,oneof"` // 64-bit signed fixed-point integer
 }
 
 type FieldFlags_Bool struct {
-	Bool *PrimitiveFlag `protobuf:"bytes,13,opt,name=bool,proto3,oneof"` // Boolean value
+	Bool *BoolFlag `protobuf:"bytes,13,opt,name=bool,proto3,oneof"` // Boolean value
 }
 
 type FieldFlags_String_ struct {
-	String_ *PrimitiveFlag `protobuf:"bytes,14,opt,name=string,proto3,oneof"` // UTF-8 string
+	String_ *StringFlag `protobuf:"bytes,14,opt,name=string,proto3,oneof"` // UTF-8 string
 }
 
 type FieldFlags_Bytes struct {
@@ -571,7 +629,7 @@ type FieldFlags_Bytes struct {
 
 type FieldFlags_Enum struct {
 	// Complex Field Types
-	Enum *PrimitiveFlag `protobuf:"bytes,16,opt,name=enum,proto3,oneof"` // Enum type
+	Enum *EnumFlag `protobuf:"bytes,16,opt,name=enum,proto3,oneof"` // Enum type
 }
 
 type FieldFlags_Repeated struct {
@@ -579,12 +637,12 @@ type FieldFlags_Repeated struct {
 }
 
 type FieldFlags_Map struct {
-	Map *PrimitiveFlag `protobuf:"bytes,18,opt,name=map,proto3,oneof"` // Map field
+	Map *MapFlag `protobuf:"bytes,18,opt,name=map,proto3,oneof"` // Map field
 }
 
 type FieldFlags_Duration struct {
 	// Well-Known Field Types
-	Duration *PrimitiveFlag `protobuf:"bytes,19,opt,name=duration,proto3,oneof"` // google.protobuf.Duration
+	Duration *DurationFlag `protobuf:"bytes,19,opt,name=duration,proto3,oneof"` // google.protobuf.Duration
 }
 
 type FieldFlags_Timestamp struct {
@@ -742,6 +800,1886 @@ func (x *PrimitiveFlag) GetDeprecatedUsage() string {
 	return ""
 }
 
+// FloatFlag contains configuration for float32 fields with default value support.
+type FloatFlag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default       float32 `protobuf:"fixed32,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FloatFlag) Reset() {
+	*x = FloatFlag{}
+	mi := &file_flags_flags_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FloatFlag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FloatFlag) ProtoMessage() {}
+
+func (x *FloatFlag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FloatFlag.ProtoReflect.Descriptor instead.
+func (*FloatFlag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *FloatFlag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *FloatFlag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *FloatFlag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *FloatFlag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *FloatFlag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *FloatFlag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *FloatFlag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *FloatFlag) GetDefault() float32 {
+	if x != nil {
+		return x.Default
+	}
+	return 0
+}
+
+// DoubleFlag contains configuration for float64 fields with default value support.
+type DoubleFlag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default       float64 `protobuf:"fixed64,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DoubleFlag) Reset() {
+	*x = DoubleFlag{}
+	mi := &file_flags_flags_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DoubleFlag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DoubleFlag) ProtoMessage() {}
+
+func (x *DoubleFlag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DoubleFlag.ProtoReflect.Descriptor instead.
+func (*DoubleFlag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *DoubleFlag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *DoubleFlag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DoubleFlag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *DoubleFlag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *DoubleFlag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *DoubleFlag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *DoubleFlag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *DoubleFlag) GetDefault() float64 {
+	if x != nil {
+		return x.Default
+	}
+	return 0
+}
+
+// Int32Flag contains configuration for int32 fields with default value support.
+type Int32Flag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default       int32 `protobuf:"varint,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Int32Flag) Reset() {
+	*x = Int32Flag{}
+	mi := &file_flags_flags_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Int32Flag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Int32Flag) ProtoMessage() {}
+
+func (x *Int32Flag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Int32Flag.ProtoReflect.Descriptor instead.
+func (*Int32Flag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *Int32Flag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *Int32Flag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Int32Flag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *Int32Flag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *Int32Flag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *Int32Flag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *Int32Flag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *Int32Flag) GetDefault() int32 {
+	if x != nil {
+		return x.Default
+	}
+	return 0
+}
+
+// Int64Flag contains configuration for int64 fields with default value support.
+type Int64Flag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default       int64 `protobuf:"varint,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Int64Flag) Reset() {
+	*x = Int64Flag{}
+	mi := &file_flags_flags_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Int64Flag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Int64Flag) ProtoMessage() {}
+
+func (x *Int64Flag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Int64Flag.ProtoReflect.Descriptor instead.
+func (*Int64Flag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *Int64Flag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *Int64Flag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Int64Flag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *Int64Flag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *Int64Flag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *Int64Flag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *Int64Flag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *Int64Flag) GetDefault() int64 {
+	if x != nil {
+		return x.Default
+	}
+	return 0
+}
+
+// Uint32Flag contains configuration for uint32 fields with default value support.
+type Uint32Flag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default       uint32 `protobuf:"varint,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Uint32Flag) Reset() {
+	*x = Uint32Flag{}
+	mi := &file_flags_flags_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Uint32Flag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Uint32Flag) ProtoMessage() {}
+
+func (x *Uint32Flag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Uint32Flag.ProtoReflect.Descriptor instead.
+func (*Uint32Flag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *Uint32Flag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *Uint32Flag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Uint32Flag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *Uint32Flag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *Uint32Flag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *Uint32Flag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *Uint32Flag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *Uint32Flag) GetDefault() uint32 {
+	if x != nil {
+		return x.Default
+	}
+	return 0
+}
+
+// Uint64Flag contains configuration for uint64 fields with default value support.
+type Uint64Flag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default       uint64 `protobuf:"varint,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Uint64Flag) Reset() {
+	*x = Uint64Flag{}
+	mi := &file_flags_flags_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Uint64Flag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Uint64Flag) ProtoMessage() {}
+
+func (x *Uint64Flag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Uint64Flag.ProtoReflect.Descriptor instead.
+func (*Uint64Flag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *Uint64Flag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *Uint64Flag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Uint64Flag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *Uint64Flag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *Uint64Flag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *Uint64Flag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *Uint64Flag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *Uint64Flag) GetDefault() uint64 {
+	if x != nil {
+		return x.Default
+	}
+	return 0
+}
+
+// Sint32Flag contains configuration for sint32 fields with default value support.
+type Sint32Flag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default       int32 `protobuf:"varint,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Sint32Flag) Reset() {
+	*x = Sint32Flag{}
+	mi := &file_flags_flags_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Sint32Flag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Sint32Flag) ProtoMessage() {}
+
+func (x *Sint32Flag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Sint32Flag.ProtoReflect.Descriptor instead.
+func (*Sint32Flag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *Sint32Flag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *Sint32Flag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Sint32Flag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *Sint32Flag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *Sint32Flag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *Sint32Flag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *Sint32Flag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *Sint32Flag) GetDefault() int32 {
+	if x != nil {
+		return x.Default
+	}
+	return 0
+}
+
+// Sint64Flag contains configuration for sint64 fields with default value support.
+type Sint64Flag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default       int64 `protobuf:"varint,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Sint64Flag) Reset() {
+	*x = Sint64Flag{}
+	mi := &file_flags_flags_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Sint64Flag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Sint64Flag) ProtoMessage() {}
+
+func (x *Sint64Flag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Sint64Flag.ProtoReflect.Descriptor instead.
+func (*Sint64Flag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *Sint64Flag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *Sint64Flag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Sint64Flag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *Sint64Flag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *Sint64Flag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *Sint64Flag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *Sint64Flag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *Sint64Flag) GetDefault() int64 {
+	if x != nil {
+		return x.Default
+	}
+	return 0
+}
+
+// Fixed32Flag contains configuration for fixed32 fields with default value support.
+type Fixed32Flag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default       uint32 `protobuf:"fixed32,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Fixed32Flag) Reset() {
+	*x = Fixed32Flag{}
+	mi := &file_flags_flags_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Fixed32Flag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Fixed32Flag) ProtoMessage() {}
+
+func (x *Fixed32Flag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Fixed32Flag.ProtoReflect.Descriptor instead.
+func (*Fixed32Flag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *Fixed32Flag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *Fixed32Flag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Fixed32Flag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *Fixed32Flag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *Fixed32Flag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *Fixed32Flag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *Fixed32Flag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *Fixed32Flag) GetDefault() uint32 {
+	if x != nil {
+		return x.Default
+	}
+	return 0
+}
+
+// Fixed64Flag contains configuration for fixed64 fields with default value support.
+type Fixed64Flag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default       uint64 `protobuf:"fixed64,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Fixed64Flag) Reset() {
+	*x = Fixed64Flag{}
+	mi := &file_flags_flags_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Fixed64Flag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Fixed64Flag) ProtoMessage() {}
+
+func (x *Fixed64Flag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Fixed64Flag.ProtoReflect.Descriptor instead.
+func (*Fixed64Flag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *Fixed64Flag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *Fixed64Flag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Fixed64Flag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *Fixed64Flag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *Fixed64Flag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *Fixed64Flag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *Fixed64Flag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *Fixed64Flag) GetDefault() uint64 {
+	if x != nil {
+		return x.Default
+	}
+	return 0
+}
+
+// Sfixed32Flag contains configuration for sfixed32 fields with default value support.
+type Sfixed32Flag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default       int32 `protobuf:"fixed32,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Sfixed32Flag) Reset() {
+	*x = Sfixed32Flag{}
+	mi := &file_flags_flags_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Sfixed32Flag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Sfixed32Flag) ProtoMessage() {}
+
+func (x *Sfixed32Flag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Sfixed32Flag.ProtoReflect.Descriptor instead.
+func (*Sfixed32Flag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *Sfixed32Flag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *Sfixed32Flag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Sfixed32Flag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *Sfixed32Flag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *Sfixed32Flag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *Sfixed32Flag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *Sfixed32Flag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *Sfixed32Flag) GetDefault() int32 {
+	if x != nil {
+		return x.Default
+	}
+	return 0
+}
+
+// Sfixed64Flag contains configuration for sfixed64 fields with default value support.
+type Sfixed64Flag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default       int64 `protobuf:"fixed64,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Sfixed64Flag) Reset() {
+	*x = Sfixed64Flag{}
+	mi := &file_flags_flags_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Sfixed64Flag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Sfixed64Flag) ProtoMessage() {}
+
+func (x *Sfixed64Flag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Sfixed64Flag.ProtoReflect.Descriptor instead.
+func (*Sfixed64Flag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *Sfixed64Flag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *Sfixed64Flag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Sfixed64Flag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *Sfixed64Flag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *Sfixed64Flag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *Sfixed64Flag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *Sfixed64Flag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *Sfixed64Flag) GetDefault() int64 {
+	if x != nil {
+		return x.Default
+	}
+	return 0
+}
+
+// BoolFlag contains configuration for bool fields with default value support.
+type BoolFlag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default       bool `protobuf:"varint,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BoolFlag) Reset() {
+	*x = BoolFlag{}
+	mi := &file_flags_flags_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BoolFlag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BoolFlag) ProtoMessage() {}
+
+func (x *BoolFlag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BoolFlag.ProtoReflect.Descriptor instead.
+func (*BoolFlag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *BoolFlag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *BoolFlag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *BoolFlag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *BoolFlag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *BoolFlag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *BoolFlag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *BoolFlag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *BoolFlag) GetDefault() bool {
+	if x != nil {
+		return x.Default
+	}
+	return false
+}
+
+// StringFlag contains configuration for string fields with default value support.
+type StringFlag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag as a JSON string.
+	Default       string `protobuf:"bytes,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StringFlag) Reset() {
+	*x = StringFlag{}
+	mi := &file_flags_flags_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StringFlag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StringFlag) ProtoMessage() {}
+
+func (x *StringFlag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StringFlag.ProtoReflect.Descriptor instead.
+func (*StringFlag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *StringFlag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *StringFlag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *StringFlag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *StringFlag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *StringFlag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *StringFlag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *StringFlag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *StringFlag) GetDefault() string {
+	if x != nil {
+		return x.Default
+	}
+	return ""
+}
+
+// EnumFlag contains configuration for enum fields with default value support.
+type EnumFlag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag as an int32.
+	Default       int32 `protobuf:"varint,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EnumFlag) Reset() {
+	*x = EnumFlag{}
+	mi := &file_flags_flags_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EnumFlag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnumFlag) ProtoMessage() {}
+
+func (x *EnumFlag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnumFlag.ProtoReflect.Descriptor instead.
+func (*EnumFlag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *EnumFlag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *EnumFlag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *EnumFlag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *EnumFlag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *EnumFlag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *EnumFlag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *EnumFlag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *EnumFlag) GetDefault() int32 {
+	if x != nil {
+		return x.Default
+	}
+	return 0
+}
+
+// MapFlag contains configuration for map fields with default value support.
+type MapFlag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default string `protobuf:"bytes,8,opt,name=default,proto3" json:"default,omitempty"`
+	// Format specifies the format for map fields. When unspecified,
+	// defaults to JSON format.
+	Format        MapFormatType `protobuf:"varint,9,opt,name=format,proto3,enum=flags.MapFormatType" json:"format,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MapFlag) Reset() {
+	*x = MapFlag{}
+	mi := &file_flags_flags_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MapFlag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MapFlag) ProtoMessage() {}
+
+func (x *MapFlag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MapFlag.ProtoReflect.Descriptor instead.
+func (*MapFlag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *MapFlag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *MapFlag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *MapFlag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *MapFlag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *MapFlag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *MapFlag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *MapFlag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *MapFlag) GetDefault() string {
+	if x != nil {
+		return x.Default
+	}
+	return ""
+}
+
+func (x *MapFlag) GetFormat() MapFormatType {
+	if x != nil {
+		return x.Format
+	}
+	return MapFormatType_MAP_FORMAT_TYPE_UNSPECIFIED
+}
+
+// DurationFlag contains configuration for duration fields with default value support.
+type DurationFlag struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Disabled skips generation of flags for this field when set to true.
+	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	// Name specifies a custom flag name. When empty, defaults to field name
+	// converted to hyphenated format (e.g., hello_world -> hello-world).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Short specifies a short flag alias (single character).
+	Short string `protobuf:"bytes,3,opt,name=short,proto3" json:"short,omitempty"`
+	// Usage provides the description text shown in help output for this flag.
+	Usage string `protobuf:"bytes,4,opt,name=usage,proto3" json:"usage,omitempty"`
+	// Hidden hides this flag from help output when set to true.
+	Hidden bool `protobuf:"varint,5,opt,name=hidden,proto3" json:"hidden,omitempty"`
+	// Deprecated marks this flag as deprecated when set to true.
+	Deprecated bool `protobuf:"varint,6,opt,name=deprecated,proto3" json:"deprecated,omitempty"`
+	// DeprecatedUsage provides additional context shown in help output for deprecated flags.
+	DeprecatedUsage string `protobuf:"bytes,7,opt,name=deprecated_usage,json=deprecatedUsage,proto3" json:"deprecated_usage,omitempty"`
+	// Default specifies the default value for this flag.
+	Default       string `protobuf:"bytes,8,opt,name=default,proto3" json:"default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DurationFlag) Reset() {
+	*x = DurationFlag{}
+	mi := &file_flags_flags_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DurationFlag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DurationFlag) ProtoMessage() {}
+
+func (x *DurationFlag) ProtoReflect() protoreflect.Message {
+	mi := &file_flags_flags_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DurationFlag.ProtoReflect.Descriptor instead.
+func (*DurationFlag) Descriptor() ([]byte, []int) {
+	return file_flags_flags_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *DurationFlag) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
+}
+
+func (x *DurationFlag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DurationFlag) GetShort() string {
+	if x != nil {
+		return x.Short
+	}
+	return ""
+}
+
+func (x *DurationFlag) GetUsage() string {
+	if x != nil {
+		return x.Usage
+	}
+	return ""
+}
+
+func (x *DurationFlag) GetHidden() bool {
+	if x != nil {
+		return x.Hidden
+	}
+	return false
+}
+
+func (x *DurationFlag) GetDeprecated() bool {
+	if x != nil {
+		return x.Deprecated
+	}
+	return false
+}
+
+func (x *DurationFlag) GetDeprecatedUsage() string {
+	if x != nil {
+		return x.DeprecatedUsage
+	}
+	return ""
+}
+
+func (x *DurationFlag) GetDefault() string {
+	if x != nil {
+		return x.Default
+	}
+	return ""
+}
+
 // TimestampFlag contains the core configuration for all Timestamp flag types.
 //
 // This message provides a comprehensive set of options for customizing flag
@@ -770,7 +2708,7 @@ type TimestampFlag struct {
 
 func (x *TimestampFlag) Reset() {
 	*x = TimestampFlag{}
-	mi := &file_flags_flags_proto_msgTypes[3]
+	mi := &file_flags_flags_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -782,7 +2720,7 @@ func (x *TimestampFlag) String() string {
 func (*TimestampFlag) ProtoMessage() {}
 
 func (x *TimestampFlag) ProtoReflect() protoreflect.Message {
-	mi := &file_flags_flags_proto_msgTypes[3]
+	mi := &file_flags_flags_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -795,7 +2733,7 @@ func (x *TimestampFlag) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TimestampFlag.ProtoReflect.Descriptor instead.
 func (*TimestampFlag) Descriptor() ([]byte, []int) {
-	return file_flags_flags_proto_rawDescGZIP(), []int{3}
+	return file_flags_flags_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *TimestampFlag) GetDisabled() bool {
@@ -884,7 +2822,7 @@ type MessageFlag struct {
 
 func (x *MessageFlag) Reset() {
 	*x = MessageFlag{}
-	mi := &file_flags_flags_proto_msgTypes[4]
+	mi := &file_flags_flags_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -896,7 +2834,7 @@ func (x *MessageFlag) String() string {
 func (*MessageFlag) ProtoMessage() {}
 
 func (x *MessageFlag) ProtoReflect() protoreflect.Message {
-	mi := &file_flags_flags_proto_msgTypes[4]
+	mi := &file_flags_flags_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -909,7 +2847,7 @@ func (x *MessageFlag) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageFlag.ProtoReflect.Descriptor instead.
 func (*MessageFlag) Descriptor() ([]byte, []int) {
-	return file_flags_flags_proto_rawDescGZIP(), []int{4}
+	return file_flags_flags_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *MessageFlag) GetNested() bool {
@@ -950,7 +2888,6 @@ type RepeatedFlags struct {
 	//	*RepeatedFlags_String_
 	//	*RepeatedFlags_Bytes
 	//	*RepeatedFlags_Enum
-	//	*RepeatedFlags_Map
 	//	*RepeatedFlags_Duration
 	//	*RepeatedFlags_Timestamp
 	Type          isRepeatedFlags_Type `protobuf_oneof:"type"`
@@ -960,7 +2897,7 @@ type RepeatedFlags struct {
 
 func (x *RepeatedFlags) Reset() {
 	*x = RepeatedFlags{}
-	mi := &file_flags_flags_proto_msgTypes[5]
+	mi := &file_flags_flags_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -972,7 +2909,7 @@ func (x *RepeatedFlags) String() string {
 func (*RepeatedFlags) ProtoMessage() {}
 
 func (x *RepeatedFlags) ProtoReflect() protoreflect.Message {
-	mi := &file_flags_flags_proto_msgTypes[5]
+	mi := &file_flags_flags_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -985,7 +2922,7 @@ func (x *RepeatedFlags) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepeatedFlags.ProtoReflect.Descriptor instead.
 func (*RepeatedFlags) Descriptor() ([]byte, []int) {
-	return file_flags_flags_proto_rawDescGZIP(), []int{5}
+	return file_flags_flags_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *RepeatedFlags) GetType() isRepeatedFlags_Type {
@@ -995,7 +2932,7 @@ func (x *RepeatedFlags) GetType() isRepeatedFlags_Type {
 	return nil
 }
 
-func (x *RepeatedFlags) GetFloat() *PrimitiveFlag {
+func (x *RepeatedFlags) GetFloat() *FloatFlag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Float); ok {
 			return x.Float
@@ -1004,7 +2941,7 @@ func (x *RepeatedFlags) GetFloat() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetDouble() *PrimitiveFlag {
+func (x *RepeatedFlags) GetDouble() *DoubleFlag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Double); ok {
 			return x.Double
@@ -1013,7 +2950,7 @@ func (x *RepeatedFlags) GetDouble() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetInt32() *PrimitiveFlag {
+func (x *RepeatedFlags) GetInt32() *Int32Flag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Int32); ok {
 			return x.Int32
@@ -1022,7 +2959,7 @@ func (x *RepeatedFlags) GetInt32() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetInt64() *PrimitiveFlag {
+func (x *RepeatedFlags) GetInt64() *Int64Flag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Int64); ok {
 			return x.Int64
@@ -1031,7 +2968,7 @@ func (x *RepeatedFlags) GetInt64() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetUint32() *PrimitiveFlag {
+func (x *RepeatedFlags) GetUint32() *Uint32Flag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Uint32); ok {
 			return x.Uint32
@@ -1040,7 +2977,7 @@ func (x *RepeatedFlags) GetUint32() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetUint64() *PrimitiveFlag {
+func (x *RepeatedFlags) GetUint64() *Uint64Flag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Uint64); ok {
 			return x.Uint64
@@ -1049,7 +2986,7 @@ func (x *RepeatedFlags) GetUint64() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetSint32() *PrimitiveFlag {
+func (x *RepeatedFlags) GetSint32() *Sint32Flag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Sint32); ok {
 			return x.Sint32
@@ -1058,7 +2995,7 @@ func (x *RepeatedFlags) GetSint32() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetSint64() *PrimitiveFlag {
+func (x *RepeatedFlags) GetSint64() *Sint64Flag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Sint64); ok {
 			return x.Sint64
@@ -1067,7 +3004,7 @@ func (x *RepeatedFlags) GetSint64() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetFixed32() *PrimitiveFlag {
+func (x *RepeatedFlags) GetFixed32() *Fixed32Flag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Fixed32); ok {
 			return x.Fixed32
@@ -1076,7 +3013,7 @@ func (x *RepeatedFlags) GetFixed32() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetFixed64() *PrimitiveFlag {
+func (x *RepeatedFlags) GetFixed64() *Fixed64Flag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Fixed64); ok {
 			return x.Fixed64
@@ -1085,7 +3022,7 @@ func (x *RepeatedFlags) GetFixed64() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetSfixed32() *PrimitiveFlag {
+func (x *RepeatedFlags) GetSfixed32() *Sfixed32Flag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Sfixed32); ok {
 			return x.Sfixed32
@@ -1094,7 +3031,7 @@ func (x *RepeatedFlags) GetSfixed32() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetSfixed64() *PrimitiveFlag {
+func (x *RepeatedFlags) GetSfixed64() *Sfixed64Flag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Sfixed64); ok {
 			return x.Sfixed64
@@ -1103,7 +3040,7 @@ func (x *RepeatedFlags) GetSfixed64() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetBool() *PrimitiveFlag {
+func (x *RepeatedFlags) GetBool() *BoolFlag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Bool); ok {
 			return x.Bool
@@ -1112,7 +3049,7 @@ func (x *RepeatedFlags) GetBool() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetString_() *PrimitiveFlag {
+func (x *RepeatedFlags) GetString_() *StringFlag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_String_); ok {
 			return x.String_
@@ -1130,7 +3067,7 @@ func (x *RepeatedFlags) GetBytes() *BytesFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetEnum() *PrimitiveFlag {
+func (x *RepeatedFlags) GetEnum() *EnumFlag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Enum); ok {
 			return x.Enum
@@ -1139,16 +3076,7 @@ func (x *RepeatedFlags) GetEnum() *PrimitiveFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetMap() *PrimitiveFlag {
-	if x != nil {
-		if x, ok := x.Type.(*RepeatedFlags_Map); ok {
-			return x.Map
-		}
-	}
-	return nil
-}
-
-func (x *RepeatedFlags) GetDuration() *PrimitiveFlag {
+func (x *RepeatedFlags) GetDuration() *DurationFlag {
 	if x != nil {
 		if x, ok := x.Type.(*RepeatedFlags_Duration); ok {
 			return x.Duration
@@ -1171,61 +3099,61 @@ type isRepeatedFlags_Type interface {
 }
 
 type RepeatedFlags_Float struct {
-	// Supported types for repeated fields - each corresponds to a PrimitiveFlag
+	// Supported types for repeated fields - each corresponds to its specific flag type
 	// configuration that controls how individual elements are handled.
-	Float *PrimitiveFlag `protobuf:"bytes,1,opt,name=float,proto3,oneof"` // Repeated 32-bit floating point
+	Float *FloatFlag `protobuf:"bytes,1,opt,name=float,proto3,oneof"` // Repeated 32-bit floating point
 }
 
 type RepeatedFlags_Double struct {
-	Double *PrimitiveFlag `protobuf:"bytes,2,opt,name=double,proto3,oneof"` // Repeated 64-bit floating point
+	Double *DoubleFlag `protobuf:"bytes,2,opt,name=double,proto3,oneof"` // Repeated 64-bit floating point
 }
 
 type RepeatedFlags_Int32 struct {
-	Int32 *PrimitiveFlag `protobuf:"bytes,3,opt,name=int32,proto3,oneof"` // Repeated 32-bit signed integer
+	Int32 *Int32Flag `protobuf:"bytes,3,opt,name=int32,proto3,oneof"` // Repeated 32-bit signed integer
 }
 
 type RepeatedFlags_Int64 struct {
-	Int64 *PrimitiveFlag `protobuf:"bytes,4,opt,name=int64,proto3,oneof"` // Repeated 64-bit signed integer
+	Int64 *Int64Flag `protobuf:"bytes,4,opt,name=int64,proto3,oneof"` // Repeated 64-bit signed integer
 }
 
 type RepeatedFlags_Uint32 struct {
-	Uint32 *PrimitiveFlag `protobuf:"bytes,5,opt,name=uint32,proto3,oneof"` // Repeated 32-bit unsigned integer
+	Uint32 *Uint32Flag `protobuf:"bytes,5,opt,name=uint32,proto3,oneof"` // Repeated 32-bit unsigned integer
 }
 
 type RepeatedFlags_Uint64 struct {
-	Uint64 *PrimitiveFlag `protobuf:"bytes,6,opt,name=uint64,proto3,oneof"` // Repeated 64-bit unsigned integer
+	Uint64 *Uint64Flag `protobuf:"bytes,6,opt,name=uint64,proto3,oneof"` // Repeated 64-bit unsigned integer
 }
 
 type RepeatedFlags_Sint32 struct {
-	Sint32 *PrimitiveFlag `protobuf:"bytes,7,opt,name=sint32,proto3,oneof"` // Repeated 32-bit signed integer (zigzag)
+	Sint32 *Sint32Flag `protobuf:"bytes,7,opt,name=sint32,proto3,oneof"` // Repeated 32-bit signed integer (zigzag)
 }
 
 type RepeatedFlags_Sint64 struct {
-	Sint64 *PrimitiveFlag `protobuf:"bytes,8,opt,name=sint64,proto3,oneof"` // Repeated 64-bit signed integer (zigzag)
+	Sint64 *Sint64Flag `protobuf:"bytes,8,opt,name=sint64,proto3,oneof"` // Repeated 64-bit signed integer (zigzag)
 }
 
 type RepeatedFlags_Fixed32 struct {
-	Fixed32 *PrimitiveFlag `protobuf:"bytes,9,opt,name=fixed32,proto3,oneof"` // Repeated 32-bit fixed-point integer
+	Fixed32 *Fixed32Flag `protobuf:"bytes,9,opt,name=fixed32,proto3,oneof"` // Repeated 32-bit fixed-point integer
 }
 
 type RepeatedFlags_Fixed64 struct {
-	Fixed64 *PrimitiveFlag `protobuf:"bytes,10,opt,name=fixed64,proto3,oneof"` // Repeated 64-bit fixed-point integer
+	Fixed64 *Fixed64Flag `protobuf:"bytes,10,opt,name=fixed64,proto3,oneof"` // Repeated 64-bit fixed-point integer
 }
 
 type RepeatedFlags_Sfixed32 struct {
-	Sfixed32 *PrimitiveFlag `protobuf:"bytes,11,opt,name=sfixed32,proto3,oneof"` // Repeated 32-bit signed fixed-point integer
+	Sfixed32 *Sfixed32Flag `protobuf:"bytes,11,opt,name=sfixed32,proto3,oneof"` // Repeated 32-bit signed fixed-point integer
 }
 
 type RepeatedFlags_Sfixed64 struct {
-	Sfixed64 *PrimitiveFlag `protobuf:"bytes,12,opt,name=sfixed64,proto3,oneof"` // Repeated 64-bit signed fixed-point integer
+	Sfixed64 *Sfixed64Flag `protobuf:"bytes,12,opt,name=sfixed64,proto3,oneof"` // Repeated 64-bit signed fixed-point integer
 }
 
 type RepeatedFlags_Bool struct {
-	Bool *PrimitiveFlag `protobuf:"bytes,13,opt,name=bool,proto3,oneof"` // Repeated boolean values
+	Bool *BoolFlag `protobuf:"bytes,13,opt,name=bool,proto3,oneof"` // Repeated boolean values
 }
 
 type RepeatedFlags_String_ struct {
-	String_ *PrimitiveFlag `protobuf:"bytes,14,opt,name=string,proto3,oneof"` // Repeated UTF-8 strings
+	String_ *StringFlag `protobuf:"bytes,14,opt,name=string,proto3,oneof"` // Repeated UTF-8 strings
 }
 
 type RepeatedFlags_Bytes struct {
@@ -1234,19 +3162,15 @@ type RepeatedFlags_Bytes struct {
 }
 
 type RepeatedFlags_Enum struct {
-	Enum *PrimitiveFlag `protobuf:"bytes,16,opt,name=enum,proto3,oneof"` // Repeated enum values
-}
-
-type RepeatedFlags_Map struct {
-	Map *PrimitiveFlag `protobuf:"bytes,17,opt,name=map,proto3,oneof"` // Repeated map entries
+	Enum *EnumFlag `protobuf:"bytes,16,opt,name=enum,proto3,oneof"` // Repeated enum values
 }
 
 type RepeatedFlags_Duration struct {
-	Duration *PrimitiveFlag `protobuf:"bytes,18,opt,name=duration,proto3,oneof"` // Repeated duration values
+	Duration *DurationFlag `protobuf:"bytes,17,opt,name=duration,proto3,oneof"` // Repeated duration values
 }
 
 type RepeatedFlags_Timestamp struct {
-	Timestamp *TimestampFlag `protobuf:"bytes,19,opt,name=timestamp,proto3,oneof"` // Repeated timestamp values
+	Timestamp *TimestampFlag `protobuf:"bytes,18,opt,name=timestamp,proto3,oneof"` // Repeated timestamp values
 }
 
 func (*RepeatedFlags_Float) isRepeatedFlags_Type() {}
@@ -1280,8 +3204,6 @@ func (*RepeatedFlags_String_) isRepeatedFlags_Type() {}
 func (*RepeatedFlags_Bytes) isRepeatedFlags_Type() {}
 
 func (*RepeatedFlags_Enum) isRepeatedFlags_Type() {}
-
-func (*RepeatedFlags_Map) isRepeatedFlags_Type() {}
 
 func (*RepeatedFlags_Duration) isRepeatedFlags_Type() {}
 
@@ -1368,29 +3290,29 @@ const file_flags_flags_proto_rawDesc = "" +
 	"deprecated\x18\x06 \x01(\bR\n" +
 	"deprecated\x12)\n" +
 	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x124\n" +
-	"\bencoding\x18\b \x01(\x0e2\x18.flags.BytesEncodingTypeR\bencoding\"\x84\b\n" +
+	"\bencoding\x18\b \x01(\x0e2\x18.flags.BytesEncodingTypeR\bencoding\"\xcf\a\n" +
 	"\n" +
-	"FieldFlags\x12,\n" +
-	"\x05float\x18\x01 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x05float\x12.\n" +
-	"\x06double\x18\x02 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06double\x12,\n" +
-	"\x05int32\x18\x03 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x05int32\x12,\n" +
-	"\x05int64\x18\x04 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x05int64\x12.\n" +
-	"\x06uint32\x18\x05 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06uint32\x12.\n" +
-	"\x06uint64\x18\x06 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06uint64\x12.\n" +
-	"\x06sint32\x18\a \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06sint32\x12.\n" +
-	"\x06sint64\x18\b \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06sint64\x120\n" +
-	"\afixed32\x18\t \x01(\v2\x14.flags.PrimitiveFlagH\x00R\afixed32\x120\n" +
+	"FieldFlags\x12(\n" +
+	"\x05float\x18\x01 \x01(\v2\x10.flags.FloatFlagH\x00R\x05float\x12+\n" +
+	"\x06double\x18\x02 \x01(\v2\x11.flags.DoubleFlagH\x00R\x06double\x12(\n" +
+	"\x05int32\x18\x03 \x01(\v2\x10.flags.Int32FlagH\x00R\x05int32\x12(\n" +
+	"\x05int64\x18\x04 \x01(\v2\x10.flags.Int64FlagH\x00R\x05int64\x12+\n" +
+	"\x06uint32\x18\x05 \x01(\v2\x11.flags.Uint32FlagH\x00R\x06uint32\x12+\n" +
+	"\x06uint64\x18\x06 \x01(\v2\x11.flags.Uint64FlagH\x00R\x06uint64\x12+\n" +
+	"\x06sint32\x18\a \x01(\v2\x11.flags.Sint32FlagH\x00R\x06sint32\x12+\n" +
+	"\x06sint64\x18\b \x01(\v2\x11.flags.Sint64FlagH\x00R\x06sint64\x12.\n" +
+	"\afixed32\x18\t \x01(\v2\x12.flags.Fixed32FlagH\x00R\afixed32\x12.\n" +
 	"\afixed64\x18\n" +
-	" \x01(\v2\x14.flags.PrimitiveFlagH\x00R\afixed64\x122\n" +
-	"\bsfixed32\x18\v \x01(\v2\x14.flags.PrimitiveFlagH\x00R\bsfixed32\x122\n" +
-	"\bsfixed64\x18\f \x01(\v2\x14.flags.PrimitiveFlagH\x00R\bsfixed64\x12*\n" +
-	"\x04bool\x18\r \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x04bool\x12.\n" +
-	"\x06string\x18\x0e \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06string\x12(\n" +
-	"\x05bytes\x18\x0f \x01(\v2\x10.flags.BytesFlagH\x00R\x05bytes\x12*\n" +
-	"\x04enum\x18\x10 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x04enum\x122\n" +
-	"\brepeated\x18\x11 \x01(\v2\x14.flags.RepeatedFlagsH\x00R\brepeated\x12(\n" +
-	"\x03map\x18\x12 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x03map\x122\n" +
-	"\bduration\x18\x13 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\bduration\x124\n" +
+	" \x01(\v2\x12.flags.Fixed64FlagH\x00R\afixed64\x121\n" +
+	"\bsfixed32\x18\v \x01(\v2\x13.flags.Sfixed32FlagH\x00R\bsfixed32\x121\n" +
+	"\bsfixed64\x18\f \x01(\v2\x13.flags.Sfixed64FlagH\x00R\bsfixed64\x12%\n" +
+	"\x04bool\x18\r \x01(\v2\x0f.flags.BoolFlagH\x00R\x04bool\x12+\n" +
+	"\x06string\x18\x0e \x01(\v2\x11.flags.StringFlagH\x00R\x06string\x12(\n" +
+	"\x05bytes\x18\x0f \x01(\v2\x10.flags.BytesFlagH\x00R\x05bytes\x12%\n" +
+	"\x04enum\x18\x10 \x01(\v2\x0f.flags.EnumFlagH\x00R\x04enum\x122\n" +
+	"\brepeated\x18\x11 \x01(\v2\x14.flags.RepeatedFlagsH\x00R\brepeated\x12\"\n" +
+	"\x03map\x18\x12 \x01(\v2\x0e.flags.MapFlagH\x00R\x03map\x121\n" +
+	"\bduration\x18\x13 \x01(\v2\x13.flags.DurationFlagH\x00R\bduration\x124\n" +
 	"\ttimestamp\x18\x14 \x01(\v2\x14.flags.TimestampFlagH\x00R\ttimestamp\x12.\n" +
 	"\amessage\x18\x15 \x01(\v2\x12.flags.MessageFlagH\x00R\amessageB\x06\n" +
 	"\x04type\"\xce\x01\n" +
@@ -1403,7 +3325,201 @@ const file_flags_flags_proto_rawDesc = "" +
 	"\n" +
 	"deprecated\x18\x06 \x01(\bR\n" +
 	"deprecated\x12)\n" +
-	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\"\xe8\x01\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\"\xe4\x01\n" +
+	"\tFloatFlag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\x02R\adefault\"\xe5\x01\n" +
+	"\n" +
+	"DoubleFlag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\x01R\adefault\"\xe4\x01\n" +
+	"\tInt32Flag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\x05R\adefault\"\xe4\x01\n" +
+	"\tInt64Flag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\x03R\adefault\"\xe5\x01\n" +
+	"\n" +
+	"Uint32Flag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\rR\adefault\"\xe5\x01\n" +
+	"\n" +
+	"Uint64Flag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\x04R\adefault\"\xe5\x01\n" +
+	"\n" +
+	"Sint32Flag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\x05R\adefault\"\xe5\x01\n" +
+	"\n" +
+	"Sint64Flag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\x03R\adefault\"\xe6\x01\n" +
+	"\vFixed32Flag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\aR\adefault\"\xe6\x01\n" +
+	"\vFixed64Flag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\x06R\adefault\"\xe7\x01\n" +
+	"\fSfixed32Flag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\x0fR\adefault\"\xe7\x01\n" +
+	"\fSfixed64Flag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\x10R\adefault\"\xe3\x01\n" +
+	"\bBoolFlag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\bR\adefault\"\xe5\x01\n" +
+	"\n" +
+	"StringFlag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\tR\adefault\"\xe3\x01\n" +
+	"\bEnumFlag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\x05R\adefault\"\x90\x02\n" +
+	"\aMapFlag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\tR\adefault\x12,\n" +
+	"\x06format\x18\t \x01(\x0e2\x14.flags.MapFormatTypeR\x06format\"\xe7\x01\n" +
+	"\fDurationFlag\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05short\x18\x03 \x01(\tR\x05short\x12\x14\n" +
+	"\x05usage\x18\x04 \x01(\tR\x05usage\x12\x16\n" +
+	"\x06hidden\x18\x05 \x01(\bR\x06hidden\x12\x1e\n" +
+	"\n" +
+	"deprecated\x18\x06 \x01(\bR\n" +
+	"deprecated\x12)\n" +
+	"\x10deprecated_usage\x18\a \x01(\tR\x0fdeprecatedUsage\x12\x18\n" +
+	"\adefault\x18\b \x01(\tR\adefault\"\xe8\x01\n" +
 	"\rTimestampFlag\x12\x1a\n" +
 	"\bdisabled\x18\x01 \x01(\bR\bdisabled\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
@@ -1417,33 +3533,37 @@ const file_flags_flags_proto_rawDesc = "" +
 	"\aformats\x18\b \x03(\tR\aformats\"9\n" +
 	"\vMessageFlag\x12\x16\n" +
 	"\x06nested\x18\x01 \x01(\bR\x06nested\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"\xa3\a\n" +
-	"\rRepeatedFlags\x12,\n" +
-	"\x05float\x18\x01 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x05float\x12.\n" +
-	"\x06double\x18\x02 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06double\x12,\n" +
-	"\x05int32\x18\x03 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x05int32\x12,\n" +
-	"\x05int64\x18\x04 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x05int64\x12.\n" +
-	"\x06uint32\x18\x05 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06uint32\x12.\n" +
-	"\x06uint64\x18\x06 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06uint64\x12.\n" +
-	"\x06sint32\x18\a \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06sint32\x12.\n" +
-	"\x06sint64\x18\b \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06sint64\x120\n" +
-	"\afixed32\x18\t \x01(\v2\x14.flags.PrimitiveFlagH\x00R\afixed32\x120\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"\xca\x06\n" +
+	"\rRepeatedFlags\x12(\n" +
+	"\x05float\x18\x01 \x01(\v2\x10.flags.FloatFlagH\x00R\x05float\x12+\n" +
+	"\x06double\x18\x02 \x01(\v2\x11.flags.DoubleFlagH\x00R\x06double\x12(\n" +
+	"\x05int32\x18\x03 \x01(\v2\x10.flags.Int32FlagH\x00R\x05int32\x12(\n" +
+	"\x05int64\x18\x04 \x01(\v2\x10.flags.Int64FlagH\x00R\x05int64\x12+\n" +
+	"\x06uint32\x18\x05 \x01(\v2\x11.flags.Uint32FlagH\x00R\x06uint32\x12+\n" +
+	"\x06uint64\x18\x06 \x01(\v2\x11.flags.Uint64FlagH\x00R\x06uint64\x12+\n" +
+	"\x06sint32\x18\a \x01(\v2\x11.flags.Sint32FlagH\x00R\x06sint32\x12+\n" +
+	"\x06sint64\x18\b \x01(\v2\x11.flags.Sint64FlagH\x00R\x06sint64\x12.\n" +
+	"\afixed32\x18\t \x01(\v2\x12.flags.Fixed32FlagH\x00R\afixed32\x12.\n" +
 	"\afixed64\x18\n" +
-	" \x01(\v2\x14.flags.PrimitiveFlagH\x00R\afixed64\x122\n" +
-	"\bsfixed32\x18\v \x01(\v2\x14.flags.PrimitiveFlagH\x00R\bsfixed32\x122\n" +
-	"\bsfixed64\x18\f \x01(\v2\x14.flags.PrimitiveFlagH\x00R\bsfixed64\x12*\n" +
-	"\x04bool\x18\r \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x04bool\x12.\n" +
-	"\x06string\x18\x0e \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x06string\x12(\n" +
-	"\x05bytes\x18\x0f \x01(\v2\x10.flags.BytesFlagH\x00R\x05bytes\x12*\n" +
-	"\x04enum\x18\x10 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x04enum\x12(\n" +
-	"\x03map\x18\x11 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\x03map\x122\n" +
-	"\bduration\x18\x12 \x01(\v2\x14.flags.PrimitiveFlagH\x00R\bduration\x124\n" +
-	"\ttimestamp\x18\x13 \x01(\v2\x14.flags.TimestampFlagH\x00R\ttimestampB\x06\n" +
+	" \x01(\v2\x12.flags.Fixed64FlagH\x00R\afixed64\x121\n" +
+	"\bsfixed32\x18\v \x01(\v2\x13.flags.Sfixed32FlagH\x00R\bsfixed32\x121\n" +
+	"\bsfixed64\x18\f \x01(\v2\x13.flags.Sfixed64FlagH\x00R\bsfixed64\x12%\n" +
+	"\x04bool\x18\r \x01(\v2\x0f.flags.BoolFlagH\x00R\x04bool\x12+\n" +
+	"\x06string\x18\x0e \x01(\v2\x11.flags.StringFlagH\x00R\x06string\x12(\n" +
+	"\x05bytes\x18\x0f \x01(\v2\x10.flags.BytesFlagH\x00R\x05bytes\x12%\n" +
+	"\x04enum\x18\x10 \x01(\v2\x0f.flags.EnumFlagH\x00R\x04enum\x121\n" +
+	"\bduration\x18\x11 \x01(\v2\x13.flags.DurationFlagH\x00R\bduration\x124\n" +
+	"\ttimestamp\x18\x12 \x01(\v2\x14.flags.TimestampFlagH\x00R\ttimestampB\x06\n" +
 	"\x04type*u\n" +
 	"\x11BytesEncodingType\x12#\n" +
 	"\x1fBYTES_ENCODING_TYPE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aBYTES_ENCODING_TYPE_BASE64\x10\x01\x12\x1b\n" +
-	"\x17BYTES_ENCODING_TYPE_HEX\x10\x02:<\n" +
+	"\x17BYTES_ENCODING_TYPE_HEX\x10\x02*\x93\x01\n" +
+	"\rMapFormatType\x12\x1f\n" +
+	"\x1bMAP_FORMAT_TYPE_UNSPECIFIED\x10\x00\x12\x18\n" +
+	"\x14MAP_FORMAT_TYPE_JSON\x10\x01\x12$\n" +
+	" MAP_FORMAT_TYPE_STRING_TO_STRING\x10\x02\x12!\n" +
+	"\x1dMAP_FORMAT_TYPE_STRING_TO_INT\x10\x03:<\n" +
 	"\bdisabled\x12\x1f.google.protobuf.MessageOptions\x18\x93\t \x01(\bR\bdisabled:@\n" +
 	"\n" +
 	"unexported\x12\x1f.google.protobuf.MessageOptions\x18\x94\t \x01(\bR\n" +
@@ -1464,66 +3584,84 @@ func file_flags_flags_proto_rawDescGZIP() []byte {
 	return file_flags_flags_proto_rawDescData
 }
 
-var file_flags_flags_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_flags_flags_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_flags_flags_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_flags_flags_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_flags_flags_proto_goTypes = []any{
 	(BytesEncodingType)(0),              // 0: flags.BytesEncodingType
-	(*BytesFlag)(nil),                   // 1: flags.BytesFlag
-	(*FieldFlags)(nil),                  // 2: flags.FieldFlags
-	(*PrimitiveFlag)(nil),               // 3: flags.PrimitiveFlag
-	(*TimestampFlag)(nil),               // 4: flags.TimestampFlag
-	(*MessageFlag)(nil),                 // 5: flags.MessageFlag
-	(*RepeatedFlags)(nil),               // 6: flags.RepeatedFlags
-	(*descriptorpb.MessageOptions)(nil), // 7: google.protobuf.MessageOptions
-	(*descriptorpb.FieldOptions)(nil),   // 8: google.protobuf.FieldOptions
+	(MapFormatType)(0),                  // 1: flags.MapFormatType
+	(*BytesFlag)(nil),                   // 2: flags.BytesFlag
+	(*FieldFlags)(nil),                  // 3: flags.FieldFlags
+	(*PrimitiveFlag)(nil),               // 4: flags.PrimitiveFlag
+	(*FloatFlag)(nil),                   // 5: flags.FloatFlag
+	(*DoubleFlag)(nil),                  // 6: flags.DoubleFlag
+	(*Int32Flag)(nil),                   // 7: flags.Int32Flag
+	(*Int64Flag)(nil),                   // 8: flags.Int64Flag
+	(*Uint32Flag)(nil),                  // 9: flags.Uint32Flag
+	(*Uint64Flag)(nil),                  // 10: flags.Uint64Flag
+	(*Sint32Flag)(nil),                  // 11: flags.Sint32Flag
+	(*Sint64Flag)(nil),                  // 12: flags.Sint64Flag
+	(*Fixed32Flag)(nil),                 // 13: flags.Fixed32Flag
+	(*Fixed64Flag)(nil),                 // 14: flags.Fixed64Flag
+	(*Sfixed32Flag)(nil),                // 15: flags.Sfixed32Flag
+	(*Sfixed64Flag)(nil),                // 16: flags.Sfixed64Flag
+	(*BoolFlag)(nil),                    // 17: flags.BoolFlag
+	(*StringFlag)(nil),                  // 18: flags.StringFlag
+	(*EnumFlag)(nil),                    // 19: flags.EnumFlag
+	(*MapFlag)(nil),                     // 20: flags.MapFlag
+	(*DurationFlag)(nil),                // 21: flags.DurationFlag
+	(*TimestampFlag)(nil),               // 22: flags.TimestampFlag
+	(*MessageFlag)(nil),                 // 23: flags.MessageFlag
+	(*RepeatedFlags)(nil),               // 24: flags.RepeatedFlags
+	(*descriptorpb.MessageOptions)(nil), // 25: google.protobuf.MessageOptions
+	(*descriptorpb.FieldOptions)(nil),   // 26: google.protobuf.FieldOptions
 }
 var file_flags_flags_proto_depIdxs = []int32{
 	0,  // 0: flags.BytesFlag.encoding:type_name -> flags.BytesEncodingType
-	3,  // 1: flags.FieldFlags.float:type_name -> flags.PrimitiveFlag
-	3,  // 2: flags.FieldFlags.double:type_name -> flags.PrimitiveFlag
-	3,  // 3: flags.FieldFlags.int32:type_name -> flags.PrimitiveFlag
-	3,  // 4: flags.FieldFlags.int64:type_name -> flags.PrimitiveFlag
-	3,  // 5: flags.FieldFlags.uint32:type_name -> flags.PrimitiveFlag
-	3,  // 6: flags.FieldFlags.uint64:type_name -> flags.PrimitiveFlag
-	3,  // 7: flags.FieldFlags.sint32:type_name -> flags.PrimitiveFlag
-	3,  // 8: flags.FieldFlags.sint64:type_name -> flags.PrimitiveFlag
-	3,  // 9: flags.FieldFlags.fixed32:type_name -> flags.PrimitiveFlag
-	3,  // 10: flags.FieldFlags.fixed64:type_name -> flags.PrimitiveFlag
-	3,  // 11: flags.FieldFlags.sfixed32:type_name -> flags.PrimitiveFlag
-	3,  // 12: flags.FieldFlags.sfixed64:type_name -> flags.PrimitiveFlag
-	3,  // 13: flags.FieldFlags.bool:type_name -> flags.PrimitiveFlag
-	3,  // 14: flags.FieldFlags.string:type_name -> flags.PrimitiveFlag
-	1,  // 15: flags.FieldFlags.bytes:type_name -> flags.BytesFlag
-	3,  // 16: flags.FieldFlags.enum:type_name -> flags.PrimitiveFlag
-	6,  // 17: flags.FieldFlags.repeated:type_name -> flags.RepeatedFlags
-	3,  // 18: flags.FieldFlags.map:type_name -> flags.PrimitiveFlag
-	3,  // 19: flags.FieldFlags.duration:type_name -> flags.PrimitiveFlag
-	4,  // 20: flags.FieldFlags.timestamp:type_name -> flags.TimestampFlag
-	5,  // 21: flags.FieldFlags.message:type_name -> flags.MessageFlag
-	3,  // 22: flags.RepeatedFlags.float:type_name -> flags.PrimitiveFlag
-	3,  // 23: flags.RepeatedFlags.double:type_name -> flags.PrimitiveFlag
-	3,  // 24: flags.RepeatedFlags.int32:type_name -> flags.PrimitiveFlag
-	3,  // 25: flags.RepeatedFlags.int64:type_name -> flags.PrimitiveFlag
-	3,  // 26: flags.RepeatedFlags.uint32:type_name -> flags.PrimitiveFlag
-	3,  // 27: flags.RepeatedFlags.uint64:type_name -> flags.PrimitiveFlag
-	3,  // 28: flags.RepeatedFlags.sint32:type_name -> flags.PrimitiveFlag
-	3,  // 29: flags.RepeatedFlags.sint64:type_name -> flags.PrimitiveFlag
-	3,  // 30: flags.RepeatedFlags.fixed32:type_name -> flags.PrimitiveFlag
-	3,  // 31: flags.RepeatedFlags.fixed64:type_name -> flags.PrimitiveFlag
-	3,  // 32: flags.RepeatedFlags.sfixed32:type_name -> flags.PrimitiveFlag
-	3,  // 33: flags.RepeatedFlags.sfixed64:type_name -> flags.PrimitiveFlag
-	3,  // 34: flags.RepeatedFlags.bool:type_name -> flags.PrimitiveFlag
-	3,  // 35: flags.RepeatedFlags.string:type_name -> flags.PrimitiveFlag
-	1,  // 36: flags.RepeatedFlags.bytes:type_name -> flags.BytesFlag
-	3,  // 37: flags.RepeatedFlags.enum:type_name -> flags.PrimitiveFlag
-	3,  // 38: flags.RepeatedFlags.map:type_name -> flags.PrimitiveFlag
-	3,  // 39: flags.RepeatedFlags.duration:type_name -> flags.PrimitiveFlag
-	4,  // 40: flags.RepeatedFlags.timestamp:type_name -> flags.TimestampFlag
-	7,  // 41: flags.disabled:extendee -> google.protobuf.MessageOptions
-	7,  // 42: flags.unexported:extendee -> google.protobuf.MessageOptions
-	7,  // 43: flags.allow_empty:extendee -> google.protobuf.MessageOptions
-	8,  // 44: flags.value:extendee -> google.protobuf.FieldOptions
-	2,  // 45: flags.value:type_name -> flags.FieldFlags
+	5,  // 1: flags.FieldFlags.float:type_name -> flags.FloatFlag
+	6,  // 2: flags.FieldFlags.double:type_name -> flags.DoubleFlag
+	7,  // 3: flags.FieldFlags.int32:type_name -> flags.Int32Flag
+	8,  // 4: flags.FieldFlags.int64:type_name -> flags.Int64Flag
+	9,  // 5: flags.FieldFlags.uint32:type_name -> flags.Uint32Flag
+	10, // 6: flags.FieldFlags.uint64:type_name -> flags.Uint64Flag
+	11, // 7: flags.FieldFlags.sint32:type_name -> flags.Sint32Flag
+	12, // 8: flags.FieldFlags.sint64:type_name -> flags.Sint64Flag
+	13, // 9: flags.FieldFlags.fixed32:type_name -> flags.Fixed32Flag
+	14, // 10: flags.FieldFlags.fixed64:type_name -> flags.Fixed64Flag
+	15, // 11: flags.FieldFlags.sfixed32:type_name -> flags.Sfixed32Flag
+	16, // 12: flags.FieldFlags.sfixed64:type_name -> flags.Sfixed64Flag
+	17, // 13: flags.FieldFlags.bool:type_name -> flags.BoolFlag
+	18, // 14: flags.FieldFlags.string:type_name -> flags.StringFlag
+	2,  // 15: flags.FieldFlags.bytes:type_name -> flags.BytesFlag
+	19, // 16: flags.FieldFlags.enum:type_name -> flags.EnumFlag
+	24, // 17: flags.FieldFlags.repeated:type_name -> flags.RepeatedFlags
+	20, // 18: flags.FieldFlags.map:type_name -> flags.MapFlag
+	21, // 19: flags.FieldFlags.duration:type_name -> flags.DurationFlag
+	22, // 20: flags.FieldFlags.timestamp:type_name -> flags.TimestampFlag
+	23, // 21: flags.FieldFlags.message:type_name -> flags.MessageFlag
+	1,  // 22: flags.MapFlag.format:type_name -> flags.MapFormatType
+	5,  // 23: flags.RepeatedFlags.float:type_name -> flags.FloatFlag
+	6,  // 24: flags.RepeatedFlags.double:type_name -> flags.DoubleFlag
+	7,  // 25: flags.RepeatedFlags.int32:type_name -> flags.Int32Flag
+	8,  // 26: flags.RepeatedFlags.int64:type_name -> flags.Int64Flag
+	9,  // 27: flags.RepeatedFlags.uint32:type_name -> flags.Uint32Flag
+	10, // 28: flags.RepeatedFlags.uint64:type_name -> flags.Uint64Flag
+	11, // 29: flags.RepeatedFlags.sint32:type_name -> flags.Sint32Flag
+	12, // 30: flags.RepeatedFlags.sint64:type_name -> flags.Sint64Flag
+	13, // 31: flags.RepeatedFlags.fixed32:type_name -> flags.Fixed32Flag
+	14, // 32: flags.RepeatedFlags.fixed64:type_name -> flags.Fixed64Flag
+	15, // 33: flags.RepeatedFlags.sfixed32:type_name -> flags.Sfixed32Flag
+	16, // 34: flags.RepeatedFlags.sfixed64:type_name -> flags.Sfixed64Flag
+	17, // 35: flags.RepeatedFlags.bool:type_name -> flags.BoolFlag
+	18, // 36: flags.RepeatedFlags.string:type_name -> flags.StringFlag
+	2,  // 37: flags.RepeatedFlags.bytes:type_name -> flags.BytesFlag
+	19, // 38: flags.RepeatedFlags.enum:type_name -> flags.EnumFlag
+	21, // 39: flags.RepeatedFlags.duration:type_name -> flags.DurationFlag
+	22, // 40: flags.RepeatedFlags.timestamp:type_name -> flags.TimestampFlag
+	25, // 41: flags.disabled:extendee -> google.protobuf.MessageOptions
+	25, // 42: flags.unexported:extendee -> google.protobuf.MessageOptions
+	25, // 43: flags.allow_empty:extendee -> google.protobuf.MessageOptions
+	26, // 44: flags.value:extendee -> google.protobuf.FieldOptions
+	3,  // 45: flags.value:type_name -> flags.FieldFlags
 	46, // [46:46] is the sub-list for method output_type
 	46, // [46:46] is the sub-list for method input_type
 	45, // [45:46] is the sub-list for extension type_name
@@ -1559,7 +3697,7 @@ func file_flags_flags_proto_init() {
 		(*FieldFlags_Timestamp)(nil),
 		(*FieldFlags_Message)(nil),
 	}
-	file_flags_flags_proto_msgTypes[5].OneofWrappers = []any{
+	file_flags_flags_proto_msgTypes[22].OneofWrappers = []any{
 		(*RepeatedFlags_Float)(nil),
 		(*RepeatedFlags_Double)(nil),
 		(*RepeatedFlags_Int32)(nil),
@@ -1576,7 +3714,6 @@ func file_flags_flags_proto_init() {
 		(*RepeatedFlags_String_)(nil),
 		(*RepeatedFlags_Bytes)(nil),
 		(*RepeatedFlags_Enum)(nil),
-		(*RepeatedFlags_Map)(nil),
 		(*RepeatedFlags_Duration)(nil),
 		(*RepeatedFlags_Timestamp)(nil),
 	}
@@ -1585,8 +3722,8 @@ func file_flags_flags_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_flags_flags_proto_rawDesc), len(file_flags_flags_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   6,
+			NumEnums:      2,
+			NumMessages:   23,
 			NumExtensions: 4,
 			NumServices:   0,
 		},
