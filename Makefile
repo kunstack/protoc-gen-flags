@@ -60,7 +60,7 @@ tidy: ## Run go mod tidy to clean up go.mod and go.sum.
 
 .PHONY: test
 test: ## Run tests.
-	go test ./...
+	go test -v ./...
 
 .PHONY: clean
 clean: ## Clean build artifacts.

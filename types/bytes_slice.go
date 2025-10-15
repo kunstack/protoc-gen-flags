@@ -2,8 +2,6 @@ package types
 
 import (
 	"encoding/base64"
-	"encoding/hex"
-	"fmt"
 	"io"
 	"strings"
 
@@ -122,70 +120,6 @@ func (s *NativeBytesSliceValue) String() string {
 	out, _ := utils.WriteAsCSV(bytesStrSlice)
 
 	return "[" + out + "]"
-}
-
-// NativeBytesValue is a pflag.Value implementation for handling native []byte fields.
-// It supports both base64 and hex encoding for command-line flag parsing.
-type NativeBytesValue struct {
-	value   *[]byte
-	changed bool
-	format  int // 0: base64, 1: hex
-}
-
-// Set parses the input string and sets the bytes value.
-// Supports both base64 and hex encoding based on the format.
-func (n *NativeBytesValue) Set(value string) error {
-	if value == "" {
-		*n.value = []byte{}
-		n.changed = true
-		return nil
-	}
-
-	value = strings.TrimSpace(value)
-
-	if n.format == 1 { // hex encoding
-		decoded, err := hex.DecodeString(value)
-		if err != nil {
-			return fmt.Errorf("invalid hex string: %v", err)
-		}
-		*n.value = decoded
-	} else { // base64 encoding (default)
-		decoded, err := base64.StdEncoding.DecodeString(value)
-		if err != nil {
-			return fmt.Errorf("invalid base64 string: %v", err)
-		}
-		*n.value = decoded
-	}
-
-	n.changed = true
-	return nil
-}
-
-// String returns the string representation of the bytes value.
-// Uses the appropriate encoding format (base64 or hex).
-func (n *NativeBytesValue) String() string {
-	if n.value == nil || *n.value == nil {
-		return ""
-	}
-
-	if len(*n.value) == 0 {
-		return ""
-	}
-
-	if n.format == 1 { // hex encoding
-		return hex.EncodeToString(*n.value)
-	}
-
-	// base64 encoding (default)
-	return base64.StdEncoding.EncodeToString(*n.value)
-}
-
-// Type returns the type name of this value.
-func (n *NativeBytesValue) Type() string {
-	if n.format == 1 {
-		return "nativeBytesHexValue"
-	}
-	return "nativeBytesValue"
 }
 
 func BytesSlice[T []*wrapperspb.BytesValue | [][]byte](v *T) pflag.Value {

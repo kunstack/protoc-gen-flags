@@ -1153,6 +1153,730 @@ func (x *WrapperMessage) GetValue2() []string {
 	return nil
 }
 
+// Test message for unexported option
+type UnexportedMessageTest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SecretKey     string                 `protobuf:"bytes,1,opt,name=secret_key,json=secretKey,proto3" json:"secret_key,omitempty"`
+	Timeout       int32                  `protobuf:"varint,2,opt,name=timeout,proto3" json:"timeout,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UnexportedMessageTest) Reset() {
+	*x = UnexportedMessageTest{}
+	mi := &file_tests_test_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UnexportedMessageTest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnexportedMessageTest) ProtoMessage() {}
+
+func (x *UnexportedMessageTest) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UnexportedMessageTest.ProtoReflect.Descriptor instead.
+func (*UnexportedMessageTest) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *UnexportedMessageTest) GetSecretKey() string {
+	if x != nil {
+		return x.SecretKey
+	}
+	return ""
+}
+
+func (x *UnexportedMessageTest) GetTimeout() int32 {
+	if x != nil {
+		return x.Timeout
+	}
+	return 0
+}
+
+// Test message for comprehensive default values
+type DefaultValueTestMessage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Test default values for all numeric types
+	Pi             float32   `protobuf:"fixed32,1,opt,name=pi,proto3" json:"pi,omitempty"`
+	Euler          float64   `protobuf:"fixed64,2,opt,name=euler,proto3" json:"euler,omitempty"`
+	DefaultPort    int32     `protobuf:"varint,3,opt,name=default_port,json=defaultPort,proto3" json:"default_port,omitempty"`
+	MaxConnections int64     `protobuf:"varint,4,opt,name=max_connections,json=maxConnections,proto3" json:"max_connections,omitempty"`
+	BufferSize     uint32    `protobuf:"varint,5,opt,name=buffer_size,json=bufferSize,proto3" json:"buffer_size,omitempty"`
+	MemoryLimit    uint64    `protobuf:"varint,6,opt,name=memory_limit,json=memoryLimit,proto3" json:"memory_limit,omitempty"`
+	DebugMode      bool      `protobuf:"varint,7,opt,name=debug_mode,json=debugMode,proto3" json:"debug_mode,omitempty"`
+	LogLevel       string    `protobuf:"bytes,8,opt,name=log_level,json=logLevel,proto3" json:"log_level,omitempty"`
+	DefaultMode    TestEnum1 `protobuf:"varint,9,opt,name=default_mode,json=defaultMode,proto3,enum=tests.TestEnum1" json:"default_mode,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *DefaultValueTestMessage) Reset() {
+	*x = DefaultValueTestMessage{}
+	mi := &file_tests_test_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DefaultValueTestMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DefaultValueTestMessage) ProtoMessage() {}
+
+func (x *DefaultValueTestMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DefaultValueTestMessage.ProtoReflect.Descriptor instead.
+func (*DefaultValueTestMessage) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *DefaultValueTestMessage) GetPi() float32 {
+	if x != nil {
+		return x.Pi
+	}
+	return 0
+}
+
+func (x *DefaultValueTestMessage) GetEuler() float64 {
+	if x != nil {
+		return x.Euler
+	}
+	return 0
+}
+
+func (x *DefaultValueTestMessage) GetDefaultPort() int32 {
+	if x != nil {
+		return x.DefaultPort
+	}
+	return 0
+}
+
+func (x *DefaultValueTestMessage) GetMaxConnections() int64 {
+	if x != nil {
+		return x.MaxConnections
+	}
+	return 0
+}
+
+func (x *DefaultValueTestMessage) GetBufferSize() uint32 {
+	if x != nil {
+		return x.BufferSize
+	}
+	return 0
+}
+
+func (x *DefaultValueTestMessage) GetMemoryLimit() uint64 {
+	if x != nil {
+		return x.MemoryLimit
+	}
+	return 0
+}
+
+func (x *DefaultValueTestMessage) GetDebugMode() bool {
+	if x != nil {
+		return x.DebugMode
+	}
+	return false
+}
+
+func (x *DefaultValueTestMessage) GetLogLevel() string {
+	if x != nil {
+		return x.LogLevel
+	}
+	return ""
+}
+
+func (x *DefaultValueTestMessage) GetDefaultMode() TestEnum1 {
+	if x != nil {
+		return x.DefaultMode
+	}
+	return TestEnum1_TEST_ENUM_UNSPECIFIED
+}
+
+// Test message for StringValue wrapper types
+type StringValueTestMessage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Test single StringValue wrapper type
+	SingleValue *wrapperspb.StringValue `protobuf:"bytes,1,opt,name=single_value,json=singleValue,proto3,oneof" json:"single_value,omitempty"`
+	// Test StringValue slice type
+	StringValues []*wrapperspb.StringValue `protobuf:"bytes,2,rep,name=string_values,json=stringValues,proto3" json:"string_values,omitempty"`
+	// Test different StringValue configurations
+	ConfigPath    *wrapperspb.StringValue   `protobuf:"bytes,3,opt,name=config_path,json=configPath,proto3,oneof" json:"config_path,omitempty"`
+	IncludePaths  []*wrapperspb.StringValue `protobuf:"bytes,4,rep,name=include_paths,json=includePaths,proto3" json:"include_paths,omitempty"`
+	Environment   *wrapperspb.StringValue   `protobuf:"bytes,5,opt,name=environment,proto3,oneof" json:"environment,omitempty"`
+	Tags          []*wrapperspb.StringValue `protobuf:"bytes,6,rep,name=tags,proto3" json:"tags,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StringValueTestMessage) Reset() {
+	*x = StringValueTestMessage{}
+	mi := &file_tests_test_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StringValueTestMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StringValueTestMessage) ProtoMessage() {}
+
+func (x *StringValueTestMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StringValueTestMessage.ProtoReflect.Descriptor instead.
+func (*StringValueTestMessage) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *StringValueTestMessage) GetSingleValue() *wrapperspb.StringValue {
+	if x != nil {
+		return x.SingleValue
+	}
+	return nil
+}
+
+func (x *StringValueTestMessage) GetStringValues() []*wrapperspb.StringValue {
+	if x != nil {
+		return x.StringValues
+	}
+	return nil
+}
+
+func (x *StringValueTestMessage) GetConfigPath() *wrapperspb.StringValue {
+	if x != nil {
+		return x.ConfigPath
+	}
+	return nil
+}
+
+func (x *StringValueTestMessage) GetIncludePaths() []*wrapperspb.StringValue {
+	if x != nil {
+		return x.IncludePaths
+	}
+	return nil
+}
+
+func (x *StringValueTestMessage) GetEnvironment() *wrapperspb.StringValue {
+	if x != nil {
+		return x.Environment
+	}
+	return nil
+}
+
+func (x *StringValueTestMessage) GetTags() []*wrapperspb.StringValue {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
+// Test message for integer wrapper types (Int32Value, Int64Value, etc.)
+type IntegerValueTestMessage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Test Int32Value wrapper type
+	Int32Value *wrapperspb.Int32Value `protobuf:"bytes,1,opt,name=int32_value,json=int32Value,proto3,oneof" json:"int32_value,omitempty"`
+	// Test Int64Value wrapper type
+	Int64Value *wrapperspb.Int64Value `protobuf:"bytes,2,opt,name=int64_value,json=int64Value,proto3,oneof" json:"int64_value,omitempty"`
+	// Test UInt32Value wrapper type
+	Uint32Value *wrapperspb.UInt32Value `protobuf:"bytes,3,opt,name=uint32_value,json=uint32Value,proto3,oneof" json:"uint32_value,omitempty"`
+	// Test UInt64Value wrapper type
+	Uint64Value *wrapperspb.UInt64Value `protobuf:"bytes,4,opt,name=uint64_value,json=uint64Value,proto3,oneof" json:"uint64_value,omitempty"`
+	// Test Int32Value slice type
+	Int32Values []*wrapperspb.Int32Value `protobuf:"bytes,5,rep,name=int32_values,json=int32Values,proto3" json:"int32_values,omitempty"`
+	// Test Int64Value slice type
+	Int64Values   []*wrapperspb.Int64Value `protobuf:"bytes,6,rep,name=int64_values,json=int64Values,proto3" json:"int64_values,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IntegerValueTestMessage) Reset() {
+	*x = IntegerValueTestMessage{}
+	mi := &file_tests_test_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IntegerValueTestMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IntegerValueTestMessage) ProtoMessage() {}
+
+func (x *IntegerValueTestMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IntegerValueTestMessage.ProtoReflect.Descriptor instead.
+func (*IntegerValueTestMessage) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *IntegerValueTestMessage) GetInt32Value() *wrapperspb.Int32Value {
+	if x != nil {
+		return x.Int32Value
+	}
+	return nil
+}
+
+func (x *IntegerValueTestMessage) GetInt64Value() *wrapperspb.Int64Value {
+	if x != nil {
+		return x.Int64Value
+	}
+	return nil
+}
+
+func (x *IntegerValueTestMessage) GetUint32Value() *wrapperspb.UInt32Value {
+	if x != nil {
+		return x.Uint32Value
+	}
+	return nil
+}
+
+func (x *IntegerValueTestMessage) GetUint64Value() *wrapperspb.UInt64Value {
+	if x != nil {
+		return x.Uint64Value
+	}
+	return nil
+}
+
+func (x *IntegerValueTestMessage) GetInt32Values() []*wrapperspb.Int32Value {
+	if x != nil {
+		return x.Int32Values
+	}
+	return nil
+}
+
+func (x *IntegerValueTestMessage) GetInt64Values() []*wrapperspb.Int64Value {
+	if x != nil {
+		return x.Int64Values
+	}
+	return nil
+}
+
+// Test message for BoolValue wrapper types
+type BoolValueTestMessage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Test single BoolValue wrapper type
+	SingleValue *wrapperspb.BoolValue `protobuf:"bytes,1,opt,name=single_value,json=singleValue,proto3,oneof" json:"single_value,omitempty"`
+	// Test BoolValue slice type
+	BoolValues []*wrapperspb.BoolValue `protobuf:"bytes,2,rep,name=bool_values,json=boolValues,proto3" json:"bool_values,omitempty"`
+	// Test different BoolValue configurations
+	EnableFeature  *wrapperspb.BoolValue   `protobuf:"bytes,3,opt,name=enable_feature,json=enableFeature,proto3,oneof" json:"enable_feature,omitempty"`
+	FeatureFlags   []*wrapperspb.BoolValue `protobuf:"bytes,4,rep,name=feature_flags,json=featureFlags,proto3" json:"feature_flags,omitempty"`
+	VerboseLogging *wrapperspb.BoolValue   `protobuf:"bytes,5,opt,name=verbose_logging,json=verboseLogging,proto3,oneof" json:"verbose_logging,omitempty"`
+	DebugOptions   []*wrapperspb.BoolValue `protobuf:"bytes,6,rep,name=debug_options,json=debugOptions,proto3" json:"debug_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *BoolValueTestMessage) Reset() {
+	*x = BoolValueTestMessage{}
+	mi := &file_tests_test_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BoolValueTestMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BoolValueTestMessage) ProtoMessage() {}
+
+func (x *BoolValueTestMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BoolValueTestMessage.ProtoReflect.Descriptor instead.
+func (*BoolValueTestMessage) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *BoolValueTestMessage) GetSingleValue() *wrapperspb.BoolValue {
+	if x != nil {
+		return x.SingleValue
+	}
+	return nil
+}
+
+func (x *BoolValueTestMessage) GetBoolValues() []*wrapperspb.BoolValue {
+	if x != nil {
+		return x.BoolValues
+	}
+	return nil
+}
+
+func (x *BoolValueTestMessage) GetEnableFeature() *wrapperspb.BoolValue {
+	if x != nil {
+		return x.EnableFeature
+	}
+	return nil
+}
+
+func (x *BoolValueTestMessage) GetFeatureFlags() []*wrapperspb.BoolValue {
+	if x != nil {
+		return x.FeatureFlags
+	}
+	return nil
+}
+
+func (x *BoolValueTestMessage) GetVerboseLogging() *wrapperspb.BoolValue {
+	if x != nil {
+		return x.VerboseLogging
+	}
+	return nil
+}
+
+func (x *BoolValueTestMessage) GetDebugOptions() []*wrapperspb.BoolValue {
+	if x != nil {
+		return x.DebugOptions
+	}
+	return nil
+}
+
+// Test message for comprehensive flag configuration options
+type ComprehensiveFlagTestMessage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Test flags with all configuration options
+	Username         string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Password         string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	LegacyToken      string `protobuf:"bytes,3,opt,name=legacy_token,json=legacyToken,proto3" json:"legacy_token,omitempty"`
+	ConnectionCount  int32  `protobuf:"varint,4,opt,name=connection_count,json=connectionCount,proto3" json:"connection_count,omitempty"`
+	MaxThreads       int32  `protobuf:"varint,5,opt,name=max_threads,json=maxThreads,proto3" json:"max_threads,omitempty"`
+	ExperimentalMode bool   `protobuf:"varint,6,opt,name=experimental_mode,json=experimentalMode,proto3" json:"experimental_mode,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ComprehensiveFlagTestMessage) Reset() {
+	*x = ComprehensiveFlagTestMessage{}
+	mi := &file_tests_test_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ComprehensiveFlagTestMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ComprehensiveFlagTestMessage) ProtoMessage() {}
+
+func (x *ComprehensiveFlagTestMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ComprehensiveFlagTestMessage.ProtoReflect.Descriptor instead.
+func (*ComprehensiveFlagTestMessage) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *ComprehensiveFlagTestMessage) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *ComprehensiveFlagTestMessage) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *ComprehensiveFlagTestMessage) GetLegacyToken() string {
+	if x != nil {
+		return x.LegacyToken
+	}
+	return ""
+}
+
+func (x *ComprehensiveFlagTestMessage) GetConnectionCount() int32 {
+	if x != nil {
+		return x.ConnectionCount
+	}
+	return 0
+}
+
+func (x *ComprehensiveFlagTestMessage) GetMaxThreads() int32 {
+	if x != nil {
+		return x.MaxThreads
+	}
+	return 0
+}
+
+func (x *ComprehensiveFlagTestMessage) GetExperimentalMode() bool {
+	if x != nil {
+		return x.ExperimentalMode
+	}
+	return false
+}
+
+// Test message for nested message configurations with different prefix behaviors
+type NestedMessageTestMessage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Test nested message with prefix
+	ServerConfig *SimpleMessage `protobuf:"bytes,1,opt,name=server_config,json=serverConfig,proto3" json:"server_config,omitempty"`
+	// Test nested message without prefix
+	ClientConfig *SimpleMessage `protobuf:"bytes,2,opt,name=client_config,json=clientConfig,proto3" json:"client_config,omitempty"`
+	// Test nested message with custom prefix
+	DatabaseConfig *SimpleMessage `protobuf:"bytes,3,opt,name=database_config,json=databaseConfig,proto3" json:"database_config,omitempty"`
+	// Test multiple levels of nesting
+	DeepConfig    *NestedLevel2Message `protobuf:"bytes,4,opt,name=deep_config,json=deepConfig,proto3" json:"deep_config,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *NestedMessageTestMessage) Reset() {
+	*x = NestedMessageTestMessage{}
+	mi := &file_tests_test_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NestedMessageTestMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NestedMessageTestMessage) ProtoMessage() {}
+
+func (x *NestedMessageTestMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NestedMessageTestMessage.ProtoReflect.Descriptor instead.
+func (*NestedMessageTestMessage) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *NestedMessageTestMessage) GetServerConfig() *SimpleMessage {
+	if x != nil {
+		return x.ServerConfig
+	}
+	return nil
+}
+
+func (x *NestedMessageTestMessage) GetClientConfig() *SimpleMessage {
+	if x != nil {
+		return x.ClientConfig
+	}
+	return nil
+}
+
+func (x *NestedMessageTestMessage) GetDatabaseConfig() *SimpleMessage {
+	if x != nil {
+		return x.DatabaseConfig
+	}
+	return nil
+}
+
+func (x *NestedMessageTestMessage) GetDeepConfig() *NestedLevel2Message {
+	if x != nil {
+		return x.DeepConfig
+	}
+	return nil
+}
+
+// Helper message for multi-level nesting test
+type NestedLevel2Message struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Level2Field   string                 `protobuf:"bytes,1,opt,name=level2_field,json=level2Field,proto3" json:"level2_field,omitempty"`
+	NestedSimple  *SimpleMessage         `protobuf:"bytes,2,opt,name=nested_simple,json=nestedSimple,proto3" json:"nested_simple,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *NestedLevel2Message) Reset() {
+	*x = NestedLevel2Message{}
+	mi := &file_tests_test_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NestedLevel2Message) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NestedLevel2Message) ProtoMessage() {}
+
+func (x *NestedLevel2Message) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NestedLevel2Message.ProtoReflect.Descriptor instead.
+func (*NestedLevel2Message) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *NestedLevel2Message) GetLevel2Field() string {
+	if x != nil {
+		return x.Level2Field
+	}
+	return ""
+}
+
+func (x *NestedLevel2Message) GetNestedSimple() *SimpleMessage {
+	if x != nil {
+		return x.NestedSimple
+	}
+	return nil
+}
+
+// Test message for map configurations with different formats
+type ComprehensiveMapTestMessage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Test JSON map format (default)
+	JsonLabels map[string]string `protobuf:"bytes,1,rep,name=json_labels,json=jsonLabels,proto3" json:"json_labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Test native string-to-string format
+	NativeLabels map[string]string `protobuf:"bytes,2,rep,name=native_labels,json=nativeLabels,proto3" json:"native_labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Test native string-to-int format with default values
+	DefaultCounters map[string]int32 `protobuf:"bytes,3,rep,name=default_counters,json=defaultCounters,proto3" json:"default_counters,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	// Test deprecated map field
+	LegacyConfig map[string]string `protobuf:"bytes,4,rep,name=legacy_config,json=legacyConfig,proto3" json:"legacy_config,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Test hidden map field
+	SecretConfig  map[string]string `protobuf:"bytes,5,rep,name=secret_config,json=secretConfig,proto3" json:"secret_config,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ComprehensiveMapTestMessage) Reset() {
+	*x = ComprehensiveMapTestMessage{}
+	mi := &file_tests_test_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ComprehensiveMapTestMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ComprehensiveMapTestMessage) ProtoMessage() {}
+
+func (x *ComprehensiveMapTestMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ComprehensiveMapTestMessage.ProtoReflect.Descriptor instead.
+func (*ComprehensiveMapTestMessage) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *ComprehensiveMapTestMessage) GetJsonLabels() map[string]string {
+	if x != nil {
+		return x.JsonLabels
+	}
+	return nil
+}
+
+func (x *ComprehensiveMapTestMessage) GetNativeLabels() map[string]string {
+	if x != nil {
+		return x.NativeLabels
+	}
+	return nil
+}
+
+func (x *ComprehensiveMapTestMessage) GetDefaultCounters() map[string]int32 {
+	if x != nil {
+		return x.DefaultCounters
+	}
+	return nil
+}
+
+func (x *ComprehensiveMapTestMessage) GetLegacyConfig() map[string]string {
+	if x != nil {
+		return x.LegacyConfig
+	}
+	return nil
+}
+
+func (x *ComprehensiveMapTestMessage) GetSecretConfig() map[string]string {
+	if x != nil {
+		return x.SecretConfig
+	}
+	return nil
+}
+
 var File_tests_test_proto protoreflect.FileDescriptor
 
 const file_tests_test_proto_rawDesc = "" +
@@ -1314,7 +2038,105 @@ const file_tests_test_proto_rawDesc = "" +
 	"\x05value\x18\x01 \x01(\v2\x1b.google.protobuf.FloatValueB\x13\x9aI\x10\n" +
 	"\x0e\x12\x05value\"\x05helloH\x00R\x05value\x88\x01\x01\x12H\n" +
 	"\x06value2\x18\x02 \x03(\tB0\x9aI-\x8a\x01*r(\x12\x06value2\"\x1eThis should not appear in helpR\x06value2B\b\n" +
-	"\x06_value*h\n" +
+	"\x06_value\"\xb8\x01\n" +
+	"\x15UnexportedMessageTest\x12L\n" +
+	"\n" +
+	"secret_key\x18\x01 \x01(\tB-\x9aI*r(\x12\n" +
+	"secret-key\"\x18Secret configuration key(\x01R\tsecretKey\x12I\n" +
+	"\atimeout\x18\x02 \x01(\x05B/\x9aI,\x1a*\x12\atimeout\"\x1dConnection timeout in seconds@\x1eR\atimeout:\x06\xa0I\x01\xa8I\x01\"\xd4\x05\n" +
+	"\x17DefaultValueTestMessage\x121\n" +
+	"\x02pi\x18\x01 \x01(\x02B!\x9aI\x1e\n" +
+	"\x1c\x12\x02pi\"\x11Pi constant valueE\xd0\x0fI@R\x02pi\x12;\n" +
+	"\x05euler\x18\x02 \x01(\x01B%\x9aI\"\x12 \x12\x05euler\"\x0eEuler's numberA\x90\xf7\xaa\x95\t\xbf\x05@R\x05euler\x12N\n" +
+	"\fdefault_port\x18\x03 \x01(\x05B+\x9aI(\x1a&\x12\fdefault-port\"\x13Default server port@\x90?R\vdefaultPort\x12_\n" +
+	"\x0fmax_connections\x18\x04 \x01(\x03B6\x9aI3\"1\x12\x0fmax-connections\"\x1bMaximum allowed connections@\xe8\aR\x0emaxConnections\x12L\n" +
+	"\vbuffer_size\x18\x05 \x01(\rB+\x9aI(*&\x12\vbuffer-size\"\x14Buffer size in bytes@\x80 R\n" +
+	"bufferSize\x12S\n" +
+	"\fmemory_limit\x18\x06 \x01(\x04B0\x9aI-2+\x12\fmemory-limit\"\x15Memory limit in bytes@\x80\x80\x80\x80\x04R\vmemoryLimit\x12C\n" +
+	"\n" +
+	"debug_mode\x18\a \x01(\bB$\x9aI!j\x1f\x12\n" +
+	"debug-mode\"\x11Enable debug modeR\tdebugMode\x12F\n" +
+	"\tlog_level\x18\b \x01(\tB)\x9aI&r$\x12\tlog-level\"\x11Default log levelB\x04infoR\blogLevel\x12c\n" +
+	"\fdefault_mode\x18\t \x01(\x0e2\x10.tests.TestEnum1B.\x9aI+\x82\x01(\x12\fdefault-mode\"\x16Default operation mode@\x01R\vdefaultMode:\x03\xa8I\x01\"\xd4\x06\n" +
+	"\x16StringValueTestMessage\x12\x8a\x01\n" +
+	"\fsingle_value\x18\x01 \x01(\v2\x1c.google.protobuf.StringValueBD\x9aIAr?\x12\fsingle-value\x1a\x02sv\"\x1bSingle string value wrapperB\x0edefault-singleH\x00R\vsingleValue\x88\x01\x01\x12\x87\x01\n" +
+	"\rstring_values\x18\x02 \x03(\v2\x1c.google.protobuf.StringValueBD\x9aIA\x8a\x01>r<\x12\rstring-values\x1a\x03svs\"&Multiple StringValue wrapper instancesR\fstringValues\x12\x86\x01\n" +
+	"\vconfig_path\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueBB\x9aI?r=\x12\vconfig-path\x1a\x03cfg\"\x17Configuration file pathB\x10/etc/config.yamlH\x01R\n" +
+	"configPath\x88\x01\x01\x12\x80\x01\n" +
+	"\rinclude_paths\x18\x04 \x03(\v2\x1c.google.protobuf.StringValueB=\x9aI:\x8a\x017r5\x12\rinclude-paths\x1a\x03inc\"\x1fInclude paths for configurationR\fincludePaths\x12z\n" +
+	"\venvironment\x18\x05 \x01(\v2\x1c.google.protobuf.StringValueB5\x9aI2r0\x12\venvironment\x1a\x03env\"\x10Environment nameB\n" +
+	"productionH\x02R\venvironment\x88\x01\x01\x12e\n" +
+	"\x04tags\x18\x06 \x03(\v2\x1c.google.protobuf.StringValueB3\x9aI0\x8a\x01-r+\x12\x04tags\x1a\x01t\" Multiple tags for categorizationR\x04tags:\x03\xa8I\x01B\x0f\n" +
+	"\r_single_valueB\x0e\n" +
+	"\f_config_pathB\x0e\n" +
+	"\f_environment\"\xd5\x06\n" +
+	"\x17IntegerValueTestMessage\x12q\n" +
+	"\vint32_value\x18\x01 \x01(\v2\x1b.google.protobuf.Int32ValueB.\x9aI+\x1a)\x12\vint32-value\x1a\x03i32\"\x13Int32 value wrapper@*H\x00R\n" +
+	"int32Value\x88\x01\x01\x12y\n" +
+	"\vint64_value\x18\x02 \x01(\v2\x1b.google.protobuf.Int64ValueB6\x9aI3\"1\x12\vint64-value\x1a\x03i64\"\x13Int64 value wrapper@\xff\xff\xff\xff\xff\xff\xff\xff\x7fH\x01R\n" +
+	"int64Value\x88\x01\x01\x12v\n" +
+	"\fuint32_value\x18\x03 \x01(\v2\x1c.google.protobuf.UInt32ValueB0\x9aI-*+\x12\fuint32-value\x1a\x03u32\"\x14UInt32 value wrapper@dH\x02R\vuint32Value\x88\x01\x01\x12\x7f\n" +
+	"\fuint64_value\x18\x04 \x01(\v2\x1c.google.protobuf.UInt64ValueB9\x9aI624\x12\fuint64-value\x1a\x03u64\"\x14UInt64 value wrapper@\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01H\x03R\vuint64Value\x88\x01\x01\x12\x84\x01\n" +
+	"\fint32_values\x18\x05 \x03(\v2\x1b.google.protobuf.Int32ValueBD\x9aIA\x8a\x01>\x1a<\x12\fint32-values\x1a\x04i32s\"&Multiple Int32 value wrapper instancesR\vint32Values\x12\x84\x01\n" +
+	"\fint64_values\x18\x06 \x03(\v2\x1b.google.protobuf.Int64ValueBD\x9aIA\x8a\x01>\"<\x12\fint64-values\x1a\x04i64s\"&Multiple Int64 value wrapper instancesR\vint64Values:\x03\xa8I\x01B\x0e\n" +
+	"\f_int32_valueB\x0e\n" +
+	"\f_int64_valueB\x0f\n" +
+	"\r_uint32_valueB\x0f\n" +
+	"\r_uint64_value\"\xc8\x06\n" +
+	"\x14BoolValueTestMessage\x12{\n" +
+	"\fsingle_value\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueB7\x9aI4j2\x12\fsingle-value\x1a\x02sv\"\x1cSingle boolean value wrapper@\x01H\x00R\vsingleValue\x88\x01\x01\x12}\n" +
+	"\vbool_values\x18\x02 \x03(\v2\x1a.google.protobuf.BoolValueB@\x9aI=\x8a\x01:j8\x12\vbool-values\x1a\x03bvs\"$Multiple BoolValue wrapper instancesR\n" +
+	"boolValues\x12\x80\x01\n" +
+	"\x0eenable_feature\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueB8\x9aI5j3\x12\x0eenable-feature\x1a\x04feat\"\x1bEnable experimental featureH\x01R\renableFeature\x88\x01\x01\x12t\n" +
+	"\rfeature_flags\x18\x04 \x03(\v2\x1a.google.protobuf.BoolValueB3\x9aI0\x8a\x01-j+\x12\rfeature-flags\x1a\x02ff\"\x16Multiple feature flagsR\ffeatureFlags\x12\x81\x01\n" +
+	"\x0fverbose_logging\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB7\x9aI4j2\x12\x0fverbose-logging\x1a\averbose\"\x16Enable verbose loggingH\x02R\x0everboseLogging\x88\x01\x01\x12z\n" +
+	"\rdebug_options\x18\x06 \x03(\v2\x1a.google.protobuf.BoolValueB9\x9aI6\x8a\x013j1\x12\rdebug-options\x1a\x03dbg\"\x1bMultiple debug option flagsR\fdebugOptions:\x03\xa8I\x01B\x0f\n" +
+	"\r_single_valueB\x11\n" +
+	"\x0f_enable_featureB\x12\n" +
+	"\x10_verbose_logging\"\x84\x05\n" +
+	"\x1cComprehensiveFlagTestMessage\x12R\n" +
+	"\busername\x18\x01 \x01(\tB6\x9aI3r1\x12\busername\x1a\x01u\"\x1bUsername for authenticationB\x05adminR\busername\x12M\n" +
+	"\bpassword\x18\x02 \x01(\tB1\x9aI.r,\x12\bpassword\x1a\x01p\"\x1bPassword for authentication(\x01R\bpassword\x12p\n" +
+	"\flegacy_token\x18\x03 \x01(\tBM\x9aIJrH\x12\flegacy-token\x1a\x02lt\"\x1bLegacy authentication token0\x01:\x15Use --api-key insteadR\vlegacyToken\x12j\n" +
+	"\x10connection_count\x18\x04 \x01(\x05B?\x9aI<\x1a:\x12\x10connection-count\x1a\x02cc\" Number of concurrent connections@\n" +
+	"R\x0fconnectionCount\x12r\n" +
+	"\vmax_threads\x18\x05 \x01(\x05BQ\x9aIN\x1aL\x12\vmax-threads\x1a\x02mt\"\x19Maximum number of threads0\x01:\x1aUse --worker-count instead@dR\n" +
+	"maxThreads\x12j\n" +
+	"\x11experimental_mode\x18\x06 \x01(\bB=\x9aI:j8\x12\x11experimental-mode\x1a\x03exp\"\x1cEnable experimental features(\x01R\x10experimentalMode:\x03\xa8I\x01\"\xca\x02\n" +
+	"\x18NestedMessageTestMessage\x12K\n" +
+	"\rserver_config\x18\x01 \x01(\v2\x14.tests.SimpleMessageB\x10\x9aI\r\xaa\x01\n" +
+	"\b\x01\x12\x06serverR\fserverConfig\x12C\n" +
+	"\rclient_config\x18\x02 \x01(\v2\x14.tests.SimpleMessageB\b\x9aI\x05\xaa\x01\x02\b\x01R\fclientConfig\x12K\n" +
+	"\x0fdatabase_config\x18\x03 \x01(\v2\x14.tests.SimpleMessageB\f\x9aI\t\xaa\x01\x06\b\x01\x12\x02dbR\x0edatabaseConfig\x12J\n" +
+	"\vdeep_config\x18\x04 \x01(\v2\x1a.tests.NestedLevel2MessageB\r\x9aI\n" +
+	"\xaa\x01\a\b\x01\x12\x03appR\n" +
+	"deepConfig:\x03\xa8I\x01\"\xb5\x01\n" +
+	"\x13NestedLevel2Message\x12L\n" +
+	"\flevel2_field\x18\x01 \x01(\tB)\x9aI&r$\x12\flevel2-field\"\x14Level 2 nested fieldR\vlevel2Field\x12K\n" +
+	"\rnested_simple\x18\x02 \x01(\v2\x14.tests.SimpleMessageB\x10\x9aI\r\xaa\x01\n" +
+	"\b\x01\x12\x06nestedR\fnestedSimple:\x03\xa8I\x01\"\x83\t\n" +
+	"\x1bComprehensiveMapTestMessage\x12\x85\x01\n" +
+	"\vjson_labels\x18\x01 \x03(\v22.tests.ComprehensiveMapTestMessage.JsonLabelsEntryB0\x9aI-\x92\x01*\x12\vjson-labels\x1a\x02jl\"\x15Labels in JSON formatH\x01R\n" +
+	"jsonLabels\x12\x8f\x01\n" +
+	"\rnative_labels\x18\x02 \x03(\v24.tests.ComprehensiveMapTestMessage.NativeLabelsEntryB4\x9aI1\x92\x01.\x12\rnative-labels\x1a\x02nl\"\x17Labels in native formatH\x02R\fnativeLabels\x12\xba\x01\n" +
+	"\x10default_counters\x18\x03 \x03(\v27.tests.ComprehensiveMapTestMessage.DefaultCountersEntryBV\x9aIS\x92\x01P\x12\x10default-counters\x1a\x02dc\"\x16Default counter valuesB\x1e{\"requests\": 100, \"errors\": 0}H\x03R\x0fdefaultCounters\x12\xac\x01\n" +
+	"\rlegacy_config\x18\x04 \x03(\v24.tests.ComprehensiveMapTestMessage.LegacyConfigEntryBQ\x9aIN\x92\x01K\x12\rlegacy-config\x1a\x02lc\"\x18Legacy configuration map0\x01:\x18Use --new-config insteadH\x01R\flegacyConfig\x12\x92\x01\n" +
+	"\rsecret_config\x18\x05 \x03(\v24.tests.ComprehensiveMapTestMessage.SecretConfigEntryB7\x9aI4\x92\x011\x12\rsecret-config\x1a\x02sc\"\x18Secret configuration map(\x01H\x01R\fsecretConfig\x1a=\n" +
+	"\x0fJsonLabelsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a?\n" +
+	"\x11NativeLabelsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aB\n" +
+	"\x14DefaultCountersEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a?\n" +
+	"\x11LegacyConfigEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a?\n" +
+	"\x11SecretConfigEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x03\xa8I\x01*h\n" +
 	"\tTestEnum1\x12\x19\n" +
 	"\x15TEST_ENUM_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10TEST_ENUM_VALUE1\x10\x01\x12\x14\n" +
@@ -1334,89 +2156,137 @@ func file_tests_test_proto_rawDescGZIP() []byte {
 }
 
 var file_tests_test_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_tests_test_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_tests_test_proto_msgTypes = make([]protoimpl.MessageInfo, 36)
 var file_tests_test_proto_goTypes = []any{
-	(TestEnum1)(0),                   // 0: tests.TestEnum1
-	(*TestForMessage)(nil),           // 1: tests.TestForMessage
-	(*SimpleMessage)(nil),            // 2: tests.SimpleMessage
-	(*WrapperValueMessage)(nil),      // 3: tests.WrapperValueMessage
-	(*DoubleSliceTestMessage)(nil),   // 4: tests.DoubleSliceTestMessage
-	(*BytesSliceTestMessage)(nil),    // 5: tests.BytesSliceTestMessage
-	(*FloatSliceTestMessage)(nil),    // 6: tests.FloatSliceTestMessage
-	(*FloatValueTestMessage)(nil),    // 7: tests.FloatValueTestMessage
-	(*DurationSliceTestMessage)(nil), // 8: tests.DurationSliceTestMessage
-	(*DisabledMessage)(nil),          // 9: tests.DisabledMessage
-	(*EmptyMessage)(nil),             // 10: tests.EmptyMessage
-	(*EmptyMessage2)(nil),            // 11: tests.EmptyMessage2
-	(*WrapperMessage)(nil),           // 12: tests.WrapperMessage
-	nil,                              // 13: tests.TestForMessage.LabelsEntry
-	nil,                              // 14: tests.TestForMessage.CountersEntry
-	nil,                              // 15: tests.TestForMessage.StringMapEntry
-	nil,                              // 16: tests.TestForMessage.Int32MapEntry
-	nil,                              // 17: tests.TestForMessage.Int64MapEntry
-	nil,                              // 18: tests.TestForMessage.Uint32MapEntry
-	nil,                              // 19: tests.TestForMessage.Uint64MapEntry
-	nil,                              // 20: tests.TestForMessage.Sfixed32MapEntry
-	nil,                              // 21: tests.TestForMessage.Sfixed64MapEntry
-	nil,                              // 22: tests.TestForMessage.JsonMapEntry
-	(*durationpb.Duration)(nil),      // 23: google.protobuf.Duration
-	(*wrapperspb.BoolValue)(nil),     // 24: google.protobuf.BoolValue
-	(*wrapperspb.DoubleValue)(nil),   // 25: google.protobuf.DoubleValue
-	(*wrapperspb.BytesValue)(nil),    // 26: google.protobuf.BytesValue
-	(*wrapperspb.FloatValue)(nil),    // 27: google.protobuf.FloatValue
-	(*timestamppb.Timestamp)(nil),    // 28: google.protobuf.Timestamp
+	(TestEnum1)(0),                       // 0: tests.TestEnum1
+	(*TestForMessage)(nil),               // 1: tests.TestForMessage
+	(*SimpleMessage)(nil),                // 2: tests.SimpleMessage
+	(*WrapperValueMessage)(nil),          // 3: tests.WrapperValueMessage
+	(*DoubleSliceTestMessage)(nil),       // 4: tests.DoubleSliceTestMessage
+	(*BytesSliceTestMessage)(nil),        // 5: tests.BytesSliceTestMessage
+	(*FloatSliceTestMessage)(nil),        // 6: tests.FloatSliceTestMessage
+	(*FloatValueTestMessage)(nil),        // 7: tests.FloatValueTestMessage
+	(*DurationSliceTestMessage)(nil),     // 8: tests.DurationSliceTestMessage
+	(*DisabledMessage)(nil),              // 9: tests.DisabledMessage
+	(*EmptyMessage)(nil),                 // 10: tests.EmptyMessage
+	(*EmptyMessage2)(nil),                // 11: tests.EmptyMessage2
+	(*WrapperMessage)(nil),               // 12: tests.WrapperMessage
+	(*UnexportedMessageTest)(nil),        // 13: tests.UnexportedMessageTest
+	(*DefaultValueTestMessage)(nil),      // 14: tests.DefaultValueTestMessage
+	(*StringValueTestMessage)(nil),       // 15: tests.StringValueTestMessage
+	(*IntegerValueTestMessage)(nil),      // 16: tests.IntegerValueTestMessage
+	(*BoolValueTestMessage)(nil),         // 17: tests.BoolValueTestMessage
+	(*ComprehensiveFlagTestMessage)(nil), // 18: tests.ComprehensiveFlagTestMessage
+	(*NestedMessageTestMessage)(nil),     // 19: tests.NestedMessageTestMessage
+	(*NestedLevel2Message)(nil),          // 20: tests.NestedLevel2Message
+	(*ComprehensiveMapTestMessage)(nil),  // 21: tests.ComprehensiveMapTestMessage
+	nil,                                  // 22: tests.TestForMessage.LabelsEntry
+	nil,                                  // 23: tests.TestForMessage.CountersEntry
+	nil,                                  // 24: tests.TestForMessage.StringMapEntry
+	nil,                                  // 25: tests.TestForMessage.Int32MapEntry
+	nil,                                  // 26: tests.TestForMessage.Int64MapEntry
+	nil,                                  // 27: tests.TestForMessage.Uint32MapEntry
+	nil,                                  // 28: tests.TestForMessage.Uint64MapEntry
+	nil,                                  // 29: tests.TestForMessage.Sfixed32MapEntry
+	nil,                                  // 30: tests.TestForMessage.Sfixed64MapEntry
+	nil,                                  // 31: tests.TestForMessage.JsonMapEntry
+	nil,                                  // 32: tests.ComprehensiveMapTestMessage.JsonLabelsEntry
+	nil,                                  // 33: tests.ComprehensiveMapTestMessage.NativeLabelsEntry
+	nil,                                  // 34: tests.ComprehensiveMapTestMessage.DefaultCountersEntry
+	nil,                                  // 35: tests.ComprehensiveMapTestMessage.LegacyConfigEntry
+	nil,                                  // 36: tests.ComprehensiveMapTestMessage.SecretConfigEntry
+	(*durationpb.Duration)(nil),          // 37: google.protobuf.Duration
+	(*wrapperspb.BoolValue)(nil),         // 38: google.protobuf.BoolValue
+	(*wrapperspb.DoubleValue)(nil),       // 39: google.protobuf.DoubleValue
+	(*wrapperspb.BytesValue)(nil),        // 40: google.protobuf.BytesValue
+	(*wrapperspb.FloatValue)(nil),        // 41: google.protobuf.FloatValue
+	(*timestamppb.Timestamp)(nil),        // 42: google.protobuf.Timestamp
+	(*wrapperspb.StringValue)(nil),       // 43: google.protobuf.StringValue
+	(*wrapperspb.Int32Value)(nil),        // 44: google.protobuf.Int32Value
+	(*wrapperspb.Int64Value)(nil),        // 45: google.protobuf.Int64Value
+	(*wrapperspb.UInt32Value)(nil),       // 46: google.protobuf.UInt32Value
+	(*wrapperspb.UInt64Value)(nil),       // 47: google.protobuf.UInt64Value
 }
 var file_tests_test_proto_depIdxs = []int32{
 	0,  // 0: tests.TestForMessage.test_enum:type_name -> tests.TestEnum1
-	23, // 1: tests.TestForMessage.timeout_duration:type_name -> google.protobuf.Duration
+	37, // 1: tests.TestForMessage.timeout_duration:type_name -> google.protobuf.Duration
 	2,  // 2: tests.TestForMessage.simple_field:type_name -> tests.SimpleMessage
-	13, // 3: tests.TestForMessage.labels:type_name -> tests.TestForMessage.LabelsEntry
-	14, // 4: tests.TestForMessage.counters:type_name -> tests.TestForMessage.CountersEntry
-	15, // 5: tests.TestForMessage.string_map:type_name -> tests.TestForMessage.StringMapEntry
-	16, // 6: tests.TestForMessage.int32_map:type_name -> tests.TestForMessage.Int32MapEntry
-	17, // 7: tests.TestForMessage.int64_map:type_name -> tests.TestForMessage.Int64MapEntry
-	18, // 8: tests.TestForMessage.uint32_map:type_name -> tests.TestForMessage.Uint32MapEntry
-	19, // 9: tests.TestForMessage.uint64_map:type_name -> tests.TestForMessage.Uint64MapEntry
-	20, // 10: tests.TestForMessage.sfixed32_map:type_name -> tests.TestForMessage.Sfixed32MapEntry
-	21, // 11: tests.TestForMessage.sfixed64_map:type_name -> tests.TestForMessage.Sfixed64MapEntry
-	22, // 12: tests.TestForMessage.json_map:type_name -> tests.TestForMessage.JsonMapEntry
-	23, // 13: tests.TestForMessage.delays:type_name -> google.protobuf.Duration
-	23, // 14: tests.TestForMessage.intervals:type_name -> google.protobuf.Duration
-	23, // 15: tests.TestForMessage.timeouts:type_name -> google.protobuf.Duration
-	24, // 16: tests.WrapperValueMessage.name:type_name -> google.protobuf.BoolValue
-	25, // 17: tests.WrapperValueMessage.double_value:type_name -> google.protobuf.DoubleValue
-	25, // 18: tests.WrapperValueMessage.double_values:type_name -> google.protobuf.DoubleValue
-	26, // 19: tests.WrapperValueMessage.bytes_value:type_name -> google.protobuf.BytesValue
-	26, // 20: tests.WrapperValueMessage.bytes_values:type_name -> google.protobuf.BytesValue
-	26, // 21: tests.WrapperValueMessage.bytes_hex_values:type_name -> google.protobuf.BytesValue
-	25, // 22: tests.DoubleSliceTestMessage.measurements:type_name -> google.protobuf.DoubleValue
-	25, // 23: tests.DoubleSliceTestMessage.scientific_values:type_name -> google.protobuf.DoubleValue
-	25, // 24: tests.DoubleSliceTestMessage.temperature_readings:type_name -> google.protobuf.DoubleValue
-	25, // 25: tests.DoubleSliceTestMessage.coordinates:type_name -> google.protobuf.DoubleValue
-	26, // 26: tests.BytesSliceTestMessage.data_chunks:type_name -> google.protobuf.BytesValue
-	26, // 27: tests.BytesSliceTestMessage.file_contents:type_name -> google.protobuf.BytesValue
-	26, // 28: tests.BytesSliceTestMessage.hex_data:type_name -> google.protobuf.BytesValue
-	26, // 29: tests.BytesSliceTestMessage.binary_payloads:type_name -> google.protobuf.BytesValue
-	27, // 30: tests.FloatValueTestMessage.single_value:type_name -> google.protobuf.FloatValue
-	27, // 31: tests.FloatValueTestMessage.float_values:type_name -> google.protobuf.FloatValue
-	27, // 32: tests.FloatValueTestMessage.temperature:type_name -> google.protobuf.FloatValue
-	27, // 33: tests.FloatValueTestMessage.sensor_readings:type_name -> google.protobuf.FloatValue
-	27, // 34: tests.FloatValueTestMessage.probability:type_name -> google.protobuf.FloatValue
-	27, // 35: tests.FloatValueTestMessage.scores:type_name -> google.protobuf.FloatValue
-	23, // 36: tests.DurationSliceTestMessage.delays:type_name -> google.protobuf.Duration
-	23, // 37: tests.DurationSliceTestMessage.intervals:type_name -> google.protobuf.Duration
-	23, // 38: tests.DurationSliceTestMessage.timeouts:type_name -> google.protobuf.Duration
-	23, // 39: tests.DurationSliceTestMessage.polling_intervals:type_name -> google.protobuf.Duration
-	28, // 40: tests.DurationSliceTestMessage.deadline:type_name -> google.protobuf.Timestamp
-	28, // 41: tests.DurationSliceTestMessage.optional_deadline:type_name -> google.protobuf.Timestamp
+	22, // 3: tests.TestForMessage.labels:type_name -> tests.TestForMessage.LabelsEntry
+	23, // 4: tests.TestForMessage.counters:type_name -> tests.TestForMessage.CountersEntry
+	24, // 5: tests.TestForMessage.string_map:type_name -> tests.TestForMessage.StringMapEntry
+	25, // 6: tests.TestForMessage.int32_map:type_name -> tests.TestForMessage.Int32MapEntry
+	26, // 7: tests.TestForMessage.int64_map:type_name -> tests.TestForMessage.Int64MapEntry
+	27, // 8: tests.TestForMessage.uint32_map:type_name -> tests.TestForMessage.Uint32MapEntry
+	28, // 9: tests.TestForMessage.uint64_map:type_name -> tests.TestForMessage.Uint64MapEntry
+	29, // 10: tests.TestForMessage.sfixed32_map:type_name -> tests.TestForMessage.Sfixed32MapEntry
+	30, // 11: tests.TestForMessage.sfixed64_map:type_name -> tests.TestForMessage.Sfixed64MapEntry
+	31, // 12: tests.TestForMessage.json_map:type_name -> tests.TestForMessage.JsonMapEntry
+	37, // 13: tests.TestForMessage.delays:type_name -> google.protobuf.Duration
+	37, // 14: tests.TestForMessage.intervals:type_name -> google.protobuf.Duration
+	37, // 15: tests.TestForMessage.timeouts:type_name -> google.protobuf.Duration
+	38, // 16: tests.WrapperValueMessage.name:type_name -> google.protobuf.BoolValue
+	39, // 17: tests.WrapperValueMessage.double_value:type_name -> google.protobuf.DoubleValue
+	39, // 18: tests.WrapperValueMessage.double_values:type_name -> google.protobuf.DoubleValue
+	40, // 19: tests.WrapperValueMessage.bytes_value:type_name -> google.protobuf.BytesValue
+	40, // 20: tests.WrapperValueMessage.bytes_values:type_name -> google.protobuf.BytesValue
+	40, // 21: tests.WrapperValueMessage.bytes_hex_values:type_name -> google.protobuf.BytesValue
+	39, // 22: tests.DoubleSliceTestMessage.measurements:type_name -> google.protobuf.DoubleValue
+	39, // 23: tests.DoubleSliceTestMessage.scientific_values:type_name -> google.protobuf.DoubleValue
+	39, // 24: tests.DoubleSliceTestMessage.temperature_readings:type_name -> google.protobuf.DoubleValue
+	39, // 25: tests.DoubleSliceTestMessage.coordinates:type_name -> google.protobuf.DoubleValue
+	40, // 26: tests.BytesSliceTestMessage.data_chunks:type_name -> google.protobuf.BytesValue
+	40, // 27: tests.BytesSliceTestMessage.file_contents:type_name -> google.protobuf.BytesValue
+	40, // 28: tests.BytesSliceTestMessage.hex_data:type_name -> google.protobuf.BytesValue
+	40, // 29: tests.BytesSliceTestMessage.binary_payloads:type_name -> google.protobuf.BytesValue
+	41, // 30: tests.FloatValueTestMessage.single_value:type_name -> google.protobuf.FloatValue
+	41, // 31: tests.FloatValueTestMessage.float_values:type_name -> google.protobuf.FloatValue
+	41, // 32: tests.FloatValueTestMessage.temperature:type_name -> google.protobuf.FloatValue
+	41, // 33: tests.FloatValueTestMessage.sensor_readings:type_name -> google.protobuf.FloatValue
+	41, // 34: tests.FloatValueTestMessage.probability:type_name -> google.protobuf.FloatValue
+	41, // 35: tests.FloatValueTestMessage.scores:type_name -> google.protobuf.FloatValue
+	37, // 36: tests.DurationSliceTestMessage.delays:type_name -> google.protobuf.Duration
+	37, // 37: tests.DurationSliceTestMessage.intervals:type_name -> google.protobuf.Duration
+	37, // 38: tests.DurationSliceTestMessage.timeouts:type_name -> google.protobuf.Duration
+	37, // 39: tests.DurationSliceTestMessage.polling_intervals:type_name -> google.protobuf.Duration
+	42, // 40: tests.DurationSliceTestMessage.deadline:type_name -> google.protobuf.Timestamp
+	42, // 41: tests.DurationSliceTestMessage.optional_deadline:type_name -> google.protobuf.Timestamp
 	2,  // 42: tests.DisabledMessage.simple_message:type_name -> tests.SimpleMessage
-	28, // 43: tests.DisabledMessage.created_at:type_name -> google.protobuf.Timestamp
-	27, // 44: tests.WrapperMessage.value:type_name -> google.protobuf.FloatValue
-	45, // [45:45] is the sub-list for method output_type
-	45, // [45:45] is the sub-list for method input_type
-	45, // [45:45] is the sub-list for extension type_name
-	45, // [45:45] is the sub-list for extension extendee
-	0,  // [0:45] is the sub-list for field type_name
+	42, // 43: tests.DisabledMessage.created_at:type_name -> google.protobuf.Timestamp
+	41, // 44: tests.WrapperMessage.value:type_name -> google.protobuf.FloatValue
+	0,  // 45: tests.DefaultValueTestMessage.default_mode:type_name -> tests.TestEnum1
+	43, // 46: tests.StringValueTestMessage.single_value:type_name -> google.protobuf.StringValue
+	43, // 47: tests.StringValueTestMessage.string_values:type_name -> google.protobuf.StringValue
+	43, // 48: tests.StringValueTestMessage.config_path:type_name -> google.protobuf.StringValue
+	43, // 49: tests.StringValueTestMessage.include_paths:type_name -> google.protobuf.StringValue
+	43, // 50: tests.StringValueTestMessage.environment:type_name -> google.protobuf.StringValue
+	43, // 51: tests.StringValueTestMessage.tags:type_name -> google.protobuf.StringValue
+	44, // 52: tests.IntegerValueTestMessage.int32_value:type_name -> google.protobuf.Int32Value
+	45, // 53: tests.IntegerValueTestMessage.int64_value:type_name -> google.protobuf.Int64Value
+	46, // 54: tests.IntegerValueTestMessage.uint32_value:type_name -> google.protobuf.UInt32Value
+	47, // 55: tests.IntegerValueTestMessage.uint64_value:type_name -> google.protobuf.UInt64Value
+	44, // 56: tests.IntegerValueTestMessage.int32_values:type_name -> google.protobuf.Int32Value
+	45, // 57: tests.IntegerValueTestMessage.int64_values:type_name -> google.protobuf.Int64Value
+	38, // 58: tests.BoolValueTestMessage.single_value:type_name -> google.protobuf.BoolValue
+	38, // 59: tests.BoolValueTestMessage.bool_values:type_name -> google.protobuf.BoolValue
+	38, // 60: tests.BoolValueTestMessage.enable_feature:type_name -> google.protobuf.BoolValue
+	38, // 61: tests.BoolValueTestMessage.feature_flags:type_name -> google.protobuf.BoolValue
+	38, // 62: tests.BoolValueTestMessage.verbose_logging:type_name -> google.protobuf.BoolValue
+	38, // 63: tests.BoolValueTestMessage.debug_options:type_name -> google.protobuf.BoolValue
+	2,  // 64: tests.NestedMessageTestMessage.server_config:type_name -> tests.SimpleMessage
+	2,  // 65: tests.NestedMessageTestMessage.client_config:type_name -> tests.SimpleMessage
+	2,  // 66: tests.NestedMessageTestMessage.database_config:type_name -> tests.SimpleMessage
+	20, // 67: tests.NestedMessageTestMessage.deep_config:type_name -> tests.NestedLevel2Message
+	2,  // 68: tests.NestedLevel2Message.nested_simple:type_name -> tests.SimpleMessage
+	32, // 69: tests.ComprehensiveMapTestMessage.json_labels:type_name -> tests.ComprehensiveMapTestMessage.JsonLabelsEntry
+	33, // 70: tests.ComprehensiveMapTestMessage.native_labels:type_name -> tests.ComprehensiveMapTestMessage.NativeLabelsEntry
+	34, // 71: tests.ComprehensiveMapTestMessage.default_counters:type_name -> tests.ComprehensiveMapTestMessage.DefaultCountersEntry
+	35, // 72: tests.ComprehensiveMapTestMessage.legacy_config:type_name -> tests.ComprehensiveMapTestMessage.LegacyConfigEntry
+	36, // 73: tests.ComprehensiveMapTestMessage.secret_config:type_name -> tests.ComprehensiveMapTestMessage.SecretConfigEntry
+	74, // [74:74] is the sub-list for method output_type
+	74, // [74:74] is the sub-list for method input_type
+	74, // [74:74] is the sub-list for extension type_name
+	74, // [74:74] is the sub-list for extension extendee
+	0,  // [0:74] is the sub-list for field type_name
 }
 
 func init() { file_tests_test_proto_init() }
@@ -1430,13 +2300,16 @@ func file_tests_test_proto_init() {
 	file_tests_test_proto_msgTypes[6].OneofWrappers = []any{}
 	file_tests_test_proto_msgTypes[7].OneofWrappers = []any{}
 	file_tests_test_proto_msgTypes[11].OneofWrappers = []any{}
+	file_tests_test_proto_msgTypes[14].OneofWrappers = []any{}
+	file_tests_test_proto_msgTypes[15].OneofWrappers = []any{}
+	file_tests_test_proto_msgTypes[16].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tests_test_proto_rawDesc), len(file_tests_test_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   22,
+			NumMessages:   36,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -2892,7 +2892,6 @@ type RepeatedFlags struct {
 	//	*RepeatedFlags_Bytes
 	//	*RepeatedFlags_Enum
 	//	*RepeatedFlags_Duration
-	//	*RepeatedFlags_Timestamp
 	Type          isRepeatedFlags_Type `protobuf_oneof:"type"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -3088,15 +3087,6 @@ func (x *RepeatedFlags) GetDuration() *DurationFlag {
 	return nil
 }
 
-func (x *RepeatedFlags) GetTimestamp() *TimestampFlag {
-	if x != nil {
-		if x, ok := x.Type.(*RepeatedFlags_Timestamp); ok {
-			return x.Timestamp
-		}
-	}
-	return nil
-}
-
 type isRepeatedFlags_Type interface {
 	isRepeatedFlags_Type()
 }
@@ -3172,10 +3162,6 @@ type RepeatedFlags_Duration struct {
 	Duration *DurationFlag `protobuf:"bytes,17,opt,name=duration,proto3,oneof"` // Repeated duration values
 }
 
-type RepeatedFlags_Timestamp struct {
-	Timestamp *TimestampFlag `protobuf:"bytes,18,opt,name=timestamp,proto3,oneof"` // Repeated timestamp values
-}
-
 func (*RepeatedFlags_Float) isRepeatedFlags_Type() {}
 
 func (*RepeatedFlags_Double) isRepeatedFlags_Type() {}
@@ -3209,8 +3195,6 @@ func (*RepeatedFlags_Bytes) isRepeatedFlags_Type() {}
 func (*RepeatedFlags_Enum) isRepeatedFlags_Type() {}
 
 func (*RepeatedFlags_Duration) isRepeatedFlags_Type() {}
-
-func (*RepeatedFlags_Timestamp) isRepeatedFlags_Type() {}
 
 var file_flags_flags_proto_extTypes = []protoimpl.ExtensionInfo{
 	{
@@ -3536,7 +3520,7 @@ const file_flags_flags_proto_rawDesc = "" +
 	"\aformats\x18\b \x03(\tR\aformats\"9\n" +
 	"\vMessageFlag\x12\x16\n" +
 	"\x06nested\x18\x01 \x01(\bR\x06nested\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"\xca\x06\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"\x94\x06\n" +
 	"\rRepeatedFlags\x12(\n" +
 	"\x05float\x18\x01 \x01(\v2\x10.flags.FloatFlagH\x00R\x05float\x12+\n" +
 	"\x06double\x18\x02 \x01(\v2\x11.flags.DoubleFlagH\x00R\x06double\x12(\n" +
@@ -3555,8 +3539,7 @@ const file_flags_flags_proto_rawDesc = "" +
 	"\x06string\x18\x0e \x01(\v2\x11.flags.StringFlagH\x00R\x06string\x12(\n" +
 	"\x05bytes\x18\x0f \x01(\v2\x10.flags.BytesFlagH\x00R\x05bytes\x12%\n" +
 	"\x04enum\x18\x10 \x01(\v2\x0f.flags.EnumFlagH\x00R\x04enum\x121\n" +
-	"\bduration\x18\x11 \x01(\v2\x13.flags.DurationFlagH\x00R\bduration\x124\n" +
-	"\ttimestamp\x18\x12 \x01(\v2\x14.flags.TimestampFlagH\x00R\ttimestampB\x06\n" +
+	"\bduration\x18\x11 \x01(\v2\x13.flags.DurationFlagH\x00R\bdurationB\x06\n" +
 	"\x04type*u\n" +
 	"\x11BytesEncodingType\x12#\n" +
 	"\x1fBYTES_ENCODING_TYPE_UNSPECIFIED\x10\x00\x12\x1e\n" +
@@ -3659,17 +3642,16 @@ var file_flags_flags_proto_depIdxs = []int32{
 	2,  // 37: flags.RepeatedFlags.bytes:type_name -> flags.BytesFlag
 	19, // 38: flags.RepeatedFlags.enum:type_name -> flags.EnumFlag
 	21, // 39: flags.RepeatedFlags.duration:type_name -> flags.DurationFlag
-	22, // 40: flags.RepeatedFlags.timestamp:type_name -> flags.TimestampFlag
-	25, // 41: flags.disabled:extendee -> google.protobuf.MessageOptions
-	25, // 42: flags.unexported:extendee -> google.protobuf.MessageOptions
-	25, // 43: flags.allow_empty:extendee -> google.protobuf.MessageOptions
-	26, // 44: flags.value:extendee -> google.protobuf.FieldOptions
-	3,  // 45: flags.value:type_name -> flags.FieldFlags
-	46, // [46:46] is the sub-list for method output_type
-	46, // [46:46] is the sub-list for method input_type
-	45, // [45:46] is the sub-list for extension type_name
-	41, // [41:45] is the sub-list for extension extendee
-	0,  // [0:41] is the sub-list for field type_name
+	25, // 40: flags.disabled:extendee -> google.protobuf.MessageOptions
+	25, // 41: flags.unexported:extendee -> google.protobuf.MessageOptions
+	25, // 42: flags.allow_empty:extendee -> google.protobuf.MessageOptions
+	26, // 43: flags.value:extendee -> google.protobuf.FieldOptions
+	3,  // 44: flags.value:type_name -> flags.FieldFlags
+	45, // [45:45] is the sub-list for method output_type
+	45, // [45:45] is the sub-list for method input_type
+	44, // [44:45] is the sub-list for extension type_name
+	40, // [40:44] is the sub-list for extension extendee
+	0,  // [0:40] is the sub-list for field type_name
 }
 
 func init() { file_flags_flags_proto_init() }
@@ -3718,7 +3700,6 @@ func file_flags_flags_proto_init() {
 		(*RepeatedFlags_Bytes)(nil),
 		(*RepeatedFlags_Enum)(nil),
 		(*RepeatedFlags_Duration)(nil),
-		(*RepeatedFlags_Timestamp)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

@@ -554,3 +554,381 @@ message WrapperMessage {
     usage: "This should not appear in help"
   }];
 }
+
+// Test message for unexported option
+message UnexportedMessageTest {
+  option (flags.unexported) = true;
+  option (flags.allow_empty) = true;
+
+  string secret_key = 1 [(flags.value).string = {
+    name: "secret-key"
+    usage: "Secret configuration key"
+    hidden: true
+  }];
+
+  int32 timeout = 2 [(flags.value).int32 = {
+    name: "timeout"
+    usage: "Connection timeout in seconds"
+    default: 30
+  }];
+}
+
+// Test message for comprehensive default values
+message DefaultValueTestMessage {
+  option (flags.allow_empty) = true;
+
+  // Test default values for all numeric types
+  float pi = 1 [(flags.value).float = {
+    name: "pi"
+    usage: "Pi constant value"
+    default: 3.14159
+  }];
+
+  double euler = 2 [(flags.value).double = {
+    name: "euler"
+    usage: "Euler's number"
+    default: 2.71828
+  }];
+
+  int32 default_port = 3 [(flags.value).int32 = {
+    name: "default-port"
+    usage: "Default server port"
+    default: 8080
+  }];
+
+  int64 max_connections = 4 [(flags.value).int64 = {
+    name: "max-connections"
+    usage: "Maximum allowed connections"
+    default: 1000
+  }];
+
+  uint32 buffer_size = 5 [(flags.value).uint32 = {
+    name: "buffer-size"
+    usage: "Buffer size in bytes"
+    default: 4096
+  }];
+
+  uint64 memory_limit = 6 [(flags.value).uint64 = {
+    name: "memory-limit"
+    usage: "Memory limit in bytes"
+    default: 1073741824
+  }];
+
+  bool debug_mode = 7 [(flags.value).bool = {
+    name: "debug-mode"
+    usage: "Enable debug mode"
+    default: false
+  }];
+
+  string log_level = 8 [(flags.value).string = {
+    name: "log-level"
+    usage: "Default log level"
+    default: "info"
+  }];
+
+  TestEnum1 default_mode = 9 [(flags.value).enum = {
+    name: "default-mode"
+    usage: "Default operation mode"
+    default: 1  // TEST_ENUM_VALUE1
+  }];
+}
+
+// Test message for StringValue wrapper types
+message StringValueTestMessage {
+  option (flags.allow_empty) = true;
+
+  // Test single StringValue wrapper type
+  optional google.protobuf.StringValue single_value = 1 [(flags.value).string = {
+    name: "single-value"
+    short: "sv"
+    usage: "Single string value wrapper"
+    default: "default-single"
+  }];
+
+  // Test StringValue slice type
+  repeated google.protobuf.StringValue string_values = 2 [(flags.value).repeated.string = {
+    name: "string-values"
+    short: "svs"
+    usage: "Multiple StringValue wrapper instances"
+  }];
+
+  // Test different StringValue configurations
+  optional google.protobuf.StringValue config_path = 3 [(flags.value).string = {
+    name: "config-path"
+    short: "cfg"
+    usage: "Configuration file path"
+    default: "/etc/config.yaml"
+  }];
+
+  repeated google.protobuf.StringValue include_paths = 4 [(flags.value).repeated.string = {
+    name: "include-paths"
+    short: "inc"
+    usage: "Include paths for configuration"
+  }];
+
+  optional google.protobuf.StringValue environment = 5 [(flags.value).string = {
+    name: "environment"
+    short: "env"
+    usage: "Environment name"
+    default: "production"
+  }];
+
+  repeated google.protobuf.StringValue tags = 6 [(flags.value).repeated.string = {
+    name: "tags"
+    short: "t"
+    usage: "Multiple tags for categorization"
+  }];
+}
+
+// Test message for integer wrapper types (Int32Value, Int64Value, etc.)
+message IntegerValueTestMessage {
+  option (flags.allow_empty) = true;
+
+  // Test Int32Value wrapper type
+  optional google.protobuf.Int32Value int32_value = 1 [(flags.value).int32 = {
+    name: "int32-value"
+    short: "i32"
+    usage: "Int32 value wrapper"
+    default: 42
+  }];
+
+  // Test Int64Value wrapper type
+  optional google.protobuf.Int64Value int64_value = 2 [(flags.value).int64 = {
+    name: "int64-value"
+    short: "i64"
+    usage: "Int64 value wrapper"
+    default: 9223372036854775807
+  }];
+
+  // Test UInt32Value wrapper type
+  optional google.protobuf.UInt32Value uint32_value = 3 [(flags.value).uint32 = {
+    name: "uint32-value"
+    short: "u32"
+    usage: "UInt32 value wrapper"
+    default: 100
+  }];
+
+  // Test UInt64Value wrapper type
+  optional google.protobuf.UInt64Value uint64_value = 4 [(flags.value).uint64 = {
+    name: "uint64-value"
+    short: "u64"
+    usage: "UInt64 value wrapper"
+    default: 18446744073709551615
+  }];
+
+  // Test Int32Value slice type
+  repeated google.protobuf.Int32Value int32_values = 5 [(flags.value).repeated.int32 = {
+    name: "int32-values"
+    short: "i32s"
+    usage: "Multiple Int32 value wrapper instances"
+  }];
+
+  // Test Int64Value slice type
+  repeated google.protobuf.Int64Value int64_values = 6 [(flags.value).repeated.int64 = {
+    name: "int64-values"
+    short: "i64s"
+    usage: "Multiple Int64 value wrapper instances"
+  }];
+}
+
+// Test message for BoolValue wrapper types
+message BoolValueTestMessage {
+  option (flags.allow_empty) = true;
+
+  // Test single BoolValue wrapper type
+  optional google.protobuf.BoolValue single_value = 1 [(flags.value).bool = {
+    name: "single-value"
+    short: "sv"
+    usage: "Single boolean value wrapper"
+    default: true
+  }];
+
+  // Test BoolValue slice type
+  repeated google.protobuf.BoolValue bool_values = 2 [(flags.value).repeated.bool = {
+    name: "bool-values"
+    short: "bvs"
+    usage: "Multiple BoolValue wrapper instances"
+  }];
+
+  // Test different BoolValue configurations
+  optional google.protobuf.BoolValue enable_feature = 3 [(flags.value).bool = {
+    name: "enable-feature"
+    short: "feat"
+    usage: "Enable experimental feature"
+    default: false
+  }];
+
+  repeated google.protobuf.BoolValue feature_flags = 4 [(flags.value).repeated.bool = {
+    name: "feature-flags"
+    short: "ff"
+    usage: "Multiple feature flags"
+  }];
+
+  optional google.protobuf.BoolValue verbose_logging = 5 [(flags.value).bool = {
+    name: "verbose-logging"
+    short: "verbose"
+    usage: "Enable verbose logging"
+    default: false
+  }];
+
+  repeated google.protobuf.BoolValue debug_options = 6 [(flags.value).repeated.bool = {
+    name: "debug-options"
+    short: "dbg"
+    usage: "Multiple debug option flags"
+  }];
+}
+
+// Test message for comprehensive flag configuration options
+message ComprehensiveFlagTestMessage {
+  option (flags.allow_empty) = true;
+
+  // Test flags with all configuration options
+  string username = 1 [(flags.value).string = {
+    name: "username"
+    short: "u"
+    usage: "Username for authentication"
+    default: "admin"
+    hidden: false
+    deprecated: false
+    deprecated_usage: ""
+  }];
+
+  string password = 2 [(flags.value).string = {
+    name: "password"
+    short: "p"
+    usage: "Password for authentication"
+    hidden: true
+    deprecated: false
+    deprecated_usage: ""
+  }];
+
+  string legacy_token = 3 [(flags.value).string = {
+    name: "legacy-token"
+    short: "lt"
+    usage: "Legacy authentication token"
+    hidden: false
+    deprecated: true
+    deprecated_usage: "Use --api-key instead"
+  }];
+
+  int32 connection_count = 4 [(flags.value).int32 = {
+    name: "connection-count"
+    short: "cc"
+    usage: "Number of concurrent connections"
+    default: 10
+    hidden: false
+    deprecated: false
+  }];
+
+  int32 max_threads = 5 [(flags.value).int32 = {
+    name: "max-threads"
+    short: "mt"
+    usage: "Maximum number of threads"
+    default: 100
+    hidden: false
+    deprecated: true
+    deprecated_usage: "Use --worker-count instead"
+  }];
+
+  bool experimental_mode = 6 [(flags.value).bool = {
+    name: "experimental-mode"
+    short: "exp"
+    usage: "Enable experimental features"
+    default: false
+    hidden: true
+    deprecated: false
+  }];
+}
+
+// Test message for nested message configurations with different prefix behaviors
+message NestedMessageTestMessage {
+  option (flags.allow_empty) = true;
+
+  // Test nested message with prefix
+  SimpleMessage server_config = 1 [(flags.value).message = {
+    nested: true
+    name: "server"
+  }];
+
+  // Test nested message without prefix
+  SimpleMessage client_config = 2 [(flags.value).message = {
+    nested: true
+    name: ""
+  }];
+
+  // Test nested message with custom prefix
+  SimpleMessage database_config = 3 [(flags.value).message = {
+    nested: true
+    name: "db"
+  }];
+
+  // Test multiple levels of nesting
+  NestedLevel2Message deep_config = 4 [(flags.value).message = {
+    nested: true
+    name: "app"
+  }];
+}
+
+// Helper message for multi-level nesting test
+message NestedLevel2Message {
+  option (flags.allow_empty) = true;
+
+  string level2_field = 1 [(flags.value).string = {
+    name: "level2-field"
+    usage: "Level 2 nested field"
+  }];
+
+  SimpleMessage nested_simple = 2 [(flags.value).message = {
+    nested: true
+    name: "nested"
+  }];
+}
+
+// Test message for map configurations with different formats
+message ComprehensiveMapTestMessage {
+  option (flags.allow_empty) = true;
+
+  // Test JSON map format (default)
+  map<string, string> json_labels = 1 [(flags.value).map = {
+    name: "json-labels"
+    short: "jl"
+    usage: "Labels in JSON format"
+    format: MAP_FORMAT_TYPE_JSON
+  }];
+
+  // Test native string-to-string format
+  map<string, string> native_labels = 2 [(flags.value).map = {
+    name: "native-labels"
+    short: "nl"
+    usage: "Labels in native format"
+    format: MAP_FORMAT_TYPE_STRING_TO_STRING
+  }];
+
+  // Test native string-to-int format with default values
+  map<string, int32> default_counters = 3 [(flags.value).map = {
+    name: "default-counters"
+    short: "dc"
+    usage: "Default counter values"
+    format: MAP_FORMAT_TYPE_STRING_TO_INT
+    default: "{\"requests\": 100, \"errors\": 0}"
+  }];
+
+  // Test deprecated map field
+  map<string, string> legacy_config = 4 [(flags.value).map = {
+    name: "legacy-config"
+    short: "lc"
+    usage: "Legacy configuration map"
+    format: MAP_FORMAT_TYPE_JSON
+    deprecated: true
+    deprecated_usage: "Use --new-config instead"
+  }];
+
+  // Test hidden map field
+  map<string, string> secret_config = 5 [(flags.value).map = {
+    name: "secret-config"
+    short: "sc"
+    usage: "Secret configuration map"
+    format: MAP_FORMAT_TYPE_JSON
+    hidden: true
+  }];
+}

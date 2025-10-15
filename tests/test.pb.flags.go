@@ -252,3 +252,195 @@ func (x *WrapperMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 	fs.StringSliceVarP(&x.Value2, utils.BuildFlagName(prefix, "value2"), "", x.Value2, "This should not appear in help")
 
 }
+
+func (x *UnexportedMessageTest) _AddFlags(fs *pflag.FlagSet, prefix ...string) {
+	fs.StringVarP(&x.SecretKey, utils.BuildFlagName(prefix, "secret-key"), "", x.SecretKey, "Secret configuration key")
+
+	fs.MarkHidden("secret-key")
+
+	fs.Int32VarP(&x.Timeout, utils.BuildFlagName(prefix, "timeout"), "", x.Timeout, "Connection timeout in seconds")
+
+}
+
+func (x *DefaultValueTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
+	fs.Float32VarP(&x.Pi, utils.BuildFlagName(prefix, "pi"), "", x.Pi, "Pi constant value")
+
+	fs.Float64VarP(&x.Euler, utils.BuildFlagName(prefix, "euler"), "", x.Euler, "Euler's number")
+
+	fs.Int32VarP(&x.DefaultPort, utils.BuildFlagName(prefix, "default-port"), "", x.DefaultPort, "Default server port")
+
+	fs.Int64VarP(&x.MaxConnections, utils.BuildFlagName(prefix, "max-connections"), "", x.MaxConnections, "Maximum allowed connections")
+
+	fs.Uint32VarP(&x.BufferSize, utils.BuildFlagName(prefix, "buffer-size"), "", x.BufferSize, "Buffer size in bytes")
+
+	fs.Uint64VarP(&x.MemoryLimit, utils.BuildFlagName(prefix, "memory-limit"), "", x.MemoryLimit, "Memory limit in bytes")
+
+	fs.BoolVarP(&x.DebugMode, utils.BuildFlagName(prefix, "debug-mode"), "", x.DebugMode, "Enable debug mode")
+
+	fs.StringVarP(&x.LogLevel, utils.BuildFlagName(prefix, "log-level"), "", x.LogLevel, "Default log level")
+	fs.VarP(types.Enum(&x.DefaultMode), utils.BuildFlagName(prefix, "default-mode"), "", "Default operation mode")
+
+}
+
+func (x *StringValueTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
+	if x.SingleValue == nil {
+		x.SingleValue = new(wrapperspb.StringValue)
+	}
+	fs.VarP(types.String(x.SingleValue), utils.BuildFlagName(prefix, "single-value"), "sv", "Single string value wrapper")
+
+	fs.VarP(types.StringSlice(&x.StringValues), utils.BuildFlagName(prefix, "string-values"), "svs", "Multiple StringValue wrapper instances")
+
+	if x.ConfigPath == nil {
+		x.ConfigPath = new(wrapperspb.StringValue)
+	}
+	fs.VarP(types.String(x.ConfigPath), utils.BuildFlagName(prefix, "config-path"), "cfg", "Configuration file path")
+
+	fs.VarP(types.StringSlice(&x.IncludePaths), utils.BuildFlagName(prefix, "include-paths"), "inc", "Include paths for configuration")
+
+	if x.Environment == nil {
+		x.Environment = new(wrapperspb.StringValue)
+	}
+	fs.VarP(types.String(x.Environment), utils.BuildFlagName(prefix, "environment"), "env", "Environment name")
+
+	fs.VarP(types.StringSlice(&x.Tags), utils.BuildFlagName(prefix, "tags"), "t", "Multiple tags for categorization")
+
+}
+
+func (x *IntegerValueTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
+	if x.Int32Value == nil {
+		x.Int32Value = new(wrapperspb.Int32Value)
+	}
+	fs.VarP(types.Int32(x.Int32Value), utils.BuildFlagName(prefix, "int32-value"), "i32", "Int32 value wrapper")
+
+	if x.Int64Value == nil {
+		x.Int64Value = new(wrapperspb.Int64Value)
+	}
+	fs.VarP(types.Int64(x.Int64Value), utils.BuildFlagName(prefix, "int64-value"), "i64", "Int64 value wrapper")
+
+	if x.Uint32Value == nil {
+		x.Uint32Value = new(wrapperspb.UInt32Value)
+	}
+	fs.VarP(types.UInt32(x.Uint32Value), utils.BuildFlagName(prefix, "uint32-value"), "u32", "UInt32 value wrapper")
+
+	if x.Uint64Value == nil {
+		x.Uint64Value = new(wrapperspb.UInt64Value)
+	}
+	fs.VarP(types.UInt64(x.Uint64Value), utils.BuildFlagName(prefix, "uint64-value"), "u64", "UInt64 value wrapper")
+
+	fs.VarP(types.Int32Slice(&x.Int32Values), utils.BuildFlagName(prefix, "int32-values"), "i32s", "Multiple Int32 value wrapper instances")
+
+	fs.VarP(types.Int64Slice(&x.Int64Values), utils.BuildFlagName(prefix, "int64-values"), "i64s", "Multiple Int64 value wrapper instances")
+
+}
+
+func (x *BoolValueTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
+	if x.SingleValue == nil {
+		x.SingleValue = new(wrapperspb.BoolValue)
+	}
+	fs.VarP(types.Bool(x.SingleValue), utils.BuildFlagName(prefix, "single-value"), "sv", "Single boolean value wrapper")
+
+	fs.VarP(types.BoolSlice(&x.BoolValues), utils.BuildFlagName(prefix, "bool-values"), "bvs", "Multiple BoolValue wrapper instances")
+
+	if x.EnableFeature == nil {
+		x.EnableFeature = new(wrapperspb.BoolValue)
+	}
+	fs.VarP(types.Bool(x.EnableFeature), utils.BuildFlagName(prefix, "enable-feature"), "feat", "Enable experimental feature")
+
+	fs.VarP(types.BoolSlice(&x.FeatureFlags), utils.BuildFlagName(prefix, "feature-flags"), "ff", "Multiple feature flags")
+
+	if x.VerboseLogging == nil {
+		x.VerboseLogging = new(wrapperspb.BoolValue)
+	}
+	fs.VarP(types.Bool(x.VerboseLogging), utils.BuildFlagName(prefix, "verbose-logging"), "verbose", "Enable verbose logging")
+
+	fs.VarP(types.BoolSlice(&x.DebugOptions), utils.BuildFlagName(prefix, "debug-options"), "dbg", "Multiple debug option flags")
+
+}
+
+func (x *ComprehensiveFlagTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
+	fs.StringVarP(&x.Username, utils.BuildFlagName(prefix, "username"), "u", x.Username, "Username for authentication")
+
+	fs.StringVarP(&x.Password, utils.BuildFlagName(prefix, "password"), "p", x.Password, "Password for authentication")
+
+	fs.MarkHidden("password")
+
+	fs.StringVarP(&x.LegacyToken, utils.BuildFlagName(prefix, "legacy-token"), "lt", x.LegacyToken, "Legacy authentication token")
+
+	fs.MarkDeprecated("legacy-token", "Use --api-key instead")
+
+	fs.Int32VarP(&x.ConnectionCount, utils.BuildFlagName(prefix, "connection-count"), "cc", x.ConnectionCount, "Number of concurrent connections")
+
+	fs.Int32VarP(&x.MaxThreads, utils.BuildFlagName(prefix, "max-threads"), "mt", x.MaxThreads, "Maximum number of threads")
+
+	fs.MarkDeprecated("max-threads", "Use --worker-count instead")
+
+	fs.BoolVarP(&x.ExperimentalMode, utils.BuildFlagName(prefix, "experimental-mode"), "exp", x.ExperimentalMode, "Enable experimental features")
+
+	fs.MarkHidden("experimental-mode")
+
+}
+
+func (x *NestedMessageTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
+	if x.ServerConfig == nil {
+		x.ServerConfig = new(SimpleMessage)
+	}
+
+	if v, ok := interface{}(x.ServerConfig).(flags.Interface); ok {
+		v.AddFlags(fs, "server")
+	}
+
+	if x.ClientConfig == nil {
+		x.ClientConfig = new(SimpleMessage)
+	}
+
+	if v, ok := interface{}(x.ClientConfig).(flags.Interface); ok {
+		v.AddFlags(fs, "client_config")
+	}
+
+	if x.DatabaseConfig == nil {
+		x.DatabaseConfig = new(SimpleMessage)
+	}
+
+	if v, ok := interface{}(x.DatabaseConfig).(flags.Interface); ok {
+		v.AddFlags(fs, "db")
+	}
+
+	if x.DeepConfig == nil {
+		x.DeepConfig = new(NestedLevel2Message)
+	}
+
+	if v, ok := interface{}(x.DeepConfig).(flags.Interface); ok {
+		v.AddFlags(fs, "app")
+	}
+
+}
+
+func (x *NestedLevel2Message) AddFlags(fs *pflag.FlagSet, prefix ...string) {
+	fs.StringVarP(&x.Level2Field, utils.BuildFlagName(prefix, "level2-field"), "", x.Level2Field, "Level 2 nested field")
+
+	if x.NestedSimple == nil {
+		x.NestedSimple = new(SimpleMessage)
+	}
+
+	if v, ok := interface{}(x.NestedSimple).(flags.Interface); ok {
+		v.AddFlags(fs, "nested")
+	}
+
+}
+
+func (x *ComprehensiveMapTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
+	fs.VarP(types.JSON(&x.JsonLabels), utils.BuildFlagName(prefix, "json-labels"), "jl", "Labels in JSON format")
+
+	fs.StringToStringVarP(&x.NativeLabels, utils.BuildFlagName(prefix, "native-labels"), "nl", x.NativeLabels, "Labels in native format")
+
+	fs.VarP(types.StringToInt32(&x.DefaultCounters), utils.BuildFlagName(prefix, "default-counters"), "dc", "Default counter values")
+
+	fs.VarP(types.JSON(&x.LegacyConfig), utils.BuildFlagName(prefix, "legacy-config"), "lc", "Legacy configuration map")
+
+	fs.MarkDeprecated("legacy-config", "Use --new-config instead")
+
+	fs.VarP(types.JSON(&x.SecretConfig), utils.BuildFlagName(prefix, "secret-config"), "sc", "Secret configuration map")
+
+	fs.MarkHidden("secret-config")
+
+}

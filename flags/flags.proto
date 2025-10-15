@@ -779,6 +779,5 @@ message RepeatedFlags {
 
     EnumFlag enum = 16; // Repeated enum values
     DurationFlag duration = 17; // Repeated duration values
-    TimestampFlag timestamp = 18; // Repeated timestamp values
   }
 }

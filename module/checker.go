@@ -192,8 +192,6 @@ func (m *Module) CheckRepeatedFlag(typ FieldType, repeated *flags.RepeatedFlags)
 		m.checkEnum(typ, r.Enum, pgs.EnumT, pgs.UnknownWKT, true)
 	case *flags.RepeatedFlags_Duration:
 		m.checkCommon(typ, r.Duration, pgs.MessageT, pgs.DurationWKT, true)
-	case *flags.RepeatedFlags_Timestamp:
-		m.checkTimestamp(typ, r.Timestamp, true)
 	default:
 		m.Failf("unknown repeated flag type (%T)", repeated.Type)
 	}
