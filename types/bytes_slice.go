@@ -65,7 +65,6 @@ func (s *BytesSliceValue) String() string {
 		bytesStrSlice[i] = base64.StdEncoding.EncodeToString(b.Value)
 	}
 	out, _ := utils.WriteAsCSV(bytesStrSlice)
-
 	return "[" + out + "]"
 }
 

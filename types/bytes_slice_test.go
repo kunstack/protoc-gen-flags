@@ -214,7 +214,7 @@ func TestBytesSliceValue_SpecialCharacters(t *testing.T) {
 func TestBytesSlice_Constructor(t *testing.T) {
 	// Test with non-nil slice
 	initialBytes := []*wrapperspb.BytesValue{wrapperspb.Bytes([]byte("test"))}
-	result := BytesSlice(initialBytes)
+	result := BytesSlice(&initialBytes)
 
 	if result == nil {
 		t.Fatal("BytesSlice() returned nil")
@@ -237,7 +237,7 @@ func TestBytesSlice_Constructor(t *testing.T) {
 func TestBytesSlice_ConstructorNil(t *testing.T) {
 	// Test with nil slice
 	var nilBytes []*wrapperspb.BytesValue
-	result := BytesSlice(nilBytes)
+	result := BytesSlice(&nilBytes)
 
 	if result == nil {
 		t.Fatal("BytesSlice() returned nil")
@@ -262,7 +262,7 @@ func TestBytesSliceValue_PflagInterface(t *testing.T) {
 	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
 
 	// Test that BytesSliceValue implements pflag.Value interface
-	bs := BytesSlice(bytesSlice)
+	bs := BytesSlice(&bytesSlice)
 	fs.Var(bs, "bytes", "test bytes slice")
 
 	// Test setting flags
