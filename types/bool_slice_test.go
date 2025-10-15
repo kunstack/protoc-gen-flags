@@ -1,8 +1,9 @@
-package types
+package types_test
 
 import (
 	"testing"
 
+	"github.com/kunstack/protoc-gen-flags/types"
 	"github.com/spf13/pflag"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -48,8 +49,8 @@ func TestBoolSliceValue_Set(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			flags := []*wrapperspb.BoolValue{}
-			bs := BoolSliceValue{value: &flags}
+			flags := make([]*wrapperspb.BoolValue, 0)
+			bs := types.BoolSlice(&flags)
 			err := bs.Set(tt.input)
 
 			if (err != nil) != tt.wantErr {
@@ -58,14 +59,14 @@ func TestBoolSliceValue_Set(t *testing.T) {
 			}
 
 			if !tt.wantErr {
-				if len(*bs.value) != len(tt.want) {
-					t.Errorf("BoolSliceValue.Set() length = %v, want %v", len(*bs.value), len(tt.want))
+				if len(flags) != len(tt.want) {
+					t.Errorf("BoolSliceValue.Set() length = %v, want %v", len(flags), len(tt.want))
 					return
 				}
 
 				for i, wantVal := range tt.want {
-					if (*bs.value)[i].Value != wantVal.Value {
-						t.Errorf("BoolSliceValue.Set()[%d] = %v, want %v", i, (*bs.value)[i].Value, wantVal.Value)
+					if (flags)[i].Value != wantVal.Value {
+						t.Errorf("BoolSliceValue.Set()[%d] = %v, want %v", i, (flags)[i].Value, wantVal.Value)
 					}
 				}
 			}
@@ -98,7 +99,7 @@ func TestBoolSliceValue_String(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bs := BoolSliceValue{value: &tt.input}
+			bs := types.BoolSlice(&tt.input)
 			if got := bs.String(); got != tt.want {
 				t.Errorf("BoolSliceValue.String() = %v, want %v", got, tt.want)
 			}
@@ -108,18 +109,18 @@ func TestBoolSliceValue_String(t *testing.T) {
 
 func TestBoolSliceValue_Type(t *testing.T) {
 	flags := []*wrapperspb.BoolValue{}
-	bs := BoolSliceValue{value: &flags}
+	bs := types.BoolSlice(&flags)
 	if got := bs.Type(); got != "boolSliceValue" {
 		t.Errorf("BoolSliceValue.Type() = %v, want %v", got, "boolSliceValue")
 	}
 }
 
 func TestBoolSliceValue_PflagInterface(t *testing.T) {
-	flags := []*wrapperspb.BoolValue{}
+	flags := make([]*wrapperspb.BoolValue, 0)
 	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
 
 	// Test that BoolSliceValue implements pflag.Value interface
-	bs := BoolSlice(flags)
+	bs := types.BoolSlice(&flags)
 	fs.Var(bs, "bools", "test boolean slice")
 
 	// Test setting flags
@@ -129,24 +130,28 @@ func TestBoolSliceValue_PflagInterface(t *testing.T) {
 	}
 
 	// Check the values through the BoolSliceValue interface
-	if len(*bs.value) != 3 {
-		t.Errorf("Expected 3 values, got %d", len(*bs.value))
+	if len(flags) != 3 {
+		t.Errorf("Expected 3 values, got %d", len(flags))
 	}
 
-	if !(*bs.value)[0].Value || (*bs.value)[1].Value || !(*bs.value)[2].Value {
-		t.Errorf("Values not as expected: %v, %v, %v", (*bs.value)[0].Value, (*bs.value)[1].Value, (*bs.value)[2].Value)
+	if !(flags)[0].Value || (flags)[1].Value || !(flags)[2].Value {
+		t.Errorf("Values not as expected: %v, %v, %v", (flags)[0].Value, (flags)[1].Value, (flags)[2].Value)
 	}
 }
 
 func TestBoolSliceFunction(t *testing.T) {
 	flags := []*wrapperspb.BoolValue{wrapperspb.Bool(true), wrapperspb.Bool(false)}
-	bs := BoolSlice(flags)
+	bs := types.BoolSlice(&flags)
 
 	if bs == nil {
 		t.Error("BoolSlice() returned nil")
 	}
 
-	if len(*bs.value) != 2 {
-		t.Errorf("BoolSlice() length = %v, want %v", len(*bs.value), 2)
+	if len(flags) != 2 {
+		t.Errorf("BoolSlice() length = %v, want %v", len(flags), 2)
+	}
+
+	if !(flags)[0].Value || (flags)[1].Value {
+		t.Errorf("Values not as expected: %v, %v", (flags)[0].Value, (flags)[1].Value)
 	}
 }

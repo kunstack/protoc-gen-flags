@@ -66,6 +66,6 @@ func (s *DurationSliceValue) String() string {
 	return "[" + out + "]"
 }
 
-func DurationSlice(v []*durationpb.Duration) *DurationSliceValue {
-	return &DurationSliceValue{value: &v}
+func DurationSlice(v *[]*durationpb.Duration) *DurationSliceValue {
+	return &DurationSliceValue{value: v}
 }

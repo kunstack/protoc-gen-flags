@@ -189,12 +189,12 @@ func (n *NativeBytesValue) Type() string {
 	return "nativeBytesValue"
 }
 
-func BytesSlice[T []*wrapperspb.BytesValue | [][]byte](v T) pflag.Value {
+func BytesSlice[T []*wrapperspb.BytesValue | [][]byte](v *T) pflag.Value {
 	switch wrap := any(v).(type) {
-	case []*wrapperspb.BytesValue:
-		return &BytesSliceValue{value: &wrap}
-	case [][]byte:
-		return &NativeBytesSliceValue{value: &wrap}
+	case *[]*wrapperspb.BytesValue:
+		return &BytesSliceValue{value: wrap}
+	case *[][]byte:
+		return &NativeBytesSliceValue{value: wrap}
 	default:
 		// This should never happen due to type constraints
 		panic("BytesSlice: unsupported type")

@@ -1,11 +1,13 @@
-package types
+package types_test
 
 import (
+	"bytes"
 	"encoding/hex"
 	"fmt"
 	"strings"
 	"testing"
 
+	"github.com/kunstack/protoc-gen-flags/types"
 	"github.com/spf13/pflag"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -75,7 +77,8 @@ func TestBytesHexValue_String(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b := &BytesHexValue{Value: tt.value}
+			value := wrapperspb.Bytes(tt.value)
+			b := types.BytesHex(value)
 			if got := b.String(); got != tt.expected {
 				t.Errorf("BytesHexValue.String() = %v, want %v", got, tt.expected)
 			}
@@ -84,7 +87,7 @@ func TestBytesHexValue_String(t *testing.T) {
 }
 
 func TestBytesHexValue_String_Nil(t *testing.T) {
-	var b *BytesHexValue
+	var b *types.BytesHexValue
 	got := b.String()
 	expected := ""
 	if got != expected {
@@ -198,7 +201,7 @@ func TestBytesHexValue_Set(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b := &BytesHexValue{}
+			b := &types.BytesHexValue{}
 			err := b.Set(tt.input)
 
 			if tt.expectError {
@@ -213,7 +216,7 @@ func TestBytesHexValue_Set(t *testing.T) {
 				return
 			}
 
-			if !equalBytesHex(b.Value, tt.expected) {
+			if !bytes.Equal(b.Value, tt.expected) {
 				t.Errorf("BytesHexValue.Set() = %v, want %v", b.Value, tt.expected)
 			}
 		})
@@ -221,19 +224,19 @@ func TestBytesHexValue_Set(t *testing.T) {
 }
 
 func TestBytesHexValue_Type(t *testing.T) {
-	b := &BytesHexValue{}
+	b := &types.BytesHexValue{}
 	if got := b.Type(); got != "bytesHex" {
 		t.Errorf("BytesHexValue.Type() = %v, want %v", got, "bytesHex")
 	}
 }
 
 func TestBytesHexValue_ImplementsPflagValue(t *testing.T) {
-	var _ pflag.Value = (*BytesHexValue)(nil)
+	var _ pflag.Value = (*types.BytesHexValue)(nil)
 }
 
 func TestBytesHexValue_PflagIntegration(t *testing.T) {
 	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
-	b := &BytesHexValue{}
+	b := &types.BytesHexValue{}
 
 	fs.Var(b, "bytes", "Test bytes hex value")
 
@@ -244,7 +247,7 @@ func TestBytesHexValue_PflagIntegration(t *testing.T) {
 	}
 
 	expected := []byte("hello world")
-	if !equalBytesHex(b.Value, expected) {
+	if !bytes.Equal(b.Value, expected) {
 		t.Errorf("Parsed bytes = %v, want %v", b.Value, expected)
 	}
 
@@ -256,7 +259,7 @@ func TestBytesHexValue_PflagIntegration(t *testing.T) {
 
 func TestBytesHexValue_PflagIntegrationError(t *testing.T) {
 	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
-	b := &BytesHexValue{}
+	b := &types.BytesHexValue{}
 
 	fs.Var(b, "bytes", "Test bytes hex value")
 
@@ -269,7 +272,7 @@ func TestBytesHexValue_PflagIntegrationError(t *testing.T) {
 
 func TestBytesHex_Constructor(t *testing.T) {
 	wrap := &wrapperspb.BytesValue{Value: []byte("hello world")}
-	b := BytesHex(wrap)
+	b := types.BytesHex(wrap)
 
 	// Test that the returned BytesHexValue has correct fields
 	if (*wrapperspb.BytesValue)(b) != wrap {
@@ -277,7 +280,7 @@ func TestBytesHex_Constructor(t *testing.T) {
 	}
 
 	// Test that the value is correct
-	if !equalBytes(b.Value, []byte("hello world")) {
+	if !bytes.Equal(b.Value, []byte("hello world")) {
 		t.Errorf("BytesHex().Value = %v, want %v", b.Value, []byte("hello world"))
 	}
 
@@ -289,7 +292,7 @@ func TestBytesHex_Constructor(t *testing.T) {
 }
 
 func TestBytesHex_ConstructorNil(t *testing.T) {
-	b := BytesHex(nil)
+	b := types.BytesHex(nil)
 
 	// Test that it works with nil wrapper
 	if b != nil {
@@ -298,7 +301,7 @@ func TestBytesHex_ConstructorNil(t *testing.T) {
 }
 
 func TestBytesHexValue_StringAfterSet(t *testing.T) {
-	b := &BytesHexValue{}
+	b := &types.BytesHexValue{}
 
 	// Set a value
 	err := b.Set("746573742076616C7565")
@@ -313,14 +316,14 @@ func TestBytesHexValue_StringAfterSet(t *testing.T) {
 }
 
 func TestBytesHexValue_MultipleSets(t *testing.T) {
-	b := &BytesHexValue{}
+	b := &types.BytesHexValue{}
 
 	// Set first value
 	err := b.Set("6669727374")
 	if err != nil {
 		t.Fatalf("Failed to set first bytes hex value: %v", err)
 	}
-	if !equalBytes(b.Value, []byte("first")) {
+	if !bytes.Equal(b.Value, []byte("first")) {
 		t.Errorf("First set failed: got %v, want %v", b.Value, []byte("first"))
 	}
 
@@ -329,7 +332,7 @@ func TestBytesHexValue_MultipleSets(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to set second bytes hex value: %v", err)
 	}
-	if !equalBytes(b.Value, []byte("second")) {
+	if !bytes.Equal(b.Value, []byte("second")) {
 		t.Errorf("Second set failed: got %v, want %v", b.Value, []byte("second"))
 	}
 
@@ -352,7 +355,7 @@ func TestBytesHexValue_RoundTrip(t *testing.T) {
 
 	for i, original := range tests {
 		t.Run(fmt.Sprintf("roundtrip_%d", i), func(t *testing.T) {
-			b := &BytesHexValue{}
+			b := &types.BytesHexValue{}
 
 			// Convert to hex and set
 			hexStr := hex.EncodeToString(original)
@@ -362,7 +365,7 @@ func TestBytesHexValue_RoundTrip(t *testing.T) {
 			}
 
 			// Convert back and compare
-			if !equalBytes(b.Value, original) {
+			if !bytes.Equal(b.Value, original) {
 				t.Errorf("Round trip failed: got %v, want %v", b.Value, original)
 			}
 		})
@@ -388,12 +391,12 @@ func TestBytesHexValue_EdgeCases(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b := &BytesHexValue{}
+			b := &types.BytesHexValue{}
 			err := b.Set(tt.input)
 			if err != nil {
 				t.Fatalf("Failed to set bytes hex value %q: %v", tt.input, err)
 			}
-			if !equalBytes(b.Value, tt.want) {
+			if !bytes.Equal(b.Value, tt.want) {
 				t.Errorf("BytesHexValue edge case: input=%q, got=%v, want=%v", tt.input, b.Value, tt.want)
 			}
 		})
@@ -401,7 +404,7 @@ func TestBytesHexValue_EdgeCases(t *testing.T) {
 }
 
 func TestBytesHexValue_LongData(t *testing.T) {
-	b := &BytesHexValue{}
+	b := &types.BytesHexValue{}
 
 	// Test with a large byte array
 	largeData := make([]byte, 10000)
@@ -416,7 +419,7 @@ func TestBytesHexValue_LongData(t *testing.T) {
 		t.Fatalf("Failed to set large bytes hex value: %v", err)
 	}
 
-	if !equalBytes(b.Value, largeData) {
+	if !bytes.Equal(b.Value, largeData) {
 		t.Errorf("Large data round trip failed")
 	}
 
@@ -455,13 +458,13 @@ func TestBytesHexValue_CaseSensitivity(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b := &BytesHexValue{}
+			b := &types.BytesHexValue{}
 			err := b.Set(tt.input)
 			if err != nil {
 				t.Fatalf("Failed to set bytes hex value: %v", err)
 			}
 
-			if !equalBytes(b.Value, tt.value) {
+			if !bytes.Equal(b.Value, tt.value) {
 				t.Errorf("Value mismatch: got %v, want %v", b.Value, tt.value)
 			}
 
@@ -485,7 +488,7 @@ func TestBytesHexValue_InvalidInputs(t *testing.T) {
 
 	for _, input := range tests {
 		t.Run(input, func(t *testing.T) {
-			b := &BytesHexValue{}
+			b := &types.BytesHexValue{}
 			err := b.Set(input)
 
 			// Only expect error for truly invalid hex (not just whitespace)
@@ -500,17 +503,4 @@ func TestBytesHexValue_InvalidInputs(t *testing.T) {
 			}
 		})
 	}
-}
-
-// Helper function to compare byte slices
-func equalBytesHex(a, b []byte) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-	return true
 }

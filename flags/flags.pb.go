@@ -2800,9 +2800,12 @@ func (x *TimestampFlag) GetFormats() []string {
 type MessageFlag struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Nested controls whether to generate AddFlags method calls for this message field.
-	// When set to true, the generated code will call AddFlags on nested message fields
-	// that implement the flags.Interface. When set to false, no flags will be generated
-	// for fields within this message, even if they have flag configurations.
+	// When set to true, the generated code will:
+	//  1. Automatically initialize the message field if it's nil (prevents null pointer exceptions)
+	//  2. Call AddFlags on the nested message fields that implement the flags.Interface
+	//
+	// When set to false, no flags will be generated for fields within this message,
+	// even if they have flag configurations.
 	Nested bool `protobuf:"varint,1,opt,name=nested,proto3" json:"nested,omitempty"`
 	// Name specifies a custom name prefix for all flags in this message field.
 	// This is useful for organizing flags into logical groups and avoiding

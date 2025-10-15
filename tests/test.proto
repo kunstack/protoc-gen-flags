@@ -23,7 +23,7 @@ import "google/protobuf/wrappers.proto";
 
 option go_package = "github.com/kunstack/protoc-gen-flags/tests;tests";
 
-message TestMessage {
+message TestForMessage {
   option (flags.allow_empty) = true;
 
   float hello = 1 [(flags.value).float = {
@@ -160,7 +160,7 @@ message TestMessage {
   }];
 
   // Test enum type
-  TestEnum test_enum = 17 [(flags.value).enum = {
+  TestEnum1 test_enum = 17 [(flags.value).enum = {
     name: "test-enum"
     short: "e"
     usage: "Test enum field"
@@ -174,19 +174,6 @@ message TestMessage {
   }];
 
   // Test oneof with duration
-  oneof duration_choice {
-    google.protobuf.Duration processing_time = 19 [(flags.value).duration = {
-      name: "processing-time"
-      short: "P"
-      usage: "Processing time duration"
-    }];
-
-    google.protobuf.Duration waiting_time = 20 [(flags.value).duration = {
-      name: "waiting-time"
-      short: "w"
-      usage: "Waiting time duration"
-    }];
-  }
 
   // Test message field type for *flags.FieldFlags_Message
   SimpleMessage simple_field = 21 [(flags.value).message = {
@@ -290,11 +277,11 @@ message TestMessage {
   }];
 }
 
-enum TestEnum {
-  UNKNOWN = 0;
-  VALUE1 = 1;
-  VALUE2 = 2;
-  VALUE3 = 3;
+enum TestEnum1 {
+  TEST_ENUM_UNSPECIFIED = 0;
+  TEST_ENUM_VALUE1 = 1;
+  TEST_ENUM_VALUE2 = 2;
+  TEST_ENUM_VALUE3 = 3;
 }
 
 message SimpleMessage {
@@ -332,6 +319,7 @@ message WrapperValueMessage {
     encoding: BYTES_ENCODING_TYPE_BASE64
   }];
 
+  // Test BytesSliceValue for repeated BytesValue with base64 encoding
   // Test BytesSliceValue for repeated BytesValue with base64 encoding
   repeated google.protobuf.BytesValue bytes_values = 5 [(flags.value).repeated.bytes = {
     name: "bytes-values"
@@ -413,6 +401,80 @@ message BytesSliceTestMessage {
   }];
 }
 
+// Dedicated message for testing FloatSlice functionality
+message FloatSliceTestMessage {
+  option (flags.allow_empty) = true;
+
+  // Test various float slice configurations
+  repeated float measurements = 1 [(flags.value).repeated.float = {
+    name: "measurements"
+    short: "m"
+    usage: "Scientific measurements (e.g., 3.14, 2.71, 1.41)"
+  }];
+
+  optional float coordinates2 = 2 [(flags.value).float = {
+    name: "coordinates"
+    short: "c"
+    usage: "GPS coordinates in float format"
+  }];
+
+  repeated float temperatures = 3 [(flags.value).repeated.float = {
+    name: "temperatures"
+    short: "t"
+    usage: "Temperature readings in Celsius"
+  }];
+
+  repeated float percentages = 4 [(flags.value).repeated.float = {
+    name: "percentages"
+    short: "p"
+    usage: "Percentage values (0.0 to 100.0)"
+  }];
+}
+
+// Dedicated message for testing FloatValue wrapper functionality
+message FloatValueTestMessage {
+  option (flags.allow_empty) = true;
+
+  // Test single FloatValue wrapper type
+  optional google.protobuf.FloatValue single_value = 1 [(flags.value).float = {
+    name: "single-value"
+    short: "sv"
+    usage: "Single float value wrapper"
+  }];
+
+  // Test FloatValue slice type
+  repeated google.protobuf.FloatValue float_values = 2 [(flags.value).repeated.float = {
+    name: "float-values"
+    short: "fvs"
+    usage: "Multiple FloatValue wrapper instances"
+  }];
+
+  // Test different FloatValue configurations
+  optional google.protobuf.FloatValue temperature = 3 [(flags.value).float = {
+    name: "temperature"
+    short: "temp"
+    usage: "Temperature in Celsius"
+  }];
+
+  repeated google.protobuf.FloatValue sensor_readings = 4 [(flags.value).repeated.float = {
+    name: "sensor-readings"
+    short: "sr"
+    usage: "Multiple sensor readings"
+  }];
+
+  optional google.protobuf.FloatValue probability = 5 [(flags.value).float = {
+    name: "probability"
+    short: "prob"
+    usage: "Probability value (0.0 to 1.0)"
+  }];
+
+  repeated google.protobuf.FloatValue scores = 6 [(flags.value).repeated.float = {
+    name: "scores"
+    short: "sc"
+    usage: "Multiple score values"
+  }];
+}
+
 // Dedicated message for testing DurationSliceValue functionality
 message DurationSliceTestMessage {
   option (flags.allow_empty) = true;
@@ -441,6 +503,16 @@ message DurationSliceTestMessage {
     short: "p"
     usage: "Polling intervals for monitoring (e.g., 100ms, 5s, 1m)"
   }];
+
+  google.protobuf.Timestamp deadline = 5 [(flags.value).timestamp = {
+    formats: ["abc"]
+    usage: "deadline usage"
+  }];
+
+  optional google.protobuf.Timestamp optional_deadline = 6 [(flags.value).timestamp = {
+    formats: ["abc"]
+    usage: "optional_deadline"
+  }];
 }
 
 message DisabledMessage {
@@ -453,10 +525,11 @@ message DisabledMessage {
 
   SimpleMessage simple_message = 2 [(flags.value).message = {
     nested: true
-    name: "simple-message"
+    name: "simple-message6"
   }];
   google.protobuf.Timestamp created_at = 3 [(flags.value).timestamp = {
     formats: ["abc"]
+    name: "hack"
   }];
 }
 
@@ -480,34 +553,4 @@ message WrapperMessage {
     name: "value2"
     usage: "This should not appear in help"
   }];
-}
-
-message OneofMessage {
-  option (flags.allow_empty) = true;
-
-  oneof test_oneof {
-    string string_value = 1 [(flags.value).string = {
-      name: "string-value"
-      short: "s"
-      usage: "String value in oneof"
-    }];
-
-    int32 int_value = 2 [(flags.value).int32 = {
-      name: "int-value"
-      short: "i"
-      usage: "Integer value in oneof"
-    }];
-
-    google.protobuf.Duration duration_value = 3 [(flags.value).duration = {
-      name: "duration-value"
-      short: "d"
-      usage: "Duration value in oneof"
-    }];
-
-    bool bool_value = 4 [(flags.value).bool = {
-      name: "bool-value"
-      short: "b"
-      usage: "Boolean value in oneof"
-    }];
-  }
 }

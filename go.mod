@@ -4,6 +4,7 @@ go 1.23.0
 
 require (
 	github.com/lyft/protoc-gen-star v0.6.2
+	github.com/samber/lo v1.52.0
 	github.com/spf13/pflag v1.0.10
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/protobuf v1.36.8

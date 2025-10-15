@@ -1,9 +1,10 @@
-package types
+package types_test
 
 import (
 	"testing"
 	"time"
 
+	"github.com/kunstack/protoc-gen-flags/types"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
@@ -49,8 +50,8 @@ func TestDurationSliceValue_Set(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			value := []*durationpb.Duration{}
-			d := DurationSliceValue{value: &value}
+			value := make([]*durationpb.Duration, 0)
+			d := types.DurationSlice(&value)
 
 			err := d.Set(tt.input)
 
@@ -95,20 +96,20 @@ func TestDurationSliceValue_String(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := DurationSlice(tt.value)
+			d := types.DurationSlice(&tt.value)
 			assert.Equal(t, tt.expected, d.String())
 		})
 	}
 }
 
 func TestDurationSliceValue_Type(t *testing.T) {
-	d := DurationSlice([]*durationpb.Duration{})
+	d := types.DurationSlice(nil)
 	assert.Equal(t, "durationSliceValue", d.Type())
 }
 
 func TestDurationSliceValue_Append(t *testing.T) {
-	value := []*durationpb.Duration{}
-	d := DurationSliceValue{value: &value}
+	value := make([]*durationpb.Duration, 0)
+	d := types.DurationSlice(&value)
 
 	// First set
 	err := d.Set("1s,2m")

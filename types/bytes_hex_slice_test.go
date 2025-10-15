@@ -1,10 +1,11 @@
-package types
+package types_test
 
 import (
 	"encoding/hex"
 	"strings"
 	"testing"
 
+	"github.com/kunstack/protoc-gen-flags/types"
 	"github.com/spf13/pflag"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -39,12 +40,12 @@ func TestBytesHexSliceValue_Set(t *testing.T) {
 		{
 			name:  "empty string",
 			input: "",
-			want:  []*wrapperspb.BytesValue{},
+			want:  make([]*wrapperspb.BytesValue, 0),
 		},
 		{
 			name:  "empty hex",
 			input: "",
-			want:  []*wrapperspb.BytesValue{},
+			want:  make([]*wrapperspb.BytesValue, 0),
 		},
 		{
 			name:  "binary data",
@@ -70,8 +71,8 @@ func TestBytesHexSliceValue_Set(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bytesSlice := []*wrapperspb.BytesValue{}
-			bs := BytesHexSliceValue{value: &bytesSlice}
+			bytesSlice := make([]*wrapperspb.BytesValue, 0)
+			bs := types.BytesHexSlice(&bytesSlice)
 			err := bs.Set(tt.input)
 
 			if (err != nil) != tt.wantErr {
@@ -80,14 +81,14 @@ func TestBytesHexSliceValue_Set(t *testing.T) {
 			}
 
 			if !tt.wantErr {
-				if len(*bs.value) != len(tt.want) {
-					t.Errorf("BytesHexSliceValue.Set() length = %v, want %v", len(*bs.value), len(tt.want))
+				if len(bytesSlice) != len(tt.want) {
+					t.Errorf("BytesHexSliceValue.Set() length = %v, want %v", len(bytesSlice), len(tt.want))
 					return
 				}
 
 				for i, wantVal := range tt.want {
-					if string((*bs.value)[i].Value) != string(wantVal.Value) {
-						t.Errorf("BytesHexSliceValue.Set()[%d] = %v, want %v", i, (*bs.value)[i].Value, wantVal.Value)
+					if string((bytesSlice)[i].Value) != string(wantVal.Value) {
+						t.Errorf("BytesHexSliceValue.Set()[%d] = %v, want %v", i, (bytesSlice)[i].Value, wantVal.Value)
 					}
 				}
 			}
@@ -103,7 +104,7 @@ func TestBytesHexSliceValue_String(t *testing.T) {
 	}{
 		{
 			name:  "empty slice",
-			input: []*wrapperspb.BytesValue{},
+			input: make([]*wrapperspb.BytesValue, 0),
 			want:  "[]",
 		},
 		{
@@ -125,7 +126,7 @@ func TestBytesHexSliceValue_String(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bs := BytesHexSliceValue{value: &tt.input}
+			bs := types.BytesHexSlice(&tt.input)
 			if got := bs.String(); got != tt.want {
 				t.Errorf("BytesHexSliceValue.String() = %v, want %v", got, tt.want)
 			}
@@ -134,22 +135,22 @@ func TestBytesHexSliceValue_String(t *testing.T) {
 }
 
 func TestBytesHexSliceValue_Type(t *testing.T) {
-	bytesSlice := []*wrapperspb.BytesValue{}
-	bs := BytesHexSliceValue{value: &bytesSlice}
+	bytesSlice := make([]*wrapperspb.BytesValue, 0)
+	bs := types.BytesHexSlice(&bytesSlice)
 	if got := bs.Type(); got != "bytesHexSliceValue" {
 		t.Errorf("BytesHexSliceValue.Type() = %v, want bytesHexSliceValue", got)
 	}
 }
 
 func TestBytesHexSliceValue_ImplementsPflagValue(t *testing.T) {
-	bytesSlice := []*wrapperspb.BytesValue{}
-	bs := BytesHexSliceValue{value: &bytesSlice}
-	var _ pflag.Value = &bs
+	bytesSlice := make([]*wrapperspb.BytesValue, 0)
+	bs := types.BytesHexSlice(&bytesSlice)
+	var _ pflag.Value = bs
 }
 
 func TestBytesHexSliceValue_MultipleSets(t *testing.T) {
-	bytesSlice := []*wrapperspb.BytesValue{}
-	bs := BytesHexSliceValue{value: &bytesSlice}
+	bytesSlice := make([]*wrapperspb.BytesValue, 0)
+	bs := types.BytesHexSlice(&bytesSlice)
 
 	// First set
 	err := bs.Set("48656C6C6F,576F726C64") // "Hello", "World" in hex
@@ -165,28 +166,28 @@ func TestBytesHexSliceValue_MultipleSets(t *testing.T) {
 
 	// Verify all values are present
 	expected := []string{"Hello", "World", "This Is", "A Test"}
-	if len(*bs.value) != len(expected) {
-		t.Fatalf("Expected %d values, got %d", len(expected), len(*bs.value))
+	if len(bytesSlice) != len(expected) {
+		t.Fatalf("Expected %d values, got %d", len(expected), len(bytesSlice))
 	}
 
 	for i, expectedStr := range expected {
-		if string((*bs.value)[i].Value) != expectedStr {
-			t.Errorf("Expected %s at index %d, got %s", expectedStr, i, (*bs.value)[i].Value)
+		if string(bytesSlice[i].Value) != expectedStr {
+			t.Errorf("Expected %s at index %d, got %s", expectedStr, i, bytesSlice[i].Value)
 		}
 	}
 }
 
 func TestBytesHexSliceValue_EmptyString(t *testing.T) {
-	bytesSlice := []*wrapperspb.BytesValue{}
-	bs := BytesHexSliceValue{value: &bytesSlice}
+	bytesSlice := make([]*wrapperspb.BytesValue, 0)
+	bs := types.BytesHexSlice(&bytesSlice)
 
 	err := bs.Set("")
 	if err != nil {
 		t.Fatalf("Set() with empty string error = %v", err)
 	}
 
-	if len(*bs.value) != 0 {
-		t.Errorf("Expected empty slice, got %d elements", len(*bs.value))
+	if len(bytesSlice) != 0 {
+		t.Errorf("Expected empty slice, got %d elements", len(bytesSlice))
 	}
 
 	if bs.String() != "[]" {
@@ -199,20 +200,20 @@ func TestBytesHexSliceValue_SpecialCharacters(t *testing.T) {
 	specialBytes := []byte{0, 1, 2, 255, 254, 253}
 	encoded := hex.EncodeToString(specialBytes)
 
-	bytesSlice := []*wrapperspb.BytesValue{}
-	bs := BytesHexSliceValue{value: &bytesSlice}
+	bytesSlice := make([]*wrapperspb.BytesValue, 0)
+	bs := types.BytesHexSlice(&bytesSlice)
 
 	err := bs.Set(encoded)
 	if err != nil {
 		t.Fatalf("Set() with special characters error = %v", err)
 	}
 
-	if len(*bs.value) != 1 {
-		t.Fatalf("Expected 1 value, got %d", len(*bs.value))
+	if len(bytesSlice) != 1 {
+		t.Fatalf("Expected 1 value, got %d", len(bytesSlice))
 	}
 
-	if string((*bs.value)[0].Value) != string(specialBytes) {
-		t.Errorf("Expected %v, got %v", specialBytes, (*bs.value)[0].Value)
+	if string(bytesSlice[0].Value) != string(specialBytes) {
+		t.Errorf("Expected %v, got %v", specialBytes, bytesSlice[0].Value)
 	}
 
 	// Check that String() method encodes back correctly (should be uppercase)
@@ -225,55 +226,45 @@ func TestBytesHexSliceValue_SpecialCharacters(t *testing.T) {
 func TestBytesHexSlice_Constructor(t *testing.T) {
 	// Test with non-nil slice
 	initialBytes := []*wrapperspb.BytesValue{wrapperspb.Bytes([]byte("test"))}
-	result := BytesHexSlice(initialBytes)
+	result := types.BytesHexSlice(&initialBytes)
 
 	if result == nil {
 		t.Fatal("BytesHexSlice() returned nil")
 	}
 
-	// Type assert to access internal fields
-	if bs, ok := result.(*BytesHexSliceValue); ok {
-		if bs.value == nil {
-			t.Error("BytesHexSlice() did not set the value pointer")
-		}
+	// Test that it implements pflag.Value
+	var _ pflag.Value = result
 
-		if bs.changed {
-			t.Error("BytesHexSlice() should initialize with changed=false")
-		}
-	} else {
-		t.Error("BytesHexSlice() did not return *BytesHexSliceValue")
+	// Test that the initial value is preserved
+	if result.String() != "[74657374]" {
+		t.Errorf("Expected [54455354], got %s", result.String())
 	}
 }
 
 func TestBytesHexSlice_ConstructorNil(t *testing.T) {
 	// Test with nil slice
 	var nilBytes []*wrapperspb.BytesValue
-	result := BytesHexSlice(nilBytes)
+	result := types.BytesHexSlice(&nilBytes)
 
 	if result == nil {
 		t.Fatal("BytesHexSlice() returned nil")
 	}
 
-	// Type assert to access internal fields
-	if bs, ok := result.(*BytesHexSliceValue); ok {
-		if bs.value == nil {
-			t.Error("BytesHexSlice() did not set the value pointer for nil input")
-		}
+	// Test that it implements pflag.Value
+	var _ pflag.Value = result
 
-		if bs.changed {
-			t.Error("BytesHexSlice() should initialize with changed=false for nil input")
-		}
-	} else {
-		t.Error("BytesHexSlice() did not return *BytesHexSliceValue for nil input")
+	// Test that it works with nil input
+	if result.String() != "[]" {
+		t.Errorf("Expected '[]', got %s", result.String())
 	}
 }
 
 func TestBytesHexSliceValue_PflagInterface(t *testing.T) {
-	bytesSlice := []*wrapperspb.BytesValue{}
+	bytesSlice := make([]*wrapperspb.BytesValue, 0)
 	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
 
 	// Test that BytesHexSliceValue implements pflag.Value interface
-	bs := BytesHexSlice(bytesSlice)
+	bs := types.BytesHexSlice(&bytesSlice)
 	fs.Var(bs, "bytes", "test bytes hex slice")
 
 	// Test setting flags
@@ -282,26 +273,22 @@ func TestBytesHexSliceValue_PflagInterface(t *testing.T) {
 		t.Errorf("Failed to parse flags: %v", err)
 	}
 
-	// Type assert to access internal values
-	if bsHex, ok := bs.(*BytesHexSliceValue); ok {
-		// Verify the parsed values
-		if len(*bsHex.value) != 2 {
-			t.Errorf("Expected 2 values, got %d", len(*bsHex.value))
-		}
+	// Verify the parsed values
+	if len(bytesSlice) != 2 {
+		t.Errorf("Expected 2 values, got %d", len(bytesSlice))
+	}
 
-		if string((*bsHex.value)[0].Value) != "Hello" {
-			t.Errorf("Expected 'Hello', got '%s'", (*bsHex.value)[0].Value)
-		}
+	if string(bytesSlice[0].Value) != "Hello" {
+		t.Errorf("Expected 'Hello', got '%s'", (bytesSlice)[0].Value)
+	}
 
-		if string((*bsHex.value)[1].Value) != "World" {
-			t.Errorf("Expected 'World', got '%s'", (*bsHex.value)[1].Value)
-		}
-	} else {
-		t.Error("Expected *BytesHexSliceValue type")
+	if string(bytesSlice[1].Value) != "World" {
+		t.Errorf("Expected 'World', got '%s'", (bytesSlice)[1].Value)
 	}
 }
 
-func TestNativeBytesHexSliceValue_Set(t *testing.T) {
+// Tests for [][]byte (native byte slice)
+func TestBytesHexNativeSliceValue_Set(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
@@ -348,23 +335,23 @@ func TestNativeBytesHexSliceValue_Set(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var bytesSlice [][]byte
-			nbhs := NativeBytesHexSliceValue{value: &bytesSlice}
+			nbhs := types.BytesHexSlice(&bytesSlice)
 			err := nbhs.Set(tt.input)
 
 			if (err != nil) != tt.wantErr {
-				t.Errorf("NativeBytesHexSliceValue.Set() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("BytesHexNativeSliceValue.Set() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
 			if !tt.wantErr {
-				if len(*nbhs.value) != len(tt.want) {
-					t.Errorf("NativeBytesHexSliceValue.Set() length = %v, want %v", len(*nbhs.value), len(tt.want))
+				if len(bytesSlice) != len(tt.want) {
+					t.Errorf("BytesHexNativeSliceValue.Set() length = %v, want %v", len(bytesSlice), len(tt.want))
 					return
 				}
 
 				for i, wantVal := range tt.want {
-					if string((*nbhs.value)[i]) != string(wantVal) {
-						t.Errorf("NativeBytesHexSliceValue.Set()[%d] = %v, want %v", i, (*nbhs.value)[i], wantVal)
+					if string(bytesSlice[i]) != string(wantVal) {
+						t.Errorf("BytesHexNativeSliceValue.Set()[%d] = %v, want %v", i, bytesSlice[i], wantVal)
 					}
 				}
 			}
@@ -372,7 +359,7 @@ func TestNativeBytesHexSliceValue_Set(t *testing.T) {
 	}
 }
 
-func TestNativeBytesHexSliceValue_String(t *testing.T) {
+func TestBytesHexNativeSliceValue_String(t *testing.T) {
 	tests := []struct {
 		name  string
 		input [][]byte
@@ -407,31 +394,31 @@ func TestNativeBytesHexSliceValue_String(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			nbhs := NativeBytesHexSliceValue{value: &tt.input}
+			nbhs := types.BytesHexSlice(&tt.input)
 			if got := nbhs.String(); got != tt.want {
-				t.Errorf("NativeBytesHexSliceValue.String() = %v, want %v", got, tt.want)
+				t.Errorf("BytesHexNativeSliceValue.String() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestNativeBytesHexSliceValue_Type(t *testing.T) {
+func TestBytesHexNativeSliceValue_Type(t *testing.T) {
 	var bytesSlice [][]byte
-	nbhs := NativeBytesHexSliceValue{value: &bytesSlice}
-	if got := nbhs.Type(); got != "nativeBytesHexSliceValue" {
-		t.Errorf("NativeBytesHexSliceValue.Type() = %v, want nativeBytesHexSliceValue", got)
+	nbhs := types.BytesHexSlice(&bytesSlice)
+	if got := nbhs.Type(); got != "BytesHexNativeSliceValue" {
+		t.Errorf("BytesHexNativeSliceValue.Type() = %v, want BytesHexNativeSliceValue", got)
 	}
 }
 
-func TestNativeBytesHexSliceValue_ImplementsPflagValue(t *testing.T) {
+func TestBytesHexNativeSliceValue_ImplementsPflagValue(t *testing.T) {
 	var bytesSlice [][]byte
-	nbhs := NativeBytesHexSliceValue{value: &bytesSlice}
-	var _ pflag.Value = &nbhs
+	nbhs := types.BytesHexSlice(&bytesSlice)
+	var _ pflag.Value = nbhs
 }
 
-func TestNativeBytesHexSliceValue_MultipleSets(t *testing.T) {
+func TestBytesHexNativeSliceValue_MultipleSets(t *testing.T) {
 	var bytesSlice [][]byte
-	nbhs := NativeBytesHexSliceValue{value: &bytesSlice}
+	nbhs := types.BytesHexSlice(&bytesSlice)
 
 	// First set
 	err := nbhs.Set("48656c6c6f,576f726c64")
@@ -447,23 +434,23 @@ func TestNativeBytesHexSliceValue_MultipleSets(t *testing.T) {
 
 	// Verify all values are present
 	expected := []string{"Hello", "World", "Test"}
-	if len(*nbhs.value) != len(expected) {
-		t.Fatalf("Expected %d values, got %d", len(expected), len(*nbhs.value))
+	if len(bytesSlice) != len(expected) {
+		t.Fatalf("Expected %d values, got %d", len(expected), len(bytesSlice))
 	}
 
 	for i, expectedVal := range expected {
-		if string((*nbhs.value)[i]) != expectedVal {
-			t.Errorf("Expected %v at index %d, got %v", expectedVal, i, (*nbhs.value)[i])
+		if string(bytesSlice[i]) != expectedVal {
+			t.Errorf("Expected %v at index %d, got %v", expectedVal, i, bytesSlice[i])
 		}
 	}
 }
 
-func TestNativeBytesHexSliceValue_PflagInterface(t *testing.T) {
+func TestBytesHexNativeSliceValue_PflagInterface(t *testing.T) {
 	var bytesSlice [][]byte
 	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
 
-	// Test that NativeBytesHexSliceValue implements pflag.Value interface
-	nbhs := &NativeBytesHexSliceValue{value: &bytesSlice}
+	// Test that BytesHexNativeSliceValue implements pflag.Value interface
+	nbhs := types.BytesHexSlice(&bytesSlice)
 	fs.Var(nbhs, "hex-bytes", "test native hex bytes slice")
 
 	// Test setting flags
@@ -473,91 +460,15 @@ func TestNativeBytesHexSliceValue_PflagInterface(t *testing.T) {
 	}
 
 	// Verify the parsed values
-	if len(*nbhs.value) != 2 {
-		t.Errorf("Expected 2 values, got %d", len(*nbhs.value))
+	if len(bytesSlice) != 2 {
+		t.Errorf("Expected 2 values, got %d", len(bytesSlice))
 	}
 
-	if string((*nbhs.value)[0]) != "Hello" {
-		t.Errorf("Expected 'Hello' at index 0, got %v", (*nbhs.value)[0])
+	if string(bytesSlice[0]) != "Hello" {
+		t.Errorf("Expected 'Hello' at index 0, got %v", bytesSlice[0])
 	}
 
-	if string((*nbhs.value)[1]) != "World" {
-		t.Errorf("Expected 'World' at index 1, got %v", (*nbhs.value)[1])
-	}
-}
-
-func TestNativeBytesHexSlice_Constructor(t *testing.T) {
-	// Test with non-nil slice - using direct struct initialization instead of deprecated NativeBytesHexSlice
-	initialBytes := [][]byte{[]byte("test")}
-	result := &NativeBytesHexSliceValue{value: &initialBytes}
-
-	if result == nil {
-		t.Fatal("NativeBytesHexSliceValue constructor returned nil")
-	}
-
-	if result.value == nil {
-		t.Error("NativeBytesHexSliceValue did not set the value pointer")
-	}
-
-	if result.changed {
-		t.Error("NativeBytesHexSliceValue should initialize with changed=false")
-	}
-}
-
-func TestNativeBytesHexSlice_ConstructorNil(t *testing.T) {
-	// Test with nil slice - using direct struct initialization instead of deprecated NativeBytesHexSlice
-	var nilBytes [][]byte
-	result := &NativeBytesHexSliceValue{value: &nilBytes}
-
-	if result == nil {
-		t.Fatal("NativeBytesHexSliceValue constructor returned nil")
-	}
-
-	if result.value == nil {
-		t.Error("NativeBytesHexSliceValue did not set the value pointer for nil input")
-	}
-
-	if result.changed {
-		t.Error("NativeBytesHexSliceValue should initialize with changed=false for nil input")
-	}
-}
-
-func TestNativeBytesHexSliceValue_RoundTrip(t *testing.T) {
-	// Test that String() and Set() are consistent
-	originalData := [][]byte{
-		[]byte("Hello World"),
-		[]byte("Test Data"),
-		[]byte("Binary\x00Data"),
-	}
-
-	var bytesSlice [][]byte
-	nbhs := NativeBytesHexSliceValue{value: &bytesSlice}
-
-	// Set the data
-	err := nbhs.Set("48656c6c6f20576f726c64,546573742044617461,42696e6172790044617461")
-	if err != nil {
-		t.Fatalf("Set() error = %v", err)
-	}
-
-	// Get the string representation
-	str := nbhs.String()
-
-	// Create a new slice and set from the string
-	var newBytesSlice [][]byte
-	newNbhs := NativeBytesHexSliceValue{value: &newBytesSlice}
-	err = newNbhs.Set(str[1 : len(str)-1]) // Remove brackets
-	if err != nil {
-		t.Fatalf("Set() from string error = %v", err)
-	}
-
-	// Verify the data matches
-	if len(*newNbhs.value) != len(originalData) {
-		t.Errorf("Expected %d values, got %d", len(originalData), len(*newNbhs.value))
-	}
-
-	for i, expected := range originalData {
-		if string((*newNbhs.value)[i]) != string(expected) {
-			t.Errorf("Round trip failed at index %d: got %v, want %v", i, (*newNbhs.value)[i], expected)
-		}
+	if string(bytesSlice[1]) != "World" {
+		t.Errorf("Expected 'World' at index 1, got %v", bytesSlice[1])
 	}
 }

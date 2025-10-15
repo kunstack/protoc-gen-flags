@@ -28,7 +28,6 @@ func Defaults() *Module {
 	return &Module{
 		ModuleBase: &pgs.ModuleBase{},
 		imports:    make(map[string]struct{}),
-		oneOfs:     make(map[string]struct{}),
 	}
 }
 
@@ -37,11 +36,10 @@ type Module struct {
 	ctx     pgsgo.Context
 	tpl     *template.Template
 	imports map[string]struct{}
-	oneOfs  map[string]struct{}
 }
 
 func (m *Module) Name() string {
-	return "defaults"
+	return "flags"
 }
 
 func (m *Module) InitContext(c pgs.BuildContext) {
@@ -77,28 +75,27 @@ func (m *Module) InitContext(c pgs.BuildContext) {
 			}
 			return imports
 		},
-		"enabled": func(m pgs.Message) bool {
+		"enabled": func(msg pgs.Message) bool {
 			var (
 				disabled   bool
 				hasFlag    bool
 				allowEmpty bool
 			)
-			for _, field := range m.Fields() {
+			for _, field := range msg.Fields() {
 				var fd flags.FieldFlags
 				ok, err := field.Extension(flags.E_Value, &fd)
-				if err == nil && ok {
+				if err == nil && ok && !field.InRealOneOf() {
 					hasFlag = true
 					break
 				}
 			}
-			_, _ = m.Extension(flags.E_Disabled, &disabled)
-			_, _ = m.Extension(flags.E_AllowEmpty, &allowEmpty)
+			_, _ = msg.Extension(flags.E_Disabled, &disabled)
+			_, _ = msg.Extension(flags.E_AllowEmpty, &allowEmpty)
 
 			return !disabled && (hasFlag || allowEmpty)
 		},
 		"flags": func(f pgs.Field) string {
-			v, _ := m.genFieldFlags(f)
-			return v
+			return m.genFieldFlags(f)
 		},
 	})
 	m.tpl = template.Must(tpl.Parse(defaultsTpl))
@@ -122,18 +119,6 @@ func (m *Module) generate(f pgs.File) {
 	m.AddGeneratorTemplateFile(name.String(), m.tpl, f)
 }
 
-func (m *Module) isOneOfDone(oneOf pgs.OneOf) bool {
-	_, done := m.oneOfs[oneOf.FullyQualifiedName()]
-	return done
-}
-
-func (m *Module) setOneOfDone(oneOf pgs.OneOf) {
-	if oneOf == nil {
-		return
-	}
-	m.oneOfs[oneOf.FullyQualifiedName()] = struct{}{}
-}
-
 const defaultsTpl = `{{ comment .SyntaxSourceCodeInfo.LeadingComments }}
 {{ range .SyntaxSourceCodeInfo.LeadingDetachedComments }}
 {{ comment . }}
@@ -147,6 +132,9 @@ import (
 	"github.com/kunstack/protoc-gen-flags/utils"
     "github.com/kunstack/protoc-gen-flags/types"
     "github.com/kunstack/protoc-gen-flags/flags"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/types/known/wrapperspb"	
 
 	{{ imports }}
 )
@@ -156,6 +144,9 @@ var (
 	_ = utils.BuildFlagName
     _ = types.Bool
     _ = flags.Interface(nil)
+	_ = wrapperspb.String
+	_ = (*durationpb.Duration)(nil)
+	_ = (*timestamppb.Timestamp)(nil)
 )
 
 {{ range .AllMessages }}

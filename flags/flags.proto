@@ -730,9 +730,11 @@ message TimestampFlag {
 // are organized and presented in the command-line interface.
 message MessageFlag {
   // Nested controls whether to generate AddFlags method calls for this message field.
-  // When set to true, the generated code will call AddFlags on nested message fields
-  // that implement the flags.Interface. When set to false, no flags will be generated
-  // for fields within this message, even if they have flag configurations.
+  // When set to true, the generated code will:
+  //   1. Automatically initialize the message field if it's nil (prevents null pointer exceptions)
+  //   2. Call AddFlags on the nested message fields that implement the flags.Interface
+  // When set to false, no flags will be generated for fields within this message,
+  // even if they have flag configurations.
   bool nested = 1;
 
   // Name specifies a custom name prefix for all flags in this message field.

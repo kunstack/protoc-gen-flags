@@ -1,10 +1,12 @@
-package types
+package types_test
 
 import (
+	"bytes"
 	"encoding/base64"
 	"fmt"
 	"testing"
 
+	"github.com/kunstack/protoc-gen-flags/types"
 	"github.com/spf13/pflag"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -59,7 +61,7 @@ func TestBytesValue_String(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b := &BytesValue{Value: tt.value}
+			b := &types.BytesValue{Value: tt.value}
 			if got := b.String(); got != tt.expected {
 				t.Errorf("BytesValue.String() = %v, want %v", got, tt.expected)
 			}
@@ -68,7 +70,7 @@ func TestBytesValue_String(t *testing.T) {
 }
 
 func TestBytesValue_String_Nil(t *testing.T) {
-	var b *BytesValue
+	var b *types.BytesValue
 	got := b.String()
 	expected := ""
 	if got != expected {
@@ -148,7 +150,7 @@ func TestBytesValue_Set(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b := &BytesValue{}
+			b := &types.BytesValue{}
 			err := b.Set(tt.input)
 
 			if tt.expectError {
@@ -163,7 +165,7 @@ func TestBytesValue_Set(t *testing.T) {
 				return
 			}
 
-			if !equalBytes(b.Value, tt.expected) {
+			if !bytes.Equal(b.Value, tt.expected) {
 				t.Errorf("BytesValue.Set() = %v, want %v", b.Value, tt.expected)
 			}
 		})
@@ -171,19 +173,19 @@ func TestBytesValue_Set(t *testing.T) {
 }
 
 func TestBytesValue_Type(t *testing.T) {
-	b := &BytesValue{}
+	b := &types.BytesValue{}
 	if got := b.Type(); got != "bytesBase64" {
 		t.Errorf("BytesValue.Type() = %v, want %v", got, "bytesBase64")
 	}
 }
 
 func TestBytesValue_ImplementsPflagValue(t *testing.T) {
-	var _ pflag.Value = (*BytesValue)(nil)
+	var _ pflag.Value = (*types.BytesValue)(nil)
 }
 
 func TestBytesValue_PflagIntegration(t *testing.T) {
 	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
-	b := &BytesValue{}
+	b := &types.BytesValue{}
 
 	fs.Var(b, "bytes", "Test bytes value")
 
@@ -194,7 +196,7 @@ func TestBytesValue_PflagIntegration(t *testing.T) {
 	}
 
 	expected := []byte("hello world")
-	if !equalBytes(b.Value, expected) {
+	if !bytes.Equal(b.Value, expected) {
 		t.Errorf("Parsed bytes = %v, want %v", b.Value, expected)
 	}
 
@@ -206,7 +208,7 @@ func TestBytesValue_PflagIntegration(t *testing.T) {
 
 func TestBytesValue_PflagIntegrationError(t *testing.T) {
 	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
-	b := &BytesValue{}
+	b := &types.BytesValue{}
 
 	fs.Var(b, "bytes", "Test bytes value")
 
@@ -219,7 +221,7 @@ func TestBytesValue_PflagIntegrationError(t *testing.T) {
 
 func TestBytes_Constructor(t *testing.T) {
 	wrap := &wrapperspb.BytesValue{Value: []byte("hello world")}
-	b := Bytes(wrap)
+	b := types.Bytes(wrap)
 
 	// Test that the returned BytesValue has correct fields
 	if (*wrapperspb.BytesValue)(b) != wrap {
@@ -227,7 +229,7 @@ func TestBytes_Constructor(t *testing.T) {
 	}
 
 	// Test that the value is correct
-	if !equalBytes(b.Value, []byte("hello world")) {
+	if !bytes.Equal(b.Value, []byte("hello world")) {
 		t.Errorf("Bytes().Value = %v, want %v", b.Value, []byte("hello world"))
 	}
 
@@ -239,7 +241,7 @@ func TestBytes_Constructor(t *testing.T) {
 }
 
 func TestBytes_ConstructorNil(t *testing.T) {
-	b := Bytes(nil)
+	b := types.Bytes(nil)
 
 	// Test that it works with nil wrapper
 	if b != nil {
@@ -248,7 +250,7 @@ func TestBytes_ConstructorNil(t *testing.T) {
 }
 
 func TestBytesValue_StringAfterSet(t *testing.T) {
-	b := &BytesValue{}
+	b := &types.BytesValue{}
 
 	// Set a value
 	err := b.Set("dGVzdCB2YWx1ZQ==")
@@ -263,14 +265,14 @@ func TestBytesValue_StringAfterSet(t *testing.T) {
 }
 
 func TestBytesValue_MultipleSets(t *testing.T) {
-	b := &BytesValue{}
+	b := &types.BytesValue{}
 
 	// Set first value
 	err := b.Set("Zmlyc3Q=")
 	if err != nil {
 		t.Fatalf("Failed to set first bytes value: %v", err)
 	}
-	if !equalBytes(b.Value, []byte("first")) {
+	if !bytes.Equal(b.Value, []byte("first")) {
 		t.Errorf("First set failed: got %v, want %v", b.Value, []byte("first"))
 	}
 
@@ -279,7 +281,7 @@ func TestBytesValue_MultipleSets(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to set second bytes value: %v", err)
 	}
-	if !equalBytes(b.Value, []byte("second")) {
+	if !bytes.Equal(b.Value, []byte("second")) {
 		t.Errorf("Second set failed: got %v, want %v", b.Value, []byte("second"))
 	}
 
@@ -302,7 +304,7 @@ func TestBytesValue_RoundTrip(t *testing.T) {
 
 	for i, original := range tests {
 		t.Run(fmt.Sprintf("roundtrip_%d", i), func(t *testing.T) {
-			b := &BytesValue{}
+			b := &types.BytesValue{}
 
 			// Convert to base64 and set
 			base64Str := base64.StdEncoding.EncodeToString(original)
@@ -312,7 +314,7 @@ func TestBytesValue_RoundTrip(t *testing.T) {
 			}
 
 			// Convert back and compare
-			if !equalBytes(b.Value, original) {
+			if !bytes.Equal(b.Value, original) {
 				t.Errorf("Round trip failed: got %v, want %v", b.Value, original)
 			}
 		})
@@ -336,12 +338,12 @@ func TestBytesValue_EdgeCases(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b := &BytesValue{}
+			b := &types.BytesValue{}
 			err := b.Set(tt.input)
 			if err != nil {
 				t.Fatalf("Failed to set bytes value %q: %v", tt.input, err)
 			}
-			if !equalBytes(b.Value, tt.want) {
+			if !bytes.Equal(b.Value, tt.want) {
 				t.Errorf("BytesValue edge case: input=%q, got=%v, want=%v", tt.input, b.Value, tt.want)
 			}
 		})
@@ -349,7 +351,7 @@ func TestBytesValue_EdgeCases(t *testing.T) {
 }
 
 func TestBytesValue_LongData(t *testing.T) {
-	b := &BytesValue{}
+	b := &types.BytesValue{}
 
 	// Test with a large byte array
 	largeData := make([]byte, 10000)
@@ -364,7 +366,7 @@ func TestBytesValue_LongData(t *testing.T) {
 		t.Fatalf("Failed to set large bytes value: %v", err)
 	}
 
-	if !equalBytes(b.Value, largeData) {
+	if !bytes.Equal(b.Value, largeData) {
 		t.Errorf("Large data round trip failed")
 	}
 
@@ -372,17 +374,4 @@ func TestBytesValue_LongData(t *testing.T) {
 	if got := b.String(); got != base64Str {
 		t.Errorf("Large data String() mismatch")
 	}
-}
-
-// Helper function to compare byte slices
-func equalBytes(a, b []byte) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-	return true
 }

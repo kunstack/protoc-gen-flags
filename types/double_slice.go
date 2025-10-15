@@ -67,6 +67,6 @@ func (s *DoubleSliceValue) String() string {
 	return "[" + out + "]"
 }
 
-func DoubleSlice(v []*wrapperspb.DoubleValue) *DoubleSliceValue {
-	return &DoubleSliceValue{value: &v}
+func DoubleSlice(v *[]*wrapperspb.DoubleValue) *DoubleSliceValue {
+	return &DoubleSliceValue{value: v}
 }

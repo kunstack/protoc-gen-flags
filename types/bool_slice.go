@@ -47,7 +47,6 @@ func (s *BoolSliceValue) Set(val string) error {
 	}
 
 	s.changed = true
-
 	return nil
 }
 
@@ -67,7 +66,7 @@ func (s *BoolSliceValue) String() string {
 	return "[" + out + "]"
 }
 
-func BoolSlice(v []*wrapperspb.BoolValue) *BoolSliceValue {
-	result := BoolSliceValue{value: &v}
+func BoolSlice(v *[]*wrapperspb.BoolValue) *BoolSliceValue {
+	result := BoolSliceValue{value: v}
 	return &result
 }

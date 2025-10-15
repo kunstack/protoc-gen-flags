@@ -1,8 +1,9 @@
-package types
+package types_test
 
 import (
 	"testing"
 
+	"github.com/kunstack/protoc-gen-flags/types"
 	"github.com/spf13/pflag"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -27,7 +28,7 @@ func TestBoolValue_String(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b := Bool(tt.value)
+			b := types.Bool(tt.value)
 			if got := b.String(); got != tt.expected {
 				t.Errorf("BoolValue.String() = %v, want %v", got, tt.expected)
 			}
@@ -121,7 +122,7 @@ func TestBoolValue_Set(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var b BoolValue
+			var b types.BoolValue
 			err := b.Set(tt.input)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BoolValue.Set() error = %v, wantErr %v", err, tt.wantErr)
@@ -137,19 +138,19 @@ func TestBoolValue_Set(t *testing.T) {
 }
 
 func TestBoolValue_Type(t *testing.T) {
-	var b BoolValue
+	var b types.BoolValue
 	if got := b.Type(); got != "boolValue" {
 		t.Errorf("BoolValue.Type() = %v, want %v", got, "boolValue")
 	}
 }
 
 func TestBoolValue_ImplementsPflagValue(t *testing.T) {
-	var _ pflag.Value = (*BoolValue)(nil)
+	var _ pflag.Value = (*types.BoolValue)(nil)
 }
 
 func TestBoolValue_PflagIntegrationTrue(t *testing.T) {
 	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
-	var b BoolValue
+	var b types.BoolValue
 
 	f := fs.VarPF(&b, "bool", "", "Test bool")
 	f.NoOptDefVal = "true"
@@ -166,7 +167,7 @@ func TestBoolValue_PflagIntegrationTrue(t *testing.T) {
 
 func TestBoolValue_PflagIntegrationFalse(t *testing.T) {
 	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
-	var b BoolValue
+	var b types.BoolValue
 
 	fs.Var(&b, "bool", "Test bool")
 
@@ -196,7 +197,7 @@ func TestBoolValue_PflagIntegrationFalse(t *testing.T) {
 
 func TestBoolValue_PflagIntegrationNoOptDef(t *testing.T) {
 	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
-	var b BoolValue
+	var b types.BoolValue
 
 	f := fs.VarPF(&b, "bool", "", "Test bool")
 	f.NoOptDefVal = "true"
@@ -213,7 +214,7 @@ func TestBoolValue_PflagIntegrationNoOptDef(t *testing.T) {
 
 func TestBoolValue_PflagIntegrationError(t *testing.T) {
 	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
-	var b BoolValue
+	var b types.BoolValue
 
 	fs.Var(&b, "bool", "Test bool")
 
@@ -226,7 +227,7 @@ func TestBoolValue_PflagIntegrationError(t *testing.T) {
 func TestBool_Constructor(t *testing.T) {
 	// Test with true value
 	trueWrap := wrapperspb.Bool(true)
-	b := Bool(trueWrap)
+	b := types.Bool(trueWrap)
 
 	if b.Value != true {
 		t.Errorf("Bool(true) = %v, want true", b.Value)
@@ -234,7 +235,7 @@ func TestBool_Constructor(t *testing.T) {
 
 	// Test with false value
 	falseWrap := wrapperspb.Bool(false)
-	b = Bool(falseWrap)
+	b = types.Bool(falseWrap)
 
 	if b.Value != false {
 		t.Errorf("Bool(false) = %v, want false", b.Value)
@@ -242,7 +243,7 @@ func TestBool_Constructor(t *testing.T) {
 }
 
 func TestBool_ConstructorNil(t *testing.T) {
-	b := Bool(nil)
+	b := types.Bool(nil)
 
 	// Test that it works with nil input
 	// When nil, it should default to false value
@@ -252,7 +253,7 @@ func TestBool_ConstructorNil(t *testing.T) {
 }
 
 func TestBoolValue_StringAfterSet(t *testing.T) {
-	var b BoolValue
+	var b types.BoolValue
 
 	// Test setting to true
 	err := b.Set("true")
@@ -276,7 +277,7 @@ func TestBoolValue_StringAfterSet(t *testing.T) {
 }
 
 func TestBoolValue_MultipleSets(t *testing.T) {
-	var b BoolValue
+	var b types.BoolValue
 
 	// Test multiple sets
 	err := b.Set("true")

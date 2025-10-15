@@ -255,7 +255,7 @@ func TestDoubleSliceValue_SpecialValues(t *testing.T) {
 func TestDoubleSlice_Constructor(t *testing.T) {
 	// Test with non-nil slice
 	initialDoubles := []*wrapperspb.DoubleValue{wrapperspb.Double(3.14)}
-	result := DoubleSlice(initialDoubles)
+	result := DoubleSlice(&initialDoubles)
 
 	if result == nil {
 		t.Fatal("DoubleSlice() returned nil")
@@ -273,7 +273,7 @@ func TestDoubleSlice_Constructor(t *testing.T) {
 func TestDoubleSlice_ConstructorNil(t *testing.T) {
 	// Test with nil slice
 	var nilDoubles []*wrapperspb.DoubleValue
-	result := DoubleSlice(nilDoubles)
+	result := DoubleSlice(&nilDoubles)
 
 	if result == nil {
 		t.Fatal("DoubleSlice() returned nil")
@@ -289,11 +289,11 @@ func TestDoubleSlice_ConstructorNil(t *testing.T) {
 }
 
 func TestDoubleSliceValue_PflagInterface(t *testing.T) {
-	doubleSlice := []*wrapperspb.DoubleValue{}
+	doubleSlice := make([]*wrapperspb.DoubleValue, 0)
 	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
 
 	// Test that DoubleSliceValue implements pflag.Value interface
-	ds := DoubleSlice(doubleSlice)
+	ds := DoubleSlice(&doubleSlice)
 	fs.Var(ds, "doubles", "test double slice")
 
 	// Test setting flags
@@ -303,19 +303,19 @@ func TestDoubleSliceValue_PflagInterface(t *testing.T) {
 	}
 
 	// Verify the parsed values
-	if len(*ds.value) != 3 {
-		t.Errorf("Expected 3 values, got %d", len(*ds.value))
+	if len(doubleSlice) != 3 {
+		t.Errorf("Expected 3 values, got %d", len(doubleSlice))
 	}
 
-	if (*ds.value)[0].Value != 1.5 {
-		t.Errorf("Expected 1.5 at index 0, got %v", (*ds.value)[0].Value)
+	if (doubleSlice)[0].Value != 1.5 {
+		t.Errorf("Expected 1.5 at index 0, got %v", (doubleSlice)[0].Value)
 	}
 
-	if (*ds.value)[1].Value != 2.7 {
-		t.Errorf("Expected 2.7 at index 1, got %v", (*ds.value)[1].Value)
+	if (doubleSlice)[1].Value != 2.7 {
+		t.Errorf("Expected 2.7 at index 1, got %v", (doubleSlice)[1].Value)
 	}
 
-	if (*ds.value)[2].Value != 3.14 {
-		t.Errorf("Expected 3.14 at index 2, got %v", (*ds.value)[2].Value)
+	if (doubleSlice)[2].Value != 3.14 {
+		t.Errorf("Expected 3.14 at index 2, got %v", (doubleSlice)[2].Value)
 	}
 }

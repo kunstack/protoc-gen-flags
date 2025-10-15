@@ -13,7 +13,7 @@ import (
 
 var (
 	_ pflag.Value = (*BytesHexSliceValue)(nil)
-	_ pflag.Value = (*NativeBytesHexSliceValue)(nil)
+	_ pflag.Value = (*BytesHexNativeSliceValue)(nil)
 )
 
 type BytesHexSliceValue struct {
@@ -70,14 +70,14 @@ func (s *BytesHexSliceValue) String() string {
 	return "[" + out + "]"
 }
 
-type NativeBytesHexSliceValue struct {
+type BytesHexNativeSliceValue struct {
 	value   *[][]byte
 	changed bool
 }
 
 // Set converts, and assigns, the comma-separated hex-encoded bytes argument string representation as the [][]byte value of this flag.
 // If Set is called on a flag that already has a [][]byte assigned, the newly converted values will be appended.
-func (s *NativeBytesHexSliceValue) Set(val string) error {
+func (s *BytesHexNativeSliceValue) Set(val string) error {
 	// remove all quote characters
 	rmQuote := strings.NewReplacer(`"`, "", `'`, "", "`", "")
 
@@ -109,12 +109,12 @@ func (s *NativeBytesHexSliceValue) Set(val string) error {
 }
 
 // Type returns a string that uniquely represents this flag's type.
-func (s *NativeBytesHexSliceValue) Type() string {
-	return "nativeBytesHexSliceValue"
+func (s *BytesHexNativeSliceValue) Type() string {
+	return "BytesHexNativeSliceValue"
 }
 
 // String defines a "native" format for this bytes slice flag value.
-func (s *NativeBytesHexSliceValue) String() string {
+func (s *BytesHexNativeSliceValue) String() string {
 	bytesStrSlice := make([]string, len(*s.value))
 	for i, b := range *s.value {
 		bytesStrSlice[i] = hex.EncodeToString(b)
@@ -124,12 +124,12 @@ func (s *NativeBytesHexSliceValue) String() string {
 	return "[" + out + "]"
 }
 
-func BytesHexSlice[T []*wrapperspb.BytesValue | [][]byte](v T) pflag.Value {
+func BytesHexSlice[T []*wrapperspb.BytesValue | [][]byte](v *T) pflag.Value {
 	switch wrap := any(v).(type) {
-	case []*wrapperspb.BytesValue:
-		return &BytesHexSliceValue{value: &wrap}
-	case [][]byte:
-		return &NativeBytesHexSliceValue{value: &wrap}
+	case *[]*wrapperspb.BytesValue:
+		return &BytesHexSliceValue{value: wrap}
+	case *[][]byte:
+		return &BytesHexNativeSliceValue{value: wrap}
 	default:
 		// This should never happen due to type constraints
 		panic("BytesSlice: unsupported type")
