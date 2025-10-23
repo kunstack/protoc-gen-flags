@@ -96,7 +96,7 @@ func (m *Module) CheckFieldRules(f pgs.Field, field *flags.FieldFlags) {
 	case *flags.FieldFlags_Bytes:
 		m.checkCommon(typ, r.Bytes, pgs.BytesT, pgs.BytesValueWKT, false)
 	case *flags.FieldFlags_Enum:
-		m.checkEnum(typ, r.Enum, pgs.EnumT, pgs.UnknownWKT, false)
+		m.checkEnum(typ, r.Enum, pgs.EnumT, pgs.UnknownWKT)
 	case *flags.FieldFlags_Duration:
 		m.checkCommon(typ, r.Duration, pgs.MessageT, pgs.DurationWKT, false)
 	case *flags.FieldFlags_Timestamp:
@@ -104,7 +104,8 @@ func (m *Module) CheckFieldRules(f pgs.Field, field *flags.FieldFlags) {
 	case *flags.FieldFlags_Repeated:
 		el, ok := typ.(Element)
 		if !ok || el.Element() == nil {
-			m.Failf("repeated field does not implement Element interface")
+			m.Failf("field '%s' is not a repeated field (actual type: %v), "+
+				"but repeated flag configuration was specified", f.Name(), typ.ProtoType())
 			return
 		}
 		m.CheckRepeatedFlag(el.Element(), r.Repeated)
@@ -189,7 +190,7 @@ func (m *Module) CheckRepeatedFlag(typ FieldType, repeated *flags.RepeatedFlags)
 	case *flags.RepeatedFlags_Bytes:
 		m.checkCommon(typ, r.Bytes, pgs.BytesT, pgs.BytesValueWKT, true)
 	case *flags.RepeatedFlags_Enum:
-		m.checkEnum(typ, r.Enum, pgs.EnumT, pgs.UnknownWKT, true)
+		m.checkEnumSlice(typ, r.Enum, pgs.EnumT, pgs.UnknownWKT)
 	case *flags.RepeatedFlags_Duration:
 		m.checkCommon(typ, r.Duration, pgs.MessageT, pgs.DurationWKT, true)
 	default:

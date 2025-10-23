@@ -119,7 +119,7 @@ type TestForMessage struct {
 	FileChunks [][]byte `protobuf:"bytes,35,rep,name=file_chunks,json=fileChunks,proto3" json:"file_chunks,omitempty"`
 	HexChunks  [][]byte `protobuf:"bytes,36,rep,name=hex_chunks,json=hexChunks,proto3" json:"hex_chunks,omitempty"`
 	// Test enum type
-	TestEnum TestEnum1 `protobuf:"varint,17,opt,name=test_enum,json=testEnum,proto3,enum=tests.TestEnum1" json:"test_enum,omitempty"`
+	TestEnum []TestEnum1 `protobuf:"varint,17,rep,packed,name=test_enum,json=testEnum,proto3,enum=tests.TestEnum1" json:"test_enum,omitempty"`
 	// Test duration type
 	TimeoutDuration *durationpb.Duration `protobuf:"bytes,18,opt,name=timeout_duration,json=timeoutDuration,proto3,oneof" json:"timeout_duration,omitempty"`
 	// Test message field type for *flags.FieldFlags_Message
@@ -316,11 +316,11 @@ func (x *TestForMessage) GetHexChunks() [][]byte {
 	return nil
 }
 
-func (x *TestForMessage) GetTestEnum() TestEnum1 {
+func (x *TestForMessage) GetTestEnum() []TestEnum1 {
 	if x != nil {
 		return x.TestEnum
 	}
-	return TestEnum1_TEST_ENUM_UNSPECIFIED
+	return nil
 }
 
 func (x *TestForMessage) GetTimeoutDuration() *durationpb.Duration {
@@ -1210,15 +1210,16 @@ func (x *UnexportedMessageTest) GetTimeout() int32 {
 type DefaultValueTestMessage struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Test default values for all numeric types
-	Pi             float32   `protobuf:"fixed32,1,opt,name=pi,proto3" json:"pi,omitempty"`
-	Euler          float64   `protobuf:"fixed64,2,opt,name=euler,proto3" json:"euler,omitempty"`
-	DefaultPort    int32     `protobuf:"varint,3,opt,name=default_port,json=defaultPort,proto3" json:"default_port,omitempty"`
-	MaxConnections int64     `protobuf:"varint,4,opt,name=max_connections,json=maxConnections,proto3" json:"max_connections,omitempty"`
-	BufferSize     uint32    `protobuf:"varint,5,opt,name=buffer_size,json=bufferSize,proto3" json:"buffer_size,omitempty"`
-	MemoryLimit    uint64    `protobuf:"varint,6,opt,name=memory_limit,json=memoryLimit,proto3" json:"memory_limit,omitempty"`
-	DebugMode      bool      `protobuf:"varint,7,opt,name=debug_mode,json=debugMode,proto3" json:"debug_mode,omitempty"`
-	LogLevel       string    `protobuf:"bytes,8,opt,name=log_level,json=logLevel,proto3" json:"log_level,omitempty"`
-	DefaultMode    TestEnum1 `protobuf:"varint,9,opt,name=default_mode,json=defaultMode,proto3,enum=tests.TestEnum1" json:"default_mode,omitempty"`
+	Pi             float32    `protobuf:"fixed32,1,opt,name=pi,proto3" json:"pi,omitempty"`
+	Euler          float64    `protobuf:"fixed64,2,opt,name=euler,proto3" json:"euler,omitempty"`
+	DefaultPort    int32      `protobuf:"varint,3,opt,name=default_port,json=defaultPort,proto3" json:"default_port,omitempty"`
+	MaxConnections int64      `protobuf:"varint,4,opt,name=max_connections,json=maxConnections,proto3" json:"max_connections,omitempty"`
+	BufferSize     uint32     `protobuf:"varint,5,opt,name=buffer_size,json=bufferSize,proto3" json:"buffer_size,omitempty"`
+	MemoryLimit    uint64     `protobuf:"varint,6,opt,name=memory_limit,json=memoryLimit,proto3" json:"memory_limit,omitempty"`
+	DebugMode      bool       `protobuf:"varint,7,opt,name=debug_mode,json=debugMode,proto3" json:"debug_mode,omitempty"`
+	LogLevel       string     `protobuf:"bytes,8,opt,name=log_level,json=logLevel,proto3" json:"log_level,omitempty"`
+	DefaultMode    TestEnum1  `protobuf:"varint,9,opt,name=default_mode,json=defaultMode,proto3,enum=tests.TestEnum1" json:"default_mode,omitempty"`
+	DefaultMode2   *TestEnum1 `protobuf:"varint,10,opt,name=default_mode2,json=defaultMode2,proto3,enum=tests.TestEnum1,oneof" json:"default_mode2,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -1312,6 +1313,13 @@ func (x *DefaultValueTestMessage) GetLogLevel() string {
 func (x *DefaultValueTestMessage) GetDefaultMode() TestEnum1 {
 	if x != nil {
 		return x.DefaultMode
+	}
+	return TestEnum1_TEST_ENUM_UNSPECIFIED
+}
+
+func (x *DefaultValueTestMessage) GetDefaultMode2() TestEnum1 {
+	if x != nil && x.DefaultMode2 != nil {
+		return *x.DefaultMode2
 	}
 	return TestEnum1_TEST_ENUM_UNSPECIFIED
 }
@@ -1881,7 +1889,7 @@ var File_tests_test_proto protoreflect.FileDescriptor
 
 const file_tests_test_proto_rawDesc = "" +
 	"\n" +
-	"\x10tests/test.proto\x12\x05tests\x1a\x11flags/flags.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xe6!\n" +
+	"\x10tests/test.proto\x12\x05tests\x1a\x11flags/flags.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xf2!\n" +
 	"\x0eTestForMessage\x12p\n" +
 	"\x05hello\x18\x01 \x01(\x02BZ\x9aIW\n" +
 	"U\x12\x05hello\x1a\x01h\"\x14Hello world '\"' flag(\x010\x01:/This flag is deprecated, use --greeting insteadR\x05hello\x12\x82\x01\n" +
@@ -1899,8 +1907,8 @@ const file_tests_test_proto_rawDesc = "" +
 	"\atimeout\x18\f \x01(\aB'\x9aI$J\"\x12\atimeout\"\x17Timeout in millisecondsR\atimeout\x12L\n" +
 	"\tbandwidth\x18\r \x01(\x06B.\x9aI+R)\x12\tbandwidth\"\x1cBandwidth in bits per secondR\tbandwidth\x123\n" +
 	"\x06offset\x18\x0e \x01(\x0fB\x1b\x9aI\x18Z\x16\x12\x06offset\"\fOffset valueR\x06offset\x122\n" +
-	"\x05ratio\x18\x0f \x01(\x01B\x1c\x9aI\x19\x12\x17\x12\x05ratio\x1a\x01r\"\vRatio valueR\x05ratio\x12G\n" +
-	"\x04byte\x18\x10 \x01(\fB.\x9aI+z)\x12\x04byte\x1a\x01b\"\x1cByte data in base64 encoding@\x02H\x00R\x04byte\x88\x01\x01\x12c\n" +
+	"\x05ratio\x18\x0f \x01(\x01B\x1c\x9aI\x19\x12\x17\x12\x05ratio\x1a\x01r\"\vRatio valueR\x05ratio\x12L\n" +
+	"\x04byte\x18\x10 \x01(\fB3\x9aI0z.\x12\x04byte\x1a\x01b\"\x1cByte data in base64 encoding@\x02J\x03xxxH\x00R\x04byte\x88\x01\x01\x12c\n" +
 	"\vconfig_data\x18! \x01(\fB=\x9aI:z8\x12\vconfig-data\x1a\x02cd\"#Configuration data in base64 format@\x01H\x01R\n" +
 	"configData\x88\x01\x01\x12W\n" +
 	"\n" +
@@ -1910,8 +1918,8 @@ const file_tests_test_proto_rawDesc = "" +
 	"fileChunks\x12T\n" +
 	"\n" +
 	"hex_chunks\x18$ \x03(\fB5\x9aI2\x8a\x01/z-\x12\n" +
-	"hex-chunks\x1a\x02hc\"\x19Data chunks in hex format@\x02R\thexChunks\x12T\n" +
-	"\ttest_enum\x18\x11 \x01(\x0e2\x10.tests.TestEnum1B%\x9aI\"\x82\x01\x1f\x12\ttest-enum\x1a\x01e\"\x0fTest enum fieldR\btestEnum\x12\x8c\x01\n" +
+	"hex-chunks\x1a\x02hc\"\x19Data chunks in hex format@\x02R\thexChunks\x12[\n" +
+	"\ttest_enum\x18\x11 \x03(\x0e2\x10.tests.TestEnum1B,\x9aI)\x8a\x01&\x82\x01#\x12\ttest-enum\x1a\x01e\"\x0fTest enum fieldB\x02\x01\x03R\btestEnum\x12\x8c\x01\n" +
 	"\x10timeout_duration\x18\x12 \x01(\v2\x19.google.protobuf.DurationBA\x9aI>\x9a\x01;\x12\x10timeout-duration\x1a\x01d\"$Timeout duration (e.g., 30s, 5m, 1h)H\x03R\x0ftimeoutDuration\x88\x01\x01\x12O\n" +
 	"\fsimple_field\x18\x15 \x01(\v2\x14.tests.SimpleMessageB\x16\x9aI\x13\xaa\x01\x10\b\x01\x12\fsimple-fieldR\vsimpleField\x12n\n" +
 	"\x06labels\x18\x16 \x03(\v2!.tests.TestForMessage.LabelsEntryB3\x9aI0\x92\x01-\x12\x06labels\x1a\x01l\"\x1eKey-value labels (JSON format)H\x02R\x06labels\x12{\n" +
@@ -2043,7 +2051,7 @@ const file_tests_test_proto_rawDesc = "" +
 	"\n" +
 	"secret_key\x18\x01 \x01(\tB-\x9aI*r(\x12\n" +
 	"secret-key\"\x18Secret configuration key(\x01R\tsecretKey\x12I\n" +
-	"\atimeout\x18\x02 \x01(\x05B/\x9aI,\x1a*\x12\atimeout\"\x1dConnection timeout in seconds@\x1eR\atimeout:\x06\xa0I\x01\xa8I\x01\"\xd4\x05\n" +
+	"\atimeout\x18\x02 \x01(\x05B/\x9aI,\x1a*\x12\atimeout\"\x1dConnection timeout in seconds@\x1eR\atimeout:\x06\xa0I\x01\xa8I\x01\"\xd5\x06\n" +
 	"\x17DefaultValueTestMessage\x121\n" +
 	"\x02pi\x18\x01 \x01(\x02B!\x9aI\x1e\n" +
 	"\x1c\x12\x02pi\"\x11Pi constant valueE\xd0\x0fI@R\x02pi\x12;\n" +
@@ -2052,12 +2060,15 @@ const file_tests_test_proto_rawDesc = "" +
 	"\x0fmax_connections\x18\x04 \x01(\x03B6\x9aI3\"1\x12\x0fmax-connections\"\x1bMaximum allowed connections@\xe8\aR\x0emaxConnections\x12L\n" +
 	"\vbuffer_size\x18\x05 \x01(\rB+\x9aI(*&\x12\vbuffer-size\"\x14Buffer size in bytes@\x80 R\n" +
 	"bufferSize\x12S\n" +
-	"\fmemory_limit\x18\x06 \x01(\x04B0\x9aI-2+\x12\fmemory-limit\"\x15Memory limit in bytes@\x80\x80\x80\x80\x04R\vmemoryLimit\x12C\n" +
+	"\fmemory_limit\x18\x06 \x01(\x04B0\x9aI-2+\x12\fmemory-limit\"\x15Memory limit in bytes@\x80\x80\x80\x80\x04R\vmemoryLimit\x12E\n" +
 	"\n" +
-	"debug_mode\x18\a \x01(\bB$\x9aI!j\x1f\x12\n" +
-	"debug-mode\"\x11Enable debug modeR\tdebugMode\x12F\n" +
+	"debug_mode\x18\a \x01(\bB&\x9aI#j!\x12\n" +
+	"debug-mode\"\x11Enable debug mode@\x01R\tdebugMode\x12F\n" +
 	"\tlog_level\x18\b \x01(\tB)\x9aI&r$\x12\tlog-level\"\x11Default log levelB\x04infoR\blogLevel\x12c\n" +
-	"\fdefault_mode\x18\t \x01(\x0e2\x10.tests.TestEnum1B.\x9aI+\x82\x01(\x12\fdefault-mode\"\x16Default operation mode@\x01R\vdefaultMode:\x03\xa8I\x01\"\xd4\x06\n" +
+	"\fdefault_mode\x18\t \x01(\x0e2\x10.tests.TestEnum1B.\x9aI+\x82\x01(\x12\fdefault-mode\"\x16Default operation mode@\x01R\vdefaultMode\x12k\n" +
+	"\rdefault_mode2\x18\n" +
+	" \x01(\x0e2\x10.tests.TestEnum1B/\x9aI,\x82\x01)\x12\rdefault-mode1\"\x16Default operation mode@\x01H\x00R\fdefaultMode2\x88\x01\x01:\x03\xa8I\x01B\x10\n" +
+	"\x0e_default_mode2\"\xd4\x06\n" +
 	"\x16StringValueTestMessage\x12\x8a\x01\n" +
 	"\fsingle_value\x18\x01 \x01(\v2\x1c.google.protobuf.StringValueBD\x9aIAr?\x12\fsingle-value\x1a\x02sv\"\x1bSingle string value wrapperB\x0edefault-singleH\x00R\vsingleValue\x88\x01\x01\x12\x87\x01\n" +
 	"\rstring_values\x18\x02 \x03(\v2\x1c.google.protobuf.StringValueBD\x9aIA\x8a\x01>r<\x12\rstring-values\x1a\x03svs\"&Multiple StringValue wrapper instancesR\fstringValues\x12\x86\x01\n" +
@@ -2082,18 +2093,18 @@ const file_tests_test_proto_rawDesc = "" +
 	"\f_int32_valueB\x0e\n" +
 	"\f_int64_valueB\x0f\n" +
 	"\r_uint32_valueB\x0f\n" +
-	"\r_uint64_value\"\xc8\x06\n" +
+	"\r_uint64_value\"\xcc\x06\n" +
 	"\x14BoolValueTestMessage\x12{\n" +
 	"\fsingle_value\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueB7\x9aI4j2\x12\fsingle-value\x1a\x02sv\"\x1cSingle boolean value wrapper@\x01H\x00R\vsingleValue\x88\x01\x01\x12}\n" +
 	"\vbool_values\x18\x02 \x03(\v2\x1a.google.protobuf.BoolValueB@\x9aI=\x8a\x01:j8\x12\vbool-values\x1a\x03bvs\"$Multiple BoolValue wrapper instancesR\n" +
-	"boolValues\x12\x80\x01\n" +
-	"\x0eenable_feature\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueB8\x9aI5j3\x12\x0eenable-feature\x1a\x04feat\"\x1bEnable experimental featureH\x01R\renableFeature\x88\x01\x01\x12t\n" +
-	"\rfeature_flags\x18\x04 \x03(\v2\x1a.google.protobuf.BoolValueB3\x9aI0\x8a\x01-j+\x12\rfeature-flags\x1a\x02ff\"\x16Multiple feature flagsR\ffeatureFlags\x12\x81\x01\n" +
-	"\x0fverbose_logging\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB7\x9aI4j2\x12\x0fverbose-logging\x1a\averbose\"\x16Enable verbose loggingH\x02R\x0everboseLogging\x88\x01\x01\x12z\n" +
+	"boolValues\x12\x82\x01\n" +
+	"\x0eenable_feature\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueB:\x9aI7j5\x12\x0eenable-feature\x1a\x04feat\"\x1bEnable experimental feature@\x00H\x01R\renableFeature\x88\x01\x01\x12t\n" +
+	"\rfeature_flags\x18\x04 \x03(\v2\x1a.google.protobuf.BoolValueB3\x9aI0\x8a\x01-j+\x12\rfeature-flags\x1a\x02ff\"\x16Multiple feature flagsR\ffeatureFlags\x12\x83\x01\n" +
+	"\x0fverbose_logging\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB9\x9aI6j4\x12\x0fverbose-logging\x1a\averbose\"\x16Enable verbose logging@\x00H\x02R\x0everboseLogging\x88\x01\x01\x12z\n" +
 	"\rdebug_options\x18\x06 \x03(\v2\x1a.google.protobuf.BoolValueB9\x9aI6\x8a\x013j1\x12\rdebug-options\x1a\x03dbg\"\x1bMultiple debug option flagsR\fdebugOptions:\x03\xa8I\x01B\x0f\n" +
 	"\r_single_valueB\x11\n" +
 	"\x0f_enable_featureB\x12\n" +
-	"\x10_verbose_logging\"\x84\x05\n" +
+	"\x10_verbose_logging\"\x86\x05\n" +
 	"\x1cComprehensiveFlagTestMessage\x12R\n" +
 	"\busername\x18\x01 \x01(\tB6\x9aI3r1\x12\busername\x1a\x01u\"\x1bUsername for authenticationB\x05adminR\busername\x12M\n" +
 	"\bpassword\x18\x02 \x01(\tB1\x9aI.r,\x12\bpassword\x1a\x01p\"\x1bPassword for authentication(\x01R\bpassword\x12p\n" +
@@ -2101,8 +2112,8 @@ const file_tests_test_proto_rawDesc = "" +
 	"\x10connection_count\x18\x04 \x01(\x05B?\x9aI<\x1a:\x12\x10connection-count\x1a\x02cc\" Number of concurrent connections@\n" +
 	"R\x0fconnectionCount\x12r\n" +
 	"\vmax_threads\x18\x05 \x01(\x05BQ\x9aIN\x1aL\x12\vmax-threads\x1a\x02mt\"\x19Maximum number of threads0\x01:\x1aUse --worker-count instead@dR\n" +
-	"maxThreads\x12j\n" +
-	"\x11experimental_mode\x18\x06 \x01(\bB=\x9aI:j8\x12\x11experimental-mode\x1a\x03exp\"\x1cEnable experimental features(\x01R\x10experimentalMode:\x03\xa8I\x01\"\xca\x02\n" +
+	"maxThreads\x12l\n" +
+	"\x11experimental_mode\x18\x06 \x01(\bB?\x9aI<j:\x12\x11experimental-mode\x1a\x03exp\"\x1cEnable experimental features(\x01@\x00R\x10experimentalMode:\x03\xa8I\x01\"\xca\x02\n" +
 	"\x18NestedMessageTestMessage\x12K\n" +
 	"\rserver_config\x18\x01 \x01(\v2\x14.tests.SimpleMessageB\x10\x9aI\r\xaa\x01\n" +
 	"\b\x01\x12\x06serverR\fserverConfig\x12C\n" +
@@ -2254,39 +2265,40 @@ var file_tests_test_proto_depIdxs = []int32{
 	42, // 43: tests.DisabledMessage.created_at:type_name -> google.protobuf.Timestamp
 	41, // 44: tests.WrapperMessage.value:type_name -> google.protobuf.FloatValue
 	0,  // 45: tests.DefaultValueTestMessage.default_mode:type_name -> tests.TestEnum1
-	43, // 46: tests.StringValueTestMessage.single_value:type_name -> google.protobuf.StringValue
-	43, // 47: tests.StringValueTestMessage.string_values:type_name -> google.protobuf.StringValue
-	43, // 48: tests.StringValueTestMessage.config_path:type_name -> google.protobuf.StringValue
-	43, // 49: tests.StringValueTestMessage.include_paths:type_name -> google.protobuf.StringValue
-	43, // 50: tests.StringValueTestMessage.environment:type_name -> google.protobuf.StringValue
-	43, // 51: tests.StringValueTestMessage.tags:type_name -> google.protobuf.StringValue
-	44, // 52: tests.IntegerValueTestMessage.int32_value:type_name -> google.protobuf.Int32Value
-	45, // 53: tests.IntegerValueTestMessage.int64_value:type_name -> google.protobuf.Int64Value
-	46, // 54: tests.IntegerValueTestMessage.uint32_value:type_name -> google.protobuf.UInt32Value
-	47, // 55: tests.IntegerValueTestMessage.uint64_value:type_name -> google.protobuf.UInt64Value
-	44, // 56: tests.IntegerValueTestMessage.int32_values:type_name -> google.protobuf.Int32Value
-	45, // 57: tests.IntegerValueTestMessage.int64_values:type_name -> google.protobuf.Int64Value
-	38, // 58: tests.BoolValueTestMessage.single_value:type_name -> google.protobuf.BoolValue
-	38, // 59: tests.BoolValueTestMessage.bool_values:type_name -> google.protobuf.BoolValue
-	38, // 60: tests.BoolValueTestMessage.enable_feature:type_name -> google.protobuf.BoolValue
-	38, // 61: tests.BoolValueTestMessage.feature_flags:type_name -> google.protobuf.BoolValue
-	38, // 62: tests.BoolValueTestMessage.verbose_logging:type_name -> google.protobuf.BoolValue
-	38, // 63: tests.BoolValueTestMessage.debug_options:type_name -> google.protobuf.BoolValue
-	2,  // 64: tests.NestedMessageTestMessage.server_config:type_name -> tests.SimpleMessage
-	2,  // 65: tests.NestedMessageTestMessage.client_config:type_name -> tests.SimpleMessage
-	2,  // 66: tests.NestedMessageTestMessage.database_config:type_name -> tests.SimpleMessage
-	20, // 67: tests.NestedMessageTestMessage.deep_config:type_name -> tests.NestedLevel2Message
-	2,  // 68: tests.NestedLevel2Message.nested_simple:type_name -> tests.SimpleMessage
-	32, // 69: tests.ComprehensiveMapTestMessage.json_labels:type_name -> tests.ComprehensiveMapTestMessage.JsonLabelsEntry
-	33, // 70: tests.ComprehensiveMapTestMessage.native_labels:type_name -> tests.ComprehensiveMapTestMessage.NativeLabelsEntry
-	34, // 71: tests.ComprehensiveMapTestMessage.default_counters:type_name -> tests.ComprehensiveMapTestMessage.DefaultCountersEntry
-	35, // 72: tests.ComprehensiveMapTestMessage.legacy_config:type_name -> tests.ComprehensiveMapTestMessage.LegacyConfigEntry
-	36, // 73: tests.ComprehensiveMapTestMessage.secret_config:type_name -> tests.ComprehensiveMapTestMessage.SecretConfigEntry
-	74, // [74:74] is the sub-list for method output_type
-	74, // [74:74] is the sub-list for method input_type
-	74, // [74:74] is the sub-list for extension type_name
-	74, // [74:74] is the sub-list for extension extendee
-	0,  // [0:74] is the sub-list for field type_name
+	0,  // 46: tests.DefaultValueTestMessage.default_mode2:type_name -> tests.TestEnum1
+	43, // 47: tests.StringValueTestMessage.single_value:type_name -> google.protobuf.StringValue
+	43, // 48: tests.StringValueTestMessage.string_values:type_name -> google.protobuf.StringValue
+	43, // 49: tests.StringValueTestMessage.config_path:type_name -> google.protobuf.StringValue
+	43, // 50: tests.StringValueTestMessage.include_paths:type_name -> google.protobuf.StringValue
+	43, // 51: tests.StringValueTestMessage.environment:type_name -> google.protobuf.StringValue
+	43, // 52: tests.StringValueTestMessage.tags:type_name -> google.protobuf.StringValue
+	44, // 53: tests.IntegerValueTestMessage.int32_value:type_name -> google.protobuf.Int32Value
+	45, // 54: tests.IntegerValueTestMessage.int64_value:type_name -> google.protobuf.Int64Value
+	46, // 55: tests.IntegerValueTestMessage.uint32_value:type_name -> google.protobuf.UInt32Value
+	47, // 56: tests.IntegerValueTestMessage.uint64_value:type_name -> google.protobuf.UInt64Value
+	44, // 57: tests.IntegerValueTestMessage.int32_values:type_name -> google.protobuf.Int32Value
+	45, // 58: tests.IntegerValueTestMessage.int64_values:type_name -> google.protobuf.Int64Value
+	38, // 59: tests.BoolValueTestMessage.single_value:type_name -> google.protobuf.BoolValue
+	38, // 60: tests.BoolValueTestMessage.bool_values:type_name -> google.protobuf.BoolValue
+	38, // 61: tests.BoolValueTestMessage.enable_feature:type_name -> google.protobuf.BoolValue
+	38, // 62: tests.BoolValueTestMessage.feature_flags:type_name -> google.protobuf.BoolValue
+	38, // 63: tests.BoolValueTestMessage.verbose_logging:type_name -> google.protobuf.BoolValue
+	38, // 64: tests.BoolValueTestMessage.debug_options:type_name -> google.protobuf.BoolValue
+	2,  // 65: tests.NestedMessageTestMessage.server_config:type_name -> tests.SimpleMessage
+	2,  // 66: tests.NestedMessageTestMessage.client_config:type_name -> tests.SimpleMessage
+	2,  // 67: tests.NestedMessageTestMessage.database_config:type_name -> tests.SimpleMessage
+	20, // 68: tests.NestedMessageTestMessage.deep_config:type_name -> tests.NestedLevel2Message
+	2,  // 69: tests.NestedLevel2Message.nested_simple:type_name -> tests.SimpleMessage
+	32, // 70: tests.ComprehensiveMapTestMessage.json_labels:type_name -> tests.ComprehensiveMapTestMessage.JsonLabelsEntry
+	33, // 71: tests.ComprehensiveMapTestMessage.native_labels:type_name -> tests.ComprehensiveMapTestMessage.NativeLabelsEntry
+	34, // 72: tests.ComprehensiveMapTestMessage.default_counters:type_name -> tests.ComprehensiveMapTestMessage.DefaultCountersEntry
+	35, // 73: tests.ComprehensiveMapTestMessage.legacy_config:type_name -> tests.ComprehensiveMapTestMessage.LegacyConfigEntry
+	36, // 74: tests.ComprehensiveMapTestMessage.secret_config:type_name -> tests.ComprehensiveMapTestMessage.SecretConfigEntry
+	75, // [75:75] is the sub-list for method output_type
+	75, // [75:75] is the sub-list for method input_type
+	75, // [75:75] is the sub-list for extension type_name
+	75, // [75:75] is the sub-list for extension extendee
+	0,  // [0:75] is the sub-list for field type_name
 }
 
 func init() { file_tests_test_proto_init() }
@@ -2300,6 +2312,7 @@ func file_tests_test_proto_init() {
 	file_tests_test_proto_msgTypes[6].OneofWrappers = []any{}
 	file_tests_test_proto_msgTypes[7].OneofWrappers = []any{}
 	file_tests_test_proto_msgTypes[11].OneofWrappers = []any{}
+	file_tests_test_proto_msgTypes[13].OneofWrappers = []any{}
 	file_tests_test_proto_msgTypes[14].OneofWrappers = []any{}
 	file_tests_test_proto_msgTypes[15].OneofWrappers = []any{}
 	file_tests_test_proto_msgTypes[16].OneofWrappers = []any{}

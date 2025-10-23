@@ -48,7 +48,7 @@ func (m *Module) genBytes(f pgs.Field, name pgs.Name, flag *flags.BytesFlag, wk 
 	return declBuilder.String()
 }
 
-func (m *Module) genBytesSlice(f pgs.Field, name pgs.Name, flag *flags.BytesFlag, wk pgs.WellKnownType) string {
+func (m *Module) genBytesSlice(f pgs.Field, name pgs.Name, flag *flags.RepeatedBytesFlag, wk pgs.WellKnownType) string {
 	var (
 		wrapper     = "BytesSlice"
 		declBuilder = &strings.Builder{}

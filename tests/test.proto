@@ -125,7 +125,8 @@ message TestForMessage {
     hidden: false
     deprecated: false
     deprecated_usage: ""
-    encoding: BYTES_ENCODING_TYPE_HEX
+    encoding: BYTES_ENCODING_TYPE_HEX,
+    default: "xxx",
   }];
 
   // Additional native bytes fields with different configurations
@@ -160,10 +161,11 @@ message TestForMessage {
   }];
 
   // Test enum type
-  TestEnum1 test_enum = 17 [(flags.value).enum = {
+   repeated TestEnum1 test_enum = 17 [(flags.value).repeated.enum = {
     name: "test-enum"
     short: "e"
     usage: "Test enum field"
+    default: [1, 3]
   }];
 
   // Test duration type
@@ -617,7 +619,7 @@ message DefaultValueTestMessage {
   bool debug_mode = 7 [(flags.value).bool = {
     name: "debug-mode"
     usage: "Enable debug mode"
-    default: false
+    default: true
   }];
 
   string log_level = 8 [(flags.value).string = {
@@ -628,6 +630,12 @@ message DefaultValueTestMessage {
 
   TestEnum1 default_mode = 9 [(flags.value).enum = {
     name: "default-mode"
+    usage: "Default operation mode"
+    default: 1  // TEST_ENUM_VALUE1
+  }];
+
+  optional TestEnum1 default_mode2 = 10 [(flags.value).enum = {
+    name: "default-mode1"
     usage: "Default operation mode"
     default: 1  // TEST_ENUM_VALUE1
   }];
@@ -646,7 +654,7 @@ message StringValueTestMessage {
   }];
 
   // Test StringValue slice type
-  repeated google.protobuf.StringValue string_values = 2 [(flags.value).repeated.string = {
+   repeated google.protobuf.StringValue string_values = 2 [(flags.value).repeated.string = {
     name: "string-values"
     short: "svs"
     usage: "Multiple StringValue wrapper instances"

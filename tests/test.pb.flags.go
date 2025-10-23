@@ -30,7 +30,7 @@ var (
 	_ = pflag.NewFlagSet
 	_ = utils.BuildFlagName
 	_ = types.Bool
-	_ = flags.Interface(nil)
+	_ = flags.Flagger(nil)
 	_ = wrapperspb.String
 	_ = (*durationpb.Duration)(nil)
 	_ = (*timestamppb.Timestamp)(nil)
@@ -84,7 +84,8 @@ func (x *TestForMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 	fs.VarP(types.BytesSlice(&x.FileChunks), utils.BuildFlagName(prefix, "file-chunks"), "fc", "File chunks in base64 format")
 
 	fs.VarP(types.BytesHexSlice(&x.HexChunks), utils.BuildFlagName(prefix, "hex-chunks"), "hc", "Data chunks in hex format")
-	fs.VarP(types.Enum(&x.TestEnum), utils.BuildFlagName(prefix, "test-enum"), "e", "Test enum field")
+
+	fs.VarP(types.EnumSlice(&x.TestEnum), utils.BuildFlagName(prefix, "test-enum"), "e", "Test enum field")
 
 	if x.TimeoutDuration == nil {
 		x.TimeoutDuration = new(durationpb.Duration)
@@ -96,7 +97,7 @@ func (x *TestForMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 		x.SimpleField = new(SimpleMessage)
 	}
 
-	if v, ok := interface{}(x.SimpleField).(flags.Interface); ok {
+	if v, ok := interface{}(x.SimpleField).(flags.Flagger); ok {
 		v.AddFlags(fs, "simple-field")
 	}
 
@@ -278,7 +279,14 @@ func (x *DefaultValueTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) 
 	fs.BoolVarP(&x.DebugMode, utils.BuildFlagName(prefix, "debug-mode"), "", x.DebugMode, "Enable debug mode")
 
 	fs.StringVarP(&x.LogLevel, utils.BuildFlagName(prefix, "log-level"), "", x.LogLevel, "Default log level")
+
 	fs.VarP(types.Enum(&x.DefaultMode), utils.BuildFlagName(prefix, "default-mode"), "", "Default operation mode")
+
+	if x.DefaultMode2 == nil {
+		x.DefaultMode2 = new(TestEnum1)
+	}
+
+	fs.VarP(types.Enum(x.DefaultMode2), utils.BuildFlagName(prefix, "default-mode1"), "", "Default operation mode")
 
 }
 
@@ -385,7 +393,7 @@ func (x *NestedMessageTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string)
 		x.ServerConfig = new(SimpleMessage)
 	}
 
-	if v, ok := interface{}(x.ServerConfig).(flags.Interface); ok {
+	if v, ok := interface{}(x.ServerConfig).(flags.Flagger); ok {
 		v.AddFlags(fs, "server")
 	}
 
@@ -393,7 +401,7 @@ func (x *NestedMessageTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string)
 		x.ClientConfig = new(SimpleMessage)
 	}
 
-	if v, ok := interface{}(x.ClientConfig).(flags.Interface); ok {
+	if v, ok := interface{}(x.ClientConfig).(flags.Flagger); ok {
 		v.AddFlags(fs, "client_config")
 	}
 
@@ -401,7 +409,7 @@ func (x *NestedMessageTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string)
 		x.DatabaseConfig = new(SimpleMessage)
 	}
 
-	if v, ok := interface{}(x.DatabaseConfig).(flags.Interface); ok {
+	if v, ok := interface{}(x.DatabaseConfig).(flags.Flagger); ok {
 		v.AddFlags(fs, "db")
 	}
 
@@ -409,7 +417,7 @@ func (x *NestedMessageTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string)
 		x.DeepConfig = new(NestedLevel2Message)
 	}
 
-	if v, ok := interface{}(x.DeepConfig).(flags.Interface); ok {
+	if v, ok := interface{}(x.DeepConfig).(flags.Flagger); ok {
 		v.AddFlags(fs, "app")
 	}
 
@@ -422,7 +430,7 @@ func (x *NestedLevel2Message) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 		x.NestedSimple = new(SimpleMessage)
 	}
 
-	if v, ok := interface{}(x.NestedSimple).(flags.Interface); ok {
+	if v, ok := interface{}(x.NestedSimple).(flags.Flagger); ok {
 		v.AddFlags(fs, "nested")
 	}
 

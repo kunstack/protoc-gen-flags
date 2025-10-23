@@ -24,7 +24,7 @@ import (
 	pgsgo "github.com/lyft/protoc-gen-star/lang/go"
 )
 
-func Defaults() *Module {
+func Flags() *Module {
 	return &Module{
 		ModuleBase: &pgs.ModuleBase{},
 		imports:    make(map[string]struct{}),
@@ -143,7 +143,7 @@ var (
 	_ = pflag.NewFlagSet
 	_ = utils.BuildFlagName
     _ = types.Bool
-    _ = flags.Interface(nil)
+    _ = flags.Flagger(nil)
 	_ = wrapperspb.String
 	_ = (*durationpb.Duration)(nil)
 	_ = (*timestamppb.Timestamp)(nil)

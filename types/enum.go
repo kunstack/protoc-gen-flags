@@ -4,7 +4,6 @@
 package types
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -20,8 +19,9 @@ var _ pflag.Value = (*EnumValue)(nil)
 // It provides string representation and parsing capabilities for enum values,
 // allowing them to be used as command-line flags.
 type EnumValue struct {
-	allowedTypes []string                          // List of valid enum value names
-	wrap         protoreflect.Enum                 // Pointer to the actual enum value (int32)
+	allowedTypes []string          // List of valid enum value names
+	wrap         protoreflect.Enum // Pointer to the actual enum value (int32)
+	typ          protoreflect.EnumType
 	descriptors  protoreflect.EnumValueDescriptors // Enum value descriptors for validation
 }
 
@@ -45,23 +45,26 @@ func (e *EnumValue) Set(s string) error {
 		return fmt.Errorf("enum value is nil or invalid")
 	}
 
-	v := reflect.ValueOf(e.wrap)
+	elem := reflect.ValueOf(e.wrap).Elem()
 
-	if v.Kind() != reflect.Ptr {
-		return errors.New("argument must be a pointer to enum")
-	}
-
-	elem := v.Elem()
-	if !elem.CanSet() {
-		return errors.New("cannot set enum value (ensure pointer is to a settable field)")
-	}
-
-	if val := e.descriptors.ByName(protoreflect.Name(s)); val != nil {
-		elem.Set(reflect.ValueOf(val))
+	val := e.descriptors.ByName(protoreflect.Name(s))
+	if val != nil {
+		elem.Set(reflect.ValueOf(e.typ.New(val.Number())))
 		return nil
 	}
 
-	return fmt.Errorf("invalid enum value %q, allowed values are: %s", s, strings.Join(e.allowedTypes, ", "))
+	// Try to parse as a number
+	if numVal, err := strconv.Atoi(s); err == nil {
+		enumVal := e.descriptors.ByNumber(protoreflect.EnumNumber(numVal))
+		if enumVal != nil {
+			newEnum := e.typ.New(enumVal.Number())
+			elem.Set(reflect.ValueOf(newEnum))
+			return nil
+		}
+		return fmt.Errorf("invalid enum number %q, allowed values are: %s", enumVal, strings.Join(e.allowedTypes, ", "))
+	}
+
+	return fmt.Errorf("invalid enum value %q, allowed values are: %s", val, strings.Join(e.allowedTypes, ", "))
 }
 
 // Type returns the data type name of the enum value.
@@ -74,15 +77,26 @@ func (e *EnumValue) Type() string {
 // It extracts the allowed enum values from the enum descriptor and
 // returns an EnumValue that can be used as a pflag.Value.
 func Enum(wrap protoreflect.Enum) *EnumValue {
+	v := reflect.ValueOf(wrap)
+
+	if v.Kind() != reflect.Ptr {
+		panic("argument must be a pointer to enum")
+	}
+
+	elem := v.Elem()
+	if !elem.CanSet() {
+		panic("cannot set enum value (ensure pointer is to a settable field)")
+	}
+
 	values := wrap.Descriptor().Values()
 	allowed := make([]string, 0, values.Len())
-
 	for i := 0; i < values.Len(); i++ {
 		allowed = append(allowed, string(values.Get(i).Name()))
 	}
 
 	return &EnumValue{
 		wrap:         wrap,
+		typ:          wrap.Type(),
 		descriptors:  values,
 		allowedTypes: allowed,
 	}

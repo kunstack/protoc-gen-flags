@@ -38,7 +38,7 @@ func (m *Module) genDuration(f pgs.Field, name pgs.Name, flag *flags.DurationFla
 	return declBuilder.String()
 }
 
-func (m *Module) genDurationSlice(f pgs.Field, name pgs.Name, flag *flags.DurationFlag, wk pgs.WellKnownType) string {
+func (m *Module) genDurationSlice(f pgs.Field, name pgs.Name, flag *flags.RepeatedDurationFlag, wk pgs.WellKnownType) string {
 	var declBuilder = &strings.Builder{}
 
 	if flag.GetDisabled() {

@@ -40,7 +40,7 @@ func (m *Module) genMessage(f pgs.Field, name pgs.Name, flag *flags.MessageFlag)
 		)
 	}
 	_, _ = fmt.Fprintf(declBuilder, `
-			if v, ok := interface{}(x.%s).(flags.Interface); ok {
+			if v, ok := interface{}(x.%s).(flags.Flagger); ok {
 				v.AddFlags(fs,%q )
 			}
         `,

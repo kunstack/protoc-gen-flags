@@ -80,7 +80,7 @@ func (m *Module) processRepeatedFlag(f pgs.Field, name pgs.Name, repeated *flags
 	case *flags.RepeatedFlags_Bytes:
 		return m.genBytesSlice(f, name, r.Bytes, wk)
 	case *flags.RepeatedFlags_Enum:
-		return m.processEnumFlag(f, name, r.Enum, wk)
+		return m.genEnumSlice(f, name, r.Enum, wk)
 	case *flags.RepeatedFlags_Duration:
 		return m.genDurationSlice(f, name, r.Duration, wk)
 	default:
@@ -141,7 +141,7 @@ func (m *Module) genFieldFlags(f pgs.Field) string {
 	case *flags.FieldFlags_Bytes:
 		return m.genBytes(f, name, r.Bytes, wk)
 	case *flags.FieldFlags_Enum:
-		return m.processEnumFlag(f, name, r.Enum, wk)
+		return m.genEnum(f, name, r.Enum, wk)
 	case *flags.FieldFlags_Duration:
 		return m.genDuration(f, name, r.Duration, wk)
 	case *flags.FieldFlags_Timestamp:
