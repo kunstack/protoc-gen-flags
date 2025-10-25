@@ -1,339 +1,216 @@
 # protoc-gen-flags
 
-*This project is currently in **alpha**. The API should be considered unstable and likely to change*
+[![Go Version](https://img.shields.io/badge/go-%3E%3D1.23-blue.svg)](https://golang.org/doc/go1.23)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![GoDoc](https://godoc.org/github.com/kunstack/protoc-gen-flags?status.svg)](https://godoc.org/github.com/kunstack/protoc-gen-flags)
 
-**protoc-gen-flags** is a protoc plugin generating the implementation of an `AddFlags` method on protobuf messages that integrates with the `spf13/pflag` library to provide POSIX/GNU-style command-line flag parsing.
+**protoc-gen-flags** is a powerful Protocol Buffer compiler plugin that automatically generates command-line flag bindings for protobuf messages. It creates `AddFlags` methods that integrate seamlessly with the `spf13/pflag` library to provide POSIX/GNU-style command-line flag parsing.
 
-```go
-type Interface interface {
-	AddFlags(fs *pflag.FlagSet, prefix string) error
-}
-```
+## ✨ Features
 
-## Installation
+- **🚀 Automatic Flag Generation**: Generate CLI flags from protobuf message definitions
+- **🎯 Comprehensive Type Support**: All protobuf scalar types, enums, repeated fields, maps, and well-known types
+- **🔧 Flexible Configuration**: Extensive customization via protobuf options
+- **🏗️ Nested Message Support**: Hierarchical flag organization with prefix support
+- **📦 Well-Known Types**: Duration, Timestamp, and wrapper types with format options
+- **🔒 Secure**: Bytes field encoding options (base64, hex)
+- **⚡ High Performance**: Efficient flag parsing with minimal runtime overhead
+- **🎨 Modern Go**: Built with Go 1.23+ and latest protobuf libraries
+
+## 🚀 Quick Start
+
+### Installation
 
 ```bash
+# Install the plugin
+go install github.com/kunstack/protoc-gen-flags@latest
+
+# Or using go get
 go get github.com/kunstack/protoc-gen-flags
 ```
 
-## Usage
+### Basic Usage
 
-### Overview
+1. **Define your protobuf message with flag options:**
 
-**protoc-gen-flags** makes use of **Protobuf** options to define command-line flag bindings for protobuf message fields.
+```protobuf
+syntax = "proto3";
 
-### Generation
+package example;
 
-**protoc-gen-flags** works the same way as other **protoc** plugins.
+import "flags/flags.proto";
 
-Example:
+option go_package = "github.com/example/project;example";
+
+message Config {
+    string host = 1 [(flags.value).string = {
+        name: "host"
+        short: "H"
+        usage: "Server hostname"
+    }];
+
+    int32 port = 2 [(flags.value).int32 = {
+        name: "port"
+        short: "p"
+        usage: "Server port"
+        default: "8080"
+    }];
+
+    bool verbose = 3 [(flags.value).bool = {
+        name: "verbose"
+        short: "v"
+        usage: "Enable verbose logging"
+    }];
+}
+```
+
+2. **Generate the code:**
+
 ```bash
-protoc -I. -I flags --go_out=paths=source_relative:. --flags_out=paths=source_relative:. types.proto
+protoc -I. -I flags --go_out=paths=source_relative:. --flags_out=paths=source_relative:. config.proto
 ```
 
-### Disable generation
+3. **Use in your application:**
 
-Flag generation can be disabled with the `(flags.disabled) = true` message option.
+```go
+package main
 
-```proto
-message NoFlags {
+import (
+    "fmt"
+    "os"
+
+    "github.com/spf13/pflag"
+    pb "github.com/example/project"
+)
+
+func main() {
+    var config pb.Config
+
+    // Create flag set and add flags
+    fs := pflag.NewFlagSet("myapp", pflag.ExitOnError)
+    if err := config.AddFlags(fs, ""); err != nil {
+        fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+        os.Exit(1)
+    }
+
+    // Parse flags
+    fs.Parse(os.Args[1:])
+
+    // Use configuration
+    fmt.Printf("Server: %s:%d (verbose: %v)\n",
+        config.GetHost(), config.GetPort(), config.GetVerbose())
+}
+```
+
+## 📋 Requirements
+
+- **Go**: 1.23 or higher
+- **Protocol Buffers**: protoc 3.0+
+- **protoc-gen-go**: Go protobuf plugin
+
+## 🔧 Advanced Configuration
+
+### Message-Level Options
+
+Control flag generation at the message level:
+
+```protobuf
+message MyConfig {
+    // Disable flag generation for this message
     option (flags.disabled) = true;
-    string string_field = 1 [(flags.value).string = {
-        name: "string-field"
-        usage: "This won't be generated"
-    }];
-}
-```
 
-### Unexported generation
-
-Unexported flag methods can be generated with the `(flags.unexported) = true` message option.
-
-```proto
-message UnexportedFlags {
+    // Generate unexported AddFlags method
     option (flags.unexported) = true;
-    string string_field = 1 [(flags.value).string = {
-        name: "string-field"
-        usage: "Generated method will be unexported"
-    }];
-}
-```
 
-### Allow empty generation
-
-Flag generation can be allowed even without field configurations with the `(flags.allow_empty) = true` message option.
-
-```proto
-message EmptyFlags {
+    // Allow flag generation without field configurations
     option (flags.allow_empty) = true;
-    string string_field = 1; // No flag configuration needed
+
+    string field = 1;
 }
 ```
 
-### Scalar and Well-Known Types
+### Field Configuration Options
 
-Each scalar or Well-Known type has its corresponding `(flags.value).[type] = {name: string, short: string, usage: string, ...}` option.
+All field types support these common options:
 
-All scalar types support the following options:
-- `name`: Custom flag name (defaults to field name converted to kebab-case)
-- `short`: Short flag alias (single character)
-- `usage`: Description shown in help output
-- `hidden`: Hide flag from help output
-- `deprecated`: Mark flag as deprecated
-- `deprecated_usage`: Additional context for deprecated flags
+| Option | Type | Description | Example |
+|--------|------|-------------|---------|
+| `name` | string | Custom flag name (kebab-case) | `"db-host"` |
+| `short` | string | Short flag alias | `"H"` |
+| `usage` | string | Help text | `"Database hostname"` |
+| `hidden` | bool | Hide from help output | `true` |
+| `deprecated` | bool | Mark as deprecated | `true` |
+| `deprecated_usage` | string | Deprecation message | `"Use --new-flag instead"` |
 
-#### Numeric Types
+### Supported Types
 
-- **float**:
-    ```proto
-    float float = 1 [(flags.value).float = {
-        name: "float-value"
-        short: "f"
-        usage: "Float value parameter"
-    }];
-    ```
-- **double**:
-    ```proto
-    double double = 2 [(flags.value).double = {
-        name: "double-value"
-        short: "d"
-        usage: "Double value parameter"
-    }];
-    ```
-- **int32**:
-    ```proto
-    int32 int32 = 3 [(flags.value).int32 = {
-        name: "int32-value"
-        short: "i"
-        usage: "32-bit signed integer"
-    }];
-    ```
-- **int64**:
-    ```proto
-    int64 int64 = 4 [(flags.value).int64 = {
-        name: "int64-value"
-        short: "I"
-        usage: "64-bit signed integer"
-    }];
-    ```
-- **uint32**:
-    ```proto
-    uint32 uint32 = 5 [(flags.value).uint32 = {
-        name: "uint32-value"
-        short: "u"
-        usage: "32-bit unsigned integer"
-    }];
-    ```
-- **uint64**:
-    ```proto
-    uint64 uint64 = 6 [(flags.value).uint64 = {
-        name: "uint64-value"
-        short: "U"
-        usage: "64-bit unsigned integer"
-    }];
-    ```
-- **sint32**:
-    ```proto
-    sint32 sint32 = 7 [(flags.value).sint32 = {
-        name: "sint32-value"
-        usage: "32-bit signed integer (zigzag encoded)"
-    }];
-    ```
-- **sint64**:
-    ```proto
-    sint64 sint64 = 8 [(flags.value).sint64 = {
-        name: "sint64-value"
-        usage: "64-bit signed integer (zigzag encoded)"
-    }];
-    ```
-- **fixed32**:
-    ```proto
-    fixed32 fixed32 = 9 [(flags.value).fixed32 = {
-        name: "fixed32-value"
-        usage: "32-bit fixed-point integer"
-    }];
-    ```
-- **fixed64**:
-    ```proto
-    fixed64 fixed64 = 10 [(flags.value).fixed64 = {
-        name: "fixed64-value"
-        usage: "64-bit fixed-point integer"
-    }];
-    ```
-- **sfixed32**:
-    ```proto
-    sfixed32 sfixed32 = 11 [(flags.value).sfixed32 = {
-        name: "sfixed32-value"
-        usage: "32-bit signed fixed-point integer"
-    }];
-    ```
-- **sfixed64**:
-    ```proto
-    sfixed64 sfixed64 = 12 [(flags.value).sfixed64 = {
-        name: "sfixed64-value"
-        usage: "64-bit signed fixed-point integer"
-    }];
-    ```
+#### Scalar Types
+- **Numeric**: `int32`, `int64`, `uint32`, `uint64`, `sint32`, `sint64`, `fixed32`, `fixed64`, `sfixed32`, `sfixed64`, `float`, `double`
+- **Basic**: `bool`, `string`
+- **Bytes**: `bytes` with encoding options (base64, hex)
 
-#### Boolean and String Types
+#### Well-Known Types
+- **Duration**: `google.protobuf.Duration` with flexible parsing
+- **Timestamp**: `google.protobuf.Timestamp` with multiple format support
+- **Wrappers**: `google.protobuf.*Value` types (StringValue, Int32Value, etc.)
 
-- **bool**:
-    ```proto
-    bool bool = 13 [(flags.value).bool = {
-        name: "bool-value"
-        short: "b"
-        usage: "Boolean flag"
-    }];
-    ```
-- **string**:
-    ```proto
-    string string = 14 [(flags.value).string = {
-        name: "string-value"
-        short: "s"
-        usage: "String value parameter"
-    }];
-    ```
+#### Complex Types
+- **Enums**: Protocol buffer enum types
+- **Repeated**: All scalar types support repeated fields
+- **Maps**: Map fields with JSON and native format support
+- **Nested Messages**: Hierarchical flag organization
+- **Oneof**: Fields within oneof blocks
 
-#### Bytes Type
+### Bytes Encoding
 
-Bytes fields support additional encoding options:
+Bytes fields support multiple encoding formats:
 
-```proto
-bytes bytes = 15 [(flags.value).bytes = {
-    name: "bytes-value"
-    short: "B"
-    usage: "Bytes data"
+```protobuf
+bytes data = 1 [(flags.value).bytes = {
+    name: "data"
     encoding: BYTES_ENCODING_TYPE_HEX  // or BYTES_ENCODING_TYPE_BASE64
 }];
 ```
 
-Supported encoding types:
 - `BYTES_ENCODING_TYPE_UNSPECIFIED`: Default base64 encoding
 - `BYTES_ENCODING_TYPE_BASE64`: Standard base64 encoding
 - `BYTES_ENCODING_TYPE_HEX`: Hexadecimal encoding
 
-#### Well-Known Types
+### Timestamp Formats
 
-- **google.protobuf.Duration**:
-    ```proto
-    google.protobuf.Duration duration = 16 [(flags.value).duration = {
-        name: "duration"
-        short: "D"
-        usage: "Duration value (e.g., 30s, 5m, 1h)"
-    }];
-    ```
-- **google.protobuf.Timestamp**:
-    ```proto
-    google.protobuf.Timestamp timestamp = 17 [(flags.value).timestamp = {
-        name: "timestamp"
-        short: "T"
-        usage: "Timestamp value"
-        formats: ["2006-01-02", "RFC3339", "ISO8601Time"]
-    }];
-    ```
+Timestamp fields support multiple time formats:
 
-    Timestamp fields support multiple time formats through the `formats` array. The parser will try each format in order until one successfully parses the input string.
+```protobuf
+google.protobuf.Timestamp created = 1 [(flags.value).timestamp = {
+    name: "created"
+    formats: ["RFC3339", "ISO8601Time", "2006-01-02 15:04:05"]
+}];
+```
 
-    Supported format names:
-    - **RFC339**: RFC3339 format (alias for RFC3339)
-    - **RFC3339**: Standard RFC3339 format
-    - **RFC3339Nano**: RFC3339 with nanosecond precision
-    - **RFC822**: RFC822 format
-    - **RFC822Z**: RFC822 with timezone
-    - **RFC850**: RFC850 format
-    - **RFC1123**: RFC1123 format
-    - **RFC1123Z**: RFC1123 with timezone
-    - **ISO8601**: ISO8601 date format (2006-01-02)
-    - **ISO8601Time**: ISO8601 datetime format (2006-01-02T15:04:05)
-    - **Kitchen**: Kitchen time format (3:04PM)
-    - **Stamp**: Timestamp format (Jan _2 15:04:05)
-    - **StampMilli**: Timestamp with milliseconds
-    - **StampMicro**: Timestamp with microseconds
-    - **StampNano**: Timestamp with nanoseconds
-    - **DateTime**: Custom datetime format (2006-01-02 15:04:05)
-    - **DateOnly**: Date only format (2006-01-02)
-    - **TimeOnly**: Time only format (15:04:05)
+Supported formats include RFC3339, ISO8601, Kitchen, Stamp, and custom Go time layout strings.
 
-    Custom Go time layout strings are also supported.
-- **Wrapper types** (google.protobuf.*Value):
-    ```proto
-    google.protobuf.StringValue string_value = 18 [(flags.value).string = {
-        name: "string-value"
-        usage: "Optional string value"
-    }];
-    ```
+### Nested Messages
 
-### Enum Types
+Generate hierarchical flags for nested messages:
 
-```proto
-enum TestEnum {
-    UNKNOWN = 0;
-    VALUE1 = 1;
-    VALUE2 = 2;
+```protobuf
+message DatabaseConfig {
+    string host = 1 [(flags.value).string = {name: "host" usage: "DB host"}];
+    int32 port = 2 [(flags.value).int32 = {name: "port" usage: "DB port"}];
 }
 
-TestEnum enum = 19 [(flags.value).enum = {
-    name: "enum-value"
-    short: "e"
-    usage: "Enum value parameter"
-}];
-```
-
-### Message Types
-
-Message fields can be configured to generate nested flags:
-
-```proto
-Message nested = 20 [(flags.value).message = {
-    name: "nested"
-    nested: true  // Generate flags for nested message fields
-}];
-```
-
-When `nested: true`, the generated code will call `AddFlags` on the nested message if it implements the flags interface. The `name` field provides a prefix for nested flags (e.g., `--nested.field-name`).
-
-### Repeated Types
-
-Repeated fields are supported with type-specific configuration:
-
-```proto
-repeated string string_list = 21 [(flags.value).repeated.string = {
-    name: "string-list"
-    usage: "List of string values (can be specified multiple times)"
-}];
-```
-
-All scalar types support repeated field configuration.
-
-### oneof Fields
-
-Fields within oneof blocks are fully supported:
-
-```proto
-oneof choice {
-    string string_value = 22 [(flags.value).string = {
-        name: "string-value"
-        short: "s"
-        usage: "String value in oneof"
-    }];
-
-    int32 int_value = 23 [(flags.value).int32 = {
-        name: "int-value"
-        short: "i"
-        usage: "Integer value in oneof"
-    }];
-
-    google.protobuf.Duration duration_value = 24 [(flags.value).duration = {
-        name: "duration-value"
-        short: "d"
-        usage: "Duration value in oneof"
+message AppConfig {
+    DatabaseConfig database = 1 [(flags.value).message = {
+        name: "db"
+        nested: true  // Generate --db.host and --db.port flags
     }];
 }
-```
 
-## Complete Example
+## 📖 Complete Examples
 
-```proto
+### Basic Configuration
+
+```protobuf
 syntax = "proto3";
 
 package example;
@@ -419,20 +296,16 @@ message DatabaseConfig {
 }
 ```
 
-## Generated Code Usage
-
-The plugin generates an `AddFlags(fs *pflag.FlagSet, prefix string) error` method for each configured message:
+### Generated Code Usage
 
 ```go
 package main
 
 import (
-    "flag"
     "fmt"
     "os"
 
     "github.com/spf13/pflag"
-
     pb "github.com/example/project"
 )
 
@@ -447,42 +320,280 @@ func main() {
     }
 
     // Parse command line flags
-    pflag.Parse()
+    fs.Parse(os.Args[1:])
 
     // Use the configuration
     fmt.Printf("Host: %s, Port: %d\n", config.GetHost(), config.GetPort())
 }
 ```
 
-## Development
-
-### Building
+### Command Line Examples
 
 ```bash
-make build
+# Basic usage
+./myapp --host localhost --port 8080 --verbose
+
+# Short flags
+./myapp -H localhost -p 8080 -v
+
+# Duration and timestamp
+./myapp --timeout 30s --start-time "2024-01-01T12:00:00"
+
+# Nested flags
+./myapp --database.url "postgres://localhost/mydb" --database.max-connections 100
+
+# Oneof selection (use one of)
+./myapp --token "my-secret-token"
+# or
+./myapp --api-key "my-api-key"
+
+# Bytes with hex encoding
+./myapp --secret "48656c6c6f20576f726c64"
+
+# Multiple formats for timestamps
+./myapp --start-time "2024-01-01 12:00:00"
+./myapp --start-time "Jan 1, 2024"
 ```
 
-### Testing
+## 🛠️ Development
+
+### Building from Source
 
 ```bash
+# Clone the repository
+git clone https://github.com/kunstack/protoc-gen-flags.git
+cd protoc-gen-flags
+
+# Install dependencies
+make deps
+
+# Build the plugin
+make build
+
+# Run tests
 make test
 ```
 
-### Code Quality
+### Development Commands
 
 ```bash
-make fmt      # Format Go code and protobuf files
-make vet      # Run static analysis
-make lint     # Run comprehensive linting
-make tidy     # Clean up module dependencies
+# Format Go code and protobuf files
+make fmt
+
+# Run static analysis
+make vet
+
+# Run comprehensive linting
+make lint
+
+# Clean up module dependencies
+make tidy
+
+# Clean build artifacts
+make clean
+
+# Generate Go code from protobuf definitions
+make generate
 ```
 
-## Dependencies
+### Project Structure
 
-- **github.com/lyft/protoc-gen-star**: Protocol buffer code generation framework
-- **github.com/spf13/pflag**: POSIX/GNU-style command-line flag parsing
-- **google.golang.org/protobuf**: Google's protocol buffer implementation
+```
+protoc-gen-flags/
+├── main.go              # Plugin entry point
+├── module/              # Core generation logic
+│   ├── module.go        # Main module implementation
+│   ├── common.go        # Common flag generation utilities
+│   ├── defaults.go      # Default value generation
+│   └── [type].go        # Type-specific generators
+├── flags/               # Protobuf extension definitions
+│   ├── flags.proto      # Extension definitions
+│   └── flags.go         # Interface definitions
+├── types/               # Custom pflag type implementations
+│   ├── bytes.go         # Bytes encoding types
+│   ├── duration.go      # Duration parser
+│   ├── timestamp.go     # Timestamp parser
+│   └── [type]_slice.go  # Slice type implementations
+├── tests/               # Test files and examples
+├── Makefile             # Build automation
+├── buf.yaml            # Buf configuration
+└── buf.gen.yaml        # Code generation configuration
+```
 
-## License
+## 🔍 Troubleshooting
 
-This project is licensed under the Apache License, Version 2.0. See the LICENSE file for details.
+### Common Issues
+
+#### Plugin Not Found
+
+If you get `protoc-gen-flags: program not found or is not executable`:
+
+```bash
+# Ensure the plugin is in your PATH
+echo $PATH
+which protoc-gen-flags
+
+# If not found, install it
+go install github.com/kunstack/protoc-gen-flags@latest
+```
+
+#### Import Path Issues
+
+Make sure to include the flags proto import path:
+
+```bash
+# Correct - include the flags directory
+protoc -I. -I flags --go_out=paths=source_relative:. --flags_out=paths=source_relative:. config.proto
+
+# Incorrect - missing flags import
+protoc -I. --go_out=paths=source_relative:. --flags_out=paths=source_relative:. config.proto
+```
+
+#### Generated Code Errors
+
+If you encounter compilation errors in generated code:
+
+1. Check that you're using compatible versions of protoc-gen-go and protoc-gen-flags
+2. Ensure your protobuf definitions are valid
+3. Verify that all required imports are present
+
+### Debug Mode
+
+Enable verbose output to debug generation issues:
+
+```bash
+protoc --flags_out=paths=source_relative,debug=true:. config.proto
+```
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Development Setup
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes and add tests
+4. Run the test suite: `make test`
+5. Commit your changes: `git commit -am 'Add new feature'`
+6. Push to the branch: `git push origin feature-name`
+7. Submit a pull request
+
+### Code Style
+
+- Follow standard Go conventions
+- Run `make fmt` before committing
+- Ensure `make lint` passes
+- Add tests for new functionality
+- Update documentation as needed
+
+## 📚 Advanced Topics
+
+### Custom Type Support
+
+The plugin supports custom types through the `pflag.Value` interface. See the `types/` directory for examples.
+
+### Performance Considerations
+
+- Generated code is optimized for minimal runtime overhead
+- Flag parsing uses efficient string-to-type conversions
+- Memory allocation is minimized through careful design
+
+### Integration with Other Tools
+
+**protoc-gen-flags** works well with:
+- **protoc-gen-go**: Standard Go protobuf generation
+- **protoc-gen-gogo**: Alternative Go protobuf implementation
+- **buf**: Modern protobuf build tool
+- **golangci-lint**: Go linting tool
+
+## 📄 License
+
+This project is licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [protoc-gen-star](https://github.com/lyft/protoc-gen-star) - Protocol buffer code generation framework
+- [spf13/pflag](https://github.com/spf13/pflag) - POSIX/GNU-style command-line flag parsing
+- [protocolbuffers/protobuf](https://github.com/protocolbuffers/protobuf) - Protocol Buffers
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/kunstack/protoc-gen-flags/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/kunstack/protoc-gen-flags/discussions)
+- **Documentation**: [Wiki](https://github.com/kunstack/protoc-gen-flags/wiki)
+
+---
+
+**Made with ❤️ by the protoc-gen-flags team**
+
+## 🧪 Testing
+
+### Running Tests
+
+```bash
+# Run all tests
+make test
+
+# Run specific test categories
+go test ./types/...      # Type-specific tests
+go test ./module/...     # Module tests
+go test ./tests/...      # Integration tests
+```
+
+### Test Coverage
+
+```bash
+# Generate coverage report
+go test -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out -o coverage.html
+```
+
+## 📊 Benchmarks
+
+Performance benchmarks are available for critical components:
+
+```bash
+# Run benchmarks
+go test -bench=. ./types/...
+go test -bench=. ./module/...
+```
+
+## 🔗 Related Projects
+
+- [protoc-gen-go](https://github.com/protocolbuffers/protobuf-go) - Go protobuf compiler plugin
+- [protoc-gen-gogo](https://github.com/gogo/protobuf) - Alternative Go protobuf implementation
+- [protoc-gen-validate](https://github.com/envoyproxy/protoc-gen-validate) - Protobuf validation
+- [protoc-gen-doc](https://github.com/pseudomuto/protoc-gen-doc) - Documentation generation
+- [buf](https://github.com/bufbuild/buf) - Modern protobuf tooling
+
+## 🗺️ Roadmap
+
+### Upcoming Features
+
+- [ ] **Default Value Support**: Enhanced default value handling
+- [ ] **Validation Integration**: Built-in validation rules
+- [ ] **Custom Type Plugins**: Extensible type system
+- [ ] **Configuration Files**: Support for config file generation
+- [ ] **Environment Variables**: Automatic env var binding
+- [ ] **Web UI**: Optional web interface for configuration
+
+## ⚖️ Comparison with Alternatives
+
+| Feature | protoc-gen-flags | Manual Flag Binding | Other Code Generators |
+|---------|------------------|-------------------|----------------------|
+| **Type Safety** | ✅ Strong typing | ⚠️ Manual validation | ✅ Varies |
+| **Protobuf Integration** | ✅ Native | ❌ Manual mapping | ⚠️ Limited |
+| **Code Generation** | ✅ Automatic | ❌ Manual | ✅ Varies |
+| **Well-Known Types** | ✅ Full support | ❌ Manual handling | ⚠️ Limited |
+| **Nested Messages** | ✅ Hierarchical | ❌ Complex | ⚠️ Limited |
+| **Maintenance** | ✅ Low effort | ❌ High effort | ⚠️ Varies |
+
+## 📈 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes and improvements.
+
+## 🏷️ Versioning
+
+This project follows [Semantic Versioning](https://semver.org/). For the versions available, see the [tags on this repository](https://github.com/kunstack/protoc-gen-flags/tags).
+
