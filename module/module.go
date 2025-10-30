@@ -57,6 +57,14 @@ func (m *Module) InitContext(c pgs.BuildContext) {
 			}
 			return "AddFlags"
 		},
+		"defaultMethodName": func(m pgs.Message) string {
+			var private bool
+			_, _ = m.Extension(flags.E_Unexported, &private)
+			if private {
+				return "_SetDefaults"
+			}
+			return "SetDefaults"
+		},
 		"comment": func(s string) string {
 			var out string
 			parts := strings.Split(s, "\n")
@@ -96,6 +104,9 @@ func (m *Module) InitContext(c pgs.BuildContext) {
 		},
 		"flags": func(f pgs.Field) string {
 			return m.genFieldFlags(f)
+		},
+		"defaults": func(f pgs.Field) string {
+			return m.genFieldDefaults(f)
 		},
 	})
 	m.tpl = template.Must(tpl.Parse(defaultsTpl))
@@ -154,6 +165,12 @@ var (
 func (x *{{ name . }}) {{ methodName . }}(fs *pflag.FlagSet, prefix ...string) {
 	{{- range .Fields }}
 		{{- flags . }}
+	{{- end }}
+}
+
+func (x *{{ name . }}) {{ defaultMethodName . }}() {
+	{{- range .Fields }}
+		{{- defaults . }}
 	{{- end }}
 }
 {{- end }}

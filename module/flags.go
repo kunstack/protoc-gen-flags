@@ -83,6 +83,8 @@ func (m *Module) processRepeatedFlag(f pgs.Field, name pgs.Name, repeated *flags
 		return m.genEnumSlice(f, name, r.Enum, wk)
 	case *flags.RepeatedFlags_Duration:
 		return m.genDurationSlice(f, name, r.Duration, wk)
+	case *flags.RepeatedFlags_Timestamp:
+		return m.genTimestampSlice(f, name, r.Timestamp)
 	default:
 		return ""
 	}

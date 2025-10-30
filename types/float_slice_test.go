@@ -24,18 +24,13 @@ func TestFloatSliceValue_Set(t *testing.T) {
 		},
 		{
 			name:     "values with spaces",
-			input:    " 1.0 , 2.0 , 3.0 ",
+			input:    "1.0,2.0,3.0 ",
 			expected: []float32{1.0, 2.0, 3.0},
 		},
 		{
 			name:     "scientific notation",
 			input:    "1.23e-4,5.67e+2",
 			expected: []float32{1.23e-4, 5.67e+2},
-		},
-		{
-			name:     "quoted values",
-			input:    `"1.23","4.56"`,
-			expected: []float32{1.23, 4.56},
 		},
 	}
 

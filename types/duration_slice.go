@@ -1,69 +1,85 @@
 package types
 
 import (
-	"io"
+	"fmt"
 	"strings"
 	"time"
 
 	"github.com/spf13/pflag"
 	"google.golang.org/protobuf/types/known/durationpb"
-
-	"github.com/kunstack/protoc-gen-flags/utils"
 )
 
-var _ pflag.Value = (*DurationSliceValue)(nil)
+var (
+	_ pflag.Value      = (*DurationSliceValue)(nil)
+	_ pflag.SliceValue = (*DurationSliceValue)(nil)
+)
 
 type DurationSliceValue struct {
 	value   *[]*durationpb.Duration
 	changed bool
 }
 
-// Set converts, and assigns, the comma-separated duration argument string representation as the []*durationpb.Duration value of this flag.
-// If Set is called on a flag that already has a []*durationpb.Duration assigned, the newly converted values will be appended.
 func (s *DurationSliceValue) Set(val string) error {
-	// remove all quote characters
-	rmQuote := strings.NewReplacer(`"`, "", `'`, "", "`", "")
-
-	// read flag arguments with CSV parser
-	ss, err := utils.ReadAsCSV(rmQuote.Replace(val))
-	if err != nil && err != io.EOF {
-		return err
-	}
-
-	// parse duration values into slice
-	out := make([]*durationpb.Duration, 0, len(ss))
-	for _, durationStr := range ss {
-		duration, err := time.ParseDuration(strings.TrimSpace(durationStr))
+	ss := strings.Split(val, ",")
+	out := make([]*durationpb.Duration, len(ss))
+	for i, d := range ss {
+		dur, err := time.ParseDuration(strings.TrimSpace(d))
 		if err != nil {
 			return err
 		}
-		out = append(out, durationpb.New(duration))
+		out[i] = durationpb.New(dur)
 	}
-
 	if !s.changed {
 		*s.value = out
 	} else {
 		*s.value = append(*s.value, out...)
 	}
-
 	s.changed = true
 	return nil
 }
 
+func (s *DurationSliceValue) Append(val string) error {
+	i, err := time.ParseDuration(strings.TrimSpace(val))
+	if err != nil {
+		return err
+	}
+	*s.value = append(*s.value, durationpb.New(i))
+	return nil
+}
+
+func (s *DurationSliceValue) Replace(val []string) error {
+	out := make([]*durationpb.Duration, len(val))
+	for i, d := range val {
+		dur, err := time.ParseDuration(strings.TrimSpace(d))
+		if err != nil {
+			return err
+		}
+		out[i] = durationpb.New(dur)
+	}
+	*s.value = out
+	return nil
+}
+
+func (s *DurationSliceValue) GetSlice() []string {
+	out := make([]string, len(*s.value))
+	for i, d := range *s.value {
+		out[i] = d.AsDuration().String()
+	}
+	return out
+}
+
 // Type returns a string that uniquely represents this flag's type.
 func (s *DurationSliceValue) Type() string {
-	return "durationSliceValue"
+	return "DurationSliceValue"
 }
 
 // String defines a "native" format for this duration slice flag value.
 func (s *DurationSliceValue) String() string {
 	durationStrSlice := make([]string, len(*s.value))
 	for i, d := range *s.value {
-		durationStrSlice[i] = d.AsDuration().String()
+		durationStrSlice[i] = fmt.Sprintf("%s", d.AsDuration())
 	}
-	out, _ := utils.WriteAsCSV(durationStrSlice)
-
-	return "[" + out + "]"
+	return "[" + strings.Join(durationStrSlice, ",") + "]"
 }
 
 func DurationSlice(v *[]*durationpb.Duration) *DurationSliceValue {

@@ -1,7 +1,6 @@
 package types
 
 import (
-	"io"
 	"strconv"
 	"strings"
 
@@ -21,33 +20,23 @@ type Int32SliceValue struct {
 // Set converts, and assigns, the comma-separated int32 argument string representation as the []*wrapperspb.Int32Value value of this flag.
 // If Set is called on a flag that already has a []*wrapperspb.Int32Value assigned, the newly converted values will be appended.
 func (s *Int32SliceValue) Set(val string) error {
-	// remove all quote characters
-	rmQuote := strings.NewReplacer(`"`, "", "'", "", "`", "")
-
-	// read flag arguments with CSV parser
-	int32StrSlice, err := utils.ReadAsCSV(rmQuote.Replace(val))
-	if err != nil && err != io.EOF {
-		return err
-	}
-
-	// parse int32 values into slice
-	out := make([]*wrapperspb.Int32Value, 0, len(int32StrSlice))
-	for _, int32Str := range int32StrSlice {
-		v, err := strconv.ParseInt(strings.TrimSpace(int32Str), 10, 32)
+	ss := strings.Split(val, ",")
+	out := make([]*wrapperspb.Int32Value, len(ss))
+	for i, d := range ss {
+		var err error
+		var temp32 int64
+		temp32, err = strconv.ParseInt(strings.TrimSpace(d), 10, 32)
 		if err != nil {
 			return err
 		}
-		out = append(out, wrapperspb.Int32(int32(v)))
+		out[i] = wrapperspb.Int32(int32(temp32))
 	}
-
 	if !s.changed {
 		*s.value = out
 	} else {
 		*s.value = append(*s.value, out...)
 	}
-
 	s.changed = true
-
 	return nil
 }
 

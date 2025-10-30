@@ -4,6 +4,7 @@
 package types
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -42,19 +43,19 @@ func (e *EnumValue) String() string {
 // Returns an error if the string is not a valid enum value or if the enum cannot be set.
 func (e *EnumValue) Set(s string) error {
 	if e == nil {
-		return fmt.Errorf("enum value is nil or invalid")
+		return errors.New("enum value is nil or invalid")
 	}
 
 	elem := reflect.ValueOf(e.wrap).Elem()
 
-	val := e.descriptors.ByName(protoreflect.Name(s))
+	val := e.descriptors.ByName(protoreflect.Name(strings.TrimSpace(s)))
 	if val != nil {
 		elem.Set(reflect.ValueOf(e.typ.New(val.Number())))
 		return nil
 	}
 
 	// Try to parse as a number
-	if numVal, err := strconv.Atoi(s); err == nil {
+	if numVal, err := strconv.Atoi(strings.TrimSpace(s)); err == nil {
 		enumVal := e.descriptors.ByNumber(protoreflect.EnumNumber(numVal))
 		if enumVal != nil {
 			newEnum := e.typ.New(enumVal.Number())

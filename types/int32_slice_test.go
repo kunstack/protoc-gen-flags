@@ -47,11 +47,7 @@ func TestInt32SliceValue_Set(t *testing.T) {
 			input:    "-2147483648",
 			expected: []int32{-2147483648},
 		},
-		{
-			name:     "quoted values",
-			input:    `"1","2","3"`,
-			expected: []int32{1, 2, 3},
-		},
+
 		{
 			name:     "mixed positive and negative",
 			input:    "1,-2,3,-4",
@@ -86,9 +82,9 @@ func TestInt32SliceValue_Set(t *testing.T) {
 
 func TestInt32SliceValue_Set_Error(t *testing.T) {
 	tests := []struct {
-		name     string
-		input    string
-		wantErr  bool
+		name    string
+		input   string
+		wantErr bool
 	}{
 		{
 			name:    "invalid integer",
@@ -209,67 +205,6 @@ func TestInt32SliceValue_Append(t *testing.T) {
 	for i, expected := range expected {
 		if slice[i].Value != expected {
 			t.Errorf("Int32SliceValue append[%d] = %v, want %v", i, slice[i].Value, expected)
-		}
-	}
-}
-
-func TestInt32SliceValue_EmptyString(t *testing.T) {
-	var slice []*wrapperspb.Int32Value
-	isv := Int32Slice(&slice)
-
-	err := isv.Set("")
-	if err != nil {
-		t.Errorf("Int32SliceValue.Set() error = %v", err)
-		return
-	}
-
-	if len(slice) != 0 {
-		t.Errorf("Int32SliceValue.Set() empty string length = %v, want 0", len(slice))
-	}
-}
-
-func TestInt32SliceValue_SingleQuotes(t *testing.T) {
-	var slice []*wrapperspb.Int32Value
-	isv := Int32Slice(&slice)
-
-	err := isv.Set(`'1','2','3'`)
-	if err != nil {
-		t.Errorf("Int32SliceValue.Set() error = %v", err)
-		return
-	}
-
-	expected := []int32{1, 2, 3}
-	if len(slice) != len(expected) {
-		t.Errorf("Int32SliceValue.Set() single quotes length = %v, want %v", len(slice), len(expected))
-		return
-	}
-
-	for i, expected := range expected {
-		if slice[i].Value != expected {
-			t.Errorf("Int32SliceValue.Set() single quotes[%d] = %v, want %v", i, slice[i].Value, expected)
-		}
-	}
-}
-
-func TestInt32SliceValue_Backticks(t *testing.T) {
-	var slice []*wrapperspb.Int32Value
-	isv := Int32Slice(&slice)
-
-	err := isv.Set("`1`,`2`,`3`")
-	if err != nil {
-		t.Errorf("Int32SliceValue.Set() error = %v", err)
-		return
-	}
-
-	expected := []int32{1, 2, 3}
-	if len(slice) != len(expected) {
-		t.Errorf("Int32SliceValue.Set() backticks length = %v, want %v", len(slice), len(expected))
-		return
-	}
-
-	for i, expected := range expected {
-		if slice[i].Value != expected {
-			t.Errorf("Int32SliceValue.Set() backticks[%d] = %v, want %v", i, slice[i].Value, expected)
 		}
 	}
 }

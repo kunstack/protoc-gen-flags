@@ -2,7 +2,6 @@ package types
 
 import (
 	"encoding/base64"
-	"io"
 	"strings"
 
 	"github.com/spf13/pflag"
@@ -18,37 +17,48 @@ type BytesSliceValue struct {
 	changed bool
 }
 
-// Set converts, and assigns, the comma-separated base64-encoded bytes argument string representation as the []*wrapperspb.BytesValue value of this flag.
-// If Set is called on a flag that already has a []*wrapperspb.BytesValue assigned, the newly converted values will be appended.
 func (s *BytesSliceValue) Set(val string) error {
-	// remove all quote characters
-	rmQuote := strings.NewReplacer(`"`, "", `'`, "", "`", "")
-
-	// read flag arguments with CSV parser
-	bytesStrSlice, err := utils.ReadAsCSV(rmQuote.Replace(val))
-	if err != nil && err != io.EOF {
+	decodedBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(val))
+	if err != nil {
 		return err
 	}
+	if !s.changed {
+		*s.value = []*wrapperspb.BytesValue{{Value: decodedBytes}}
+		s.changed = true
+	} else {
+		*s.value = append(*s.value, wrapperspb.Bytes(decodedBytes))
+	}
+	return nil
+}
 
-	// parse base64 values into slice
-	out := make([]*wrapperspb.BytesValue, 0, len(bytesStrSlice))
-	for _, bytesStr := range bytesStrSlice {
-		decodedBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(bytesStr))
+func (s *BytesSliceValue) Append(val string) error {
+	decodedBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(val))
+	if err != nil {
+		return err
+	}
+	*s.value = append(*s.value, wrapperspb.Bytes(decodedBytes))
+	return nil
+}
+
+func (s *BytesSliceValue) Replace(val []string) error {
+	out := make([]*wrapperspb.BytesValue, len(val))
+	for i, d := range val {
+		decodedBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(d))
 		if err != nil {
 			return err
 		}
-		out = append(out, wrapperspb.Bytes(decodedBytes))
+		out[i] = wrapperspb.Bytes(decodedBytes)
 	}
-
-	if !s.changed {
-		*s.value = out
-	} else {
-		*s.value = append(*s.value, out...)
-	}
-
-	s.changed = true
-
+	*s.value = out
 	return nil
+}
+
+func (s *BytesSliceValue) GetSlice() []string {
+	out := make([]string, len(*s.value))
+	for i, d := range *s.value {
+		out[i] = strings.ToUpper(base64.StdEncoding.EncodeToString(d.Value))
+	}
+	return out
 }
 
 // Type returns a string that uniquely represents this flag's type.
@@ -73,37 +83,48 @@ type NativeBytesSliceValue struct {
 	changed bool
 }
 
-// Set converts, and assigns, the comma-separated base64-encoded bytes argument string representation as the [][]byte value of this flag.
-// If Set is called on a flag that already has a [][]byte assigned, the newly converted values will be appended.
 func (s *NativeBytesSliceValue) Set(val string) error {
-	// remove all quote characters
-	rmQuote := strings.NewReplacer(`"`, "", `'`, "", "`", "")
-
-	// read flag arguments with CSV parser
-	bytesStrSlice, err := utils.ReadAsCSV(rmQuote.Replace(val))
-	if err != nil && err != io.EOF {
+	decodedBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(val))
+	if err != nil {
 		return err
 	}
+	if !s.changed {
+		*s.value = [][]byte{decodedBytes}
+		s.changed = true
+	} else {
+		*s.value = append(*s.value, decodedBytes)
+	}
+	return nil
+}
 
-	// parse base64 values into slice
-	out := make([][]byte, 0, len(bytesStrSlice))
-	for _, bytesStr := range bytesStrSlice {
-		decodedBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(bytesStr))
+func (s *NativeBytesSliceValue) Append(val string) error {
+	decodedBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(val))
+	if err != nil {
+		return err
+	}
+	*s.value = append(*s.value, decodedBytes)
+	return nil
+}
+
+func (s *NativeBytesSliceValue) Replace(val []string) error {
+	out := make([][]byte, len(val))
+	for i, d := range val {
+		decodedBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(d))
 		if err != nil {
 			return err
 		}
-		out = append(out, decodedBytes)
+		out[i] = decodedBytes
 	}
-
-	if !s.changed {
-		*s.value = out
-	} else {
-		*s.value = append(*s.value, out...)
-	}
-
-	s.changed = true
-
+	*s.value = out
 	return nil
+}
+
+func (s *NativeBytesSliceValue) GetSlice() []string {
+	out := make([]string, len(*s.value))
+	for i, d := range *s.value {
+		out[i] = strings.ToUpper(base64.StdEncoding.EncodeToString(d))
+	}
+	return out
 }
 
 // Type returns a string that uniquely represents this flag's type.

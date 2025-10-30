@@ -2,6 +2,7 @@ package module
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
 	pgs "github.com/lyft/protoc-gen-star"
@@ -11,11 +12,11 @@ func (m *Module) checkCommon(typ FieldType, r commonFlag, pt pgs.ProtoType, wrap
 	m.mustType(typ, pt, wrapper)
 
 	if typ, ok := typ.(Repeatable); ok {
-		if isSlice && !typ.IsRepeated(){
+		if isSlice && !typ.IsRepeated() {
 			m.Fail("repeated fields should use repeated flag")
 		}
 
-		if !isSlice && typ.IsRepeated(){
+		if !isSlice && typ.IsRepeated() {
 			m.Fail("repeated flag should be used for repeated fields")
 		}
 	}
@@ -29,7 +30,70 @@ func (m *Module) checkCommon(typ FieldType, r commonFlag, pt pgs.ProtoType, wrap
 	}
 }
 
+func (m *Module) genCommonDefaults(f pgs.Field, name pgs.Name, zero, value any, wk pgs.WellKnownType) (res string) {
+	valueReflect := reflect.ValueOf(value)
+	if value == nil || (valueReflect.Kind() == reflect.Pointer && valueReflect.IsNil()) {
+		return ""
+	}
+	if valueReflect.Kind() == reflect.Pointer {
+		value = valueReflect.Elem().Interface()
+	}
+	if wk != "" && wk != pgs.UnknownWKT {
+		return fmt.Sprint(`
+			if x.`, name, ` == nil {
+				x.`, name, ` = &wrapperspb.`, wk, `{Value: `, value, `}
+			}
+		`)
+	}
+	if f.HasOptionalKeyword() {
+		zero = "nil"
+		return fmt.Sprint(`
+		if x.`, name, ` == `, zero, ` {
+			v := `, m.ctx.Type(f).Value(), `(`, value, `)
+			x.`, name, ` = &v
+		}
+		`)
+	}
+	return fmt.Sprint(`
+		if x.`, name, ` == `, zero, ` {
+			x.`, name, ` = `, value, `
+		}
+	`)
+}
 
+func (m *Module) genCommonSliceDefaults(f pgs.Field, name pgs.Name, flag commonFlag, wk pgs.WellKnownType, wrapper, nativeWrapper string) string {
+	var (
+		declBuilder = &strings.Builder{}
+	)
+
+	if flag.GetDisabled() {
+		return fmt.Sprint("\n// ", name, ": flags disabled by disabled=true\n")
+	}
+
+	flagName := flag.GetName()
+
+	if flagName == "" {
+		flagName = strings.ToLower(name.String())
+	}
+
+	declBuilder.WriteString(fmt.Sprintf("// %s\n", flagName))
+
+	//
+	//if wk != "" && wk != pgs.UnknownWKT {
+	//	_, _ = fmt.Fprintf(declBuilder, `
+	//			fs.VarP(types.%s(&x.%s), utils.BuildFlagName(prefix,%q), %q, %q)
+	//		`,
+	//		wrapper, name, flagName, flag.GetShort(), flag.GetUsage())
+	//} else {
+	//	_, _ = fmt.Fprintf(declBuilder, `
+	//			fs.%s(&x.%s, utils.BuildFlagName(prefix, %q), %q, x.%s, %q)
+	//		`,
+	//		nativeWrapper, name, flagName, flag.GetShort(), name, flag.GetUsage())
+	//}
+
+	_, _ = declBuilder.WriteString(m.genMark(flag))
+	return declBuilder.String()
+}
 
 func (m *Module) genCommon(f pgs.Field, name pgs.Name, flag commonFlag, wk pgs.WellKnownType, wrapper, nativeWrapper string) string {
 	var (

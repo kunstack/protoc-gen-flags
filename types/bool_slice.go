@@ -23,7 +23,6 @@ type BoolSliceValue struct {
 func (s *BoolSliceValue) Set(val string) error {
 	// remove all quote characters
 	rmQuote := strings.NewReplacer(`"`, "", `'`, "", "`", "")
-
 	// read flag arguments with CSV parser
 	boolStrSlice, err := utils.ReadAsCSV(rmQuote.Replace(val))
 	if err != nil && err != io.EOF {

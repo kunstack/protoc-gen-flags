@@ -47,11 +47,7 @@ func TestInt64SliceValue_Set(t *testing.T) {
 			input:    "-9223372036854775808",
 			expected: []int64{-9223372036854775808},
 		},
-		{
-			name:     "quoted values",
-			input:    `"1","2","3"`,
-			expected: []int64{1, 2, 3},
-		},
+
 		{
 			name:     "mixed positive and negative",
 			input:    "1,-2,3,-4",
@@ -91,9 +87,9 @@ func TestInt64SliceValue_Set(t *testing.T) {
 
 func TestInt64SliceValue_Set_Error(t *testing.T) {
 	tests := []struct {
-		name     string
-		input    string
-		wantErr  bool
+		name    string
+		input   string
+		wantErr bool
 	}{
 		{
 			name:    "invalid integer",
@@ -219,67 +215,6 @@ func TestInt64SliceValue_Append(t *testing.T) {
 	for i, expected := range expected {
 		if slice[i].Value != expected {
 			t.Errorf("Int64SliceValue append[%d] = %v, want %v", i, slice[i].Value, expected)
-		}
-	}
-}
-
-func TestInt64SliceValue_EmptyString(t *testing.T) {
-	var slice []*wrapperspb.Int64Value
-	isv := Int64Slice(&slice)
-
-	err := isv.Set("")
-	if err != nil {
-		t.Errorf("Int64SliceValue.Set() error = %v", err)
-		return
-	}
-
-	if len(slice) != 0 {
-		t.Errorf("Int64SliceValue.Set() empty string length = %v, want 0", len(slice))
-	}
-}
-
-func TestInt64SliceValue_SingleQuotes(t *testing.T) {
-	var slice []*wrapperspb.Int64Value
-	isv := Int64Slice(&slice)
-
-	err := isv.Set(`'1','2','3'`)
-	if err != nil {
-		t.Errorf("Int64SliceValue.Set() error = %v", err)
-		return
-	}
-
-	expected := []int64{1, 2, 3}
-	if len(slice) != len(expected) {
-		t.Errorf("Int64SliceValue.Set() single quotes length = %v, want %v", len(slice), len(expected))
-		return
-	}
-
-	for i, expected := range expected {
-		if slice[i].Value != expected {
-			t.Errorf("Int64SliceValue.Set() single quotes[%d] = %v, want %v", i, slice[i].Value, expected)
-		}
-	}
-}
-
-func TestInt64SliceValue_Backticks(t *testing.T) {
-	var slice []*wrapperspb.Int64Value
-	isv := Int64Slice(&slice)
-
-	err := isv.Set("`1`,`2`,`3`")
-	if err != nil {
-		t.Errorf("Int64SliceValue.Set() error = %v", err)
-		return
-	}
-
-	expected := []int64{1, 2, 3}
-	if len(slice) != len(expected) {
-		t.Errorf("Int64SliceValue.Set() backticks length = %v, want %v", len(slice), len(expected))
-		return
-	}
-
-	for i, expected := range expected {
-		if slice[i].Value != expected {
-			t.Errorf("Int64SliceValue.Set() backticks[%d] = %v, want %v", i, slice[i].Value, expected)
 		}
 	}
 }

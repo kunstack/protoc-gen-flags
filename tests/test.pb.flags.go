@@ -131,9 +131,23 @@ func (x *TestForMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 
 }
 
+func (x *TestForMessage) SetDefaults() {
+	if x.SimpleField == nil {
+		x.SimpleField = new(SimpleMessage)
+	}
+
+	if v, ok := interface{}(x.SimpleField).(flags.Defaulter); ok {
+		v.SetDefaults()
+	}
+
+}
+
 func (x *SimpleMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 	fs.StringVarP(&x.Name, utils.BuildFlagName(prefix, "name"), "", x.Name, "Name parameter")
 
+}
+
+func (x *SimpleMessage) SetDefaults() {
 }
 
 func (x *WrapperValueMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
@@ -158,6 +172,9 @@ func (x *WrapperValueMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 
 }
 
+func (x *WrapperValueMessage) SetDefaults() {
+}
+
 func (x *DoubleSliceTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 	fs.VarP(types.DoubleSlice(&x.Measurements), utils.BuildFlagName(prefix, "measurements"), "m", "Scientific measurements (e.g., 3.14159, 2.71828, 1.41421)")
 
@@ -169,6 +186,9 @@ func (x *DoubleSliceTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 
 }
 
+func (x *DoubleSliceTestMessage) SetDefaults() {
+}
+
 func (x *BytesSliceTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 	fs.VarP(types.BytesSlice(&x.DataChunks), utils.BuildFlagName(prefix, "data-chunks"), "dc", "Data chunks in base64 format")
 
@@ -178,6 +198,9 @@ func (x *BytesSliceTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 
 	fs.VarP(types.BytesHexSlice(&x.BinaryPayloads), utils.BuildFlagName(prefix, "binary-payloads"), "bp", "Binary payloads in hex format")
 
+}
+
+func (x *BytesSliceTestMessage) SetDefaults() {
 }
 
 func (x *FloatSliceTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
@@ -192,6 +215,9 @@ func (x *FloatSliceTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 
 	fs.Float32SliceVarP(&x.Percentages, utils.BuildFlagName(prefix, "percentages"), "p", x.Percentages, "Percentage values (0.0 to 100.0)")
 
+}
+
+func (x *FloatSliceTestMessage) SetDefaults() {
 }
 
 func (x *FloatValueTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
@@ -218,6 +244,9 @@ func (x *FloatValueTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 
 }
 
+func (x *FloatValueTestMessage) SetDefaults() {
+}
+
 func (x *DurationSliceTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 	fs.VarP(types.DurationSlice(&x.Delays), utils.BuildFlagName(prefix, "delays"), "d", "Delay durations (e.g., 1s, 2m, 3h)")
 
@@ -241,7 +270,13 @@ func (x *DurationSliceTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string)
 
 }
 
+func (x *DurationSliceTestMessage) SetDefaults() {
+}
+
 func (x *EmptyMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
+}
+
+func (x *EmptyMessage) SetDefaults() {
 }
 
 func (x *WrapperMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
@@ -254,12 +289,22 @@ func (x *WrapperMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 
 }
 
+func (x *WrapperMessage) SetDefaults() {
+}
+
 func (x *UnexportedMessageTest) _AddFlags(fs *pflag.FlagSet, prefix ...string) {
 	fs.StringVarP(&x.SecretKey, utils.BuildFlagName(prefix, "secret-key"), "", x.SecretKey, "Secret configuration key")
 
 	fs.MarkHidden("secret-key")
 
 	fs.Int32VarP(&x.Timeout, utils.BuildFlagName(prefix, "timeout"), "", x.Timeout, "Connection timeout in seconds")
+
+}
+
+func (x *UnexportedMessageTest) _SetDefaults() {
+	if x.Timeout == 0 {
+		x.Timeout = 30
+	}
 
 }
 
@@ -276,7 +321,10 @@ func (x *DefaultValueTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) 
 
 	fs.Uint64VarP(&x.MemoryLimit, utils.BuildFlagName(prefix, "memory-limit"), "", x.MemoryLimit, "Memory limit in bytes")
 
-	fs.BoolVarP(&x.DebugMode, utils.BuildFlagName(prefix, "debug-mode"), "", x.DebugMode, "Enable debug mode")
+	if x.DebugMode == nil {
+		x.DebugMode = new(bool)
+	}
+	fs.BoolVarP(x.DebugMode, utils.BuildFlagName(prefix, "debug-mode"), "", *(x.DebugMode), "Enable debug mode")
 
 	fs.StringVarP(&x.LogLevel, utils.BuildFlagName(prefix, "log-level"), "", x.LogLevel, "Default log level")
 
@@ -287,6 +335,38 @@ func (x *DefaultValueTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) 
 	}
 
 	fs.VarP(types.Enum(x.DefaultMode2), utils.BuildFlagName(prefix, "default-mode1"), "", "Default operation mode")
+
+}
+
+func (x *DefaultValueTestMessage) SetDefaults() {
+	if x.Pi == 0 {
+		x.Pi = 3.14159
+	}
+
+	if x.Euler == 0 {
+		x.Euler = 2.71828
+	}
+
+	if x.DefaultPort == 0 {
+		x.DefaultPort = 8080
+	}
+
+	if x.MaxConnections == 0 {
+		x.MaxConnections = 1000
+	}
+
+	if x.BufferSize == 0 {
+		x.BufferSize = 4096
+	}
+
+	if x.MemoryLimit == 0 {
+		x.MemoryLimit = 1073741824
+	}
+
+	if x.DebugMode == nil {
+		v := bool(true)
+		x.DebugMode = &v
+	}
 
 }
 
@@ -312,6 +392,9 @@ func (x *StringValueTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 
 	fs.VarP(types.StringSlice(&x.Tags), utils.BuildFlagName(prefix, "tags"), "t", "Multiple tags for categorization")
 
+}
+
+func (x *StringValueTestMessage) SetDefaults() {
 }
 
 func (x *IntegerValueTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
@@ -341,6 +424,25 @@ func (x *IntegerValueTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) 
 
 }
 
+func (x *IntegerValueTestMessage) SetDefaults() {
+	if x.Int32Value == nil {
+		x.Int32Value = &wrapperspb.Int32Value{Value: 42}
+	}
+
+	if x.Int64Value == nil {
+		x.Int64Value = &wrapperspb.Int64Value{Value: 9223372036854775807}
+	}
+
+	if x.Uint32Value == nil {
+		x.Uint32Value = &wrapperspb.UInt32Value{Value: 100}
+	}
+
+	if x.Uint64Value == nil {
+		x.Uint64Value = &wrapperspb.UInt64Value{Value: 18446744073709551615}
+	}
+
+}
+
 func (x *BoolValueTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 	if x.SingleValue == nil {
 		x.SingleValue = new(wrapperspb.BoolValue)
@@ -365,6 +467,21 @@ func (x *BoolValueTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 
 }
 
+func (x *BoolValueTestMessage) SetDefaults() {
+	if x.SingleValue == nil {
+		x.SingleValue = &wrapperspb.BoolValue{Value: true}
+	}
+
+	if x.EnableFeature == nil {
+		x.EnableFeature = &wrapperspb.BoolValue{Value: false}
+	}
+
+	if x.VerboseLogging == nil {
+		x.VerboseLogging = &wrapperspb.BoolValue{Value: false}
+	}
+
+}
+
 func (x *ComprehensiveFlagTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 	fs.StringVarP(&x.Username, utils.BuildFlagName(prefix, "username"), "u", x.Username, "Username for authentication")
 
@@ -385,6 +502,21 @@ func (x *ComprehensiveFlagTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...str
 	fs.BoolVarP(&x.ExperimentalMode, utils.BuildFlagName(prefix, "experimental-mode"), "exp", x.ExperimentalMode, "Enable experimental features")
 
 	fs.MarkHidden("experimental-mode")
+
+}
+
+func (x *ComprehensiveFlagTestMessage) SetDefaults() {
+	if x.ConnectionCount == 0 {
+		x.ConnectionCount = 10
+	}
+
+	if x.MaxThreads == 0 {
+		x.MaxThreads = 100
+	}
+
+	if x.ExperimentalMode == false {
+		x.ExperimentalMode = false
+	}
 
 }
 
@@ -423,6 +555,41 @@ func (x *NestedMessageTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string)
 
 }
 
+func (x *NestedMessageTestMessage) SetDefaults() {
+	if x.ServerConfig == nil {
+		x.ServerConfig = new(SimpleMessage)
+	}
+
+	if v, ok := interface{}(x.ServerConfig).(flags.Defaulter); ok {
+		v.SetDefaults()
+	}
+
+	if x.ClientConfig == nil {
+		x.ClientConfig = new(SimpleMessage)
+	}
+
+	if v, ok := interface{}(x.ClientConfig).(flags.Defaulter); ok {
+		v.SetDefaults()
+	}
+
+	if x.DatabaseConfig == nil {
+		x.DatabaseConfig = new(SimpleMessage)
+	}
+
+	if v, ok := interface{}(x.DatabaseConfig).(flags.Defaulter); ok {
+		v.SetDefaults()
+	}
+
+	if x.DeepConfig == nil {
+		x.DeepConfig = new(NestedLevel2Message)
+	}
+
+	if v, ok := interface{}(x.DeepConfig).(flags.Defaulter); ok {
+		v.SetDefaults()
+	}
+
+}
+
 func (x *NestedLevel2Message) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 	fs.StringVarP(&x.Level2Field, utils.BuildFlagName(prefix, "level2-field"), "", x.Level2Field, "Level 2 nested field")
 
@@ -432,6 +599,17 @@ func (x *NestedLevel2Message) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 
 	if v, ok := interface{}(x.NestedSimple).(flags.Flagger); ok {
 		v.AddFlags(fs, "nested")
+	}
+
+}
+
+func (x *NestedLevel2Message) SetDefaults() {
+	if x.NestedSimple == nil {
+		x.NestedSimple = new(SimpleMessage)
+	}
+
+	if v, ok := interface{}(x.NestedSimple).(flags.Defaulter); ok {
+		v.SetDefaults()
 	}
 
 }
@@ -451,4 +629,23 @@ func (x *ComprehensiveMapTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...stri
 
 	fs.MarkHidden("secret-config")
 
+}
+
+func (x *ComprehensiveMapTestMessage) SetDefaults() {
+}
+
+func (x *TimestampSliceTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
+	fs.VarP(types.TimestampSlice(&x.EventTimes, []string{"RFC3339"}), utils.BuildFlagName(prefix, "event-times"), "et", "Event timestamps (e.g., 2023-01-01T00:00:00Z, 2023-12-31T23:59:59Z)")
+
+	fs.VarP(types.TimestampSlice(&x.LogTimestamps, []string{"RFC3339"}), utils.BuildFlagName(prefix, "log-timestamps"), "lt", "Log entry timestamps in RFC3339 format")
+
+	fs.VarP(types.TimestampSlice(&x.ScheduledTasks, []string{"RFC3339"}), utils.BuildFlagName(prefix, "scheduled-tasks"), "st", "Scheduled task execution times")
+
+	fs.VarP(types.TimestampSlice(&x.BackupTimes, []string{"RFC3339"}), utils.BuildFlagName(prefix, "backup-times"), "bt", "Backup schedule timestamps (e.g., 2024-01-01T02:00:00Z)")
+
+	fs.VarP(types.TimestampSlice(&x.CustomFormatTimes, []string{"RFC3339", "ISO8601", "RFC822"}), utils.BuildFlagName(prefix, "custom-format-times"), "cft", "Custom format timestamps")
+
+}
+
+func (x *TimestampSliceTestMessage) SetDefaults() {
 }

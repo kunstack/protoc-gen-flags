@@ -1,7 +1,6 @@
 package types
 
 import (
-	"io"
 	"strconv"
 	"strings"
 
@@ -21,33 +20,23 @@ type FloatSliceValue struct {
 // Set converts, and assigns, the comma-separated float argument string representation as the []*wrapperspb.FloatValue value of this flag.
 // If Set is called on a flag that already has a []*wrapperspb.FloatValue assigned, the newly converted values will be appended.
 func (s *FloatSliceValue) Set(val string) error {
-	// remove all quote characters
-	rmQuote := strings.NewReplacer(`"`, "", `'`, "", "`", "")
-
-	// read flag arguments with CSV parser
-	floatStrSlice, err := utils.ReadAsCSV(rmQuote.Replace(val))
-	if err != nil && err != io.EOF {
-		return err
-	}
-
-	// parse float values into slice
-	out := make([]*wrapperspb.FloatValue, 0, len(floatStrSlice))
-	for _, floatStr := range floatStrSlice {
-		f, err := strconv.ParseFloat(strings.TrimSpace(floatStr), 32)
+	ss := strings.Split(val, ",")
+	out := make([]*wrapperspb.FloatValue, len(ss))
+	for i, d := range ss {
+		var err error
+		var temp32 float64
+		temp32, err = strconv.ParseFloat(strings.TrimSpace(d), 32)
 		if err != nil {
 			return err
 		}
-		out = append(out, wrapperspb.Float(float32(f)))
+		out[i] = wrapperspb.Float(float32(temp32))
 	}
-
 	if !s.changed {
 		*s.value = out
 	} else {
 		*s.value = append(*s.value, out...)
 	}
-
 	s.changed = true
-
 	return nil
 }
 

@@ -100,7 +100,7 @@ func (m *Module) CheckFieldRules(f pgs.Field, field *flags.FieldFlags) {
 	case *flags.FieldFlags_Duration:
 		m.checkCommon(typ, r.Duration, pgs.MessageT, pgs.DurationWKT, false)
 	case *flags.FieldFlags_Timestamp:
-		m.checkTimestamp(typ, r.Timestamp, false)
+		m.checkTimestamp(typ, r.Timestamp)
 	case *flags.FieldFlags_Repeated:
 		el, ok := typ.(Element)
 		if !ok || el.Element() == nil {
@@ -193,6 +193,8 @@ func (m *Module) CheckRepeatedFlag(typ FieldType, repeated *flags.RepeatedFlags)
 		m.checkEnumSlice(typ, r.Enum, pgs.EnumT, pgs.UnknownWKT)
 	case *flags.RepeatedFlags_Duration:
 		m.checkCommon(typ, r.Duration, pgs.MessageT, pgs.DurationWKT, true)
+	case *flags.RepeatedFlags_Timestamp:
+		m.checkTimestampSlice(typ, r.Timestamp)
 	default:
 		m.Failf("unknown repeated flag type (%T)", repeated.Type)
 	}

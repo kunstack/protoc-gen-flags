@@ -6,10 +6,9 @@ package types
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 
 	"github.com/spf13/pflag"
-	"google.golang.org/protobuf/reflect/protoreflect"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var _ pflag.Value = (*JSONValue)(nil)
@@ -18,17 +17,12 @@ var _ pflag.Value = (*JSONValue)(nil)
 // It provides JSON string representation and parsing capabilities for complex types,
 // allowing them to be used as command-line flags.
 type JSONValue struct {
-	wrap protoreflect.Message // Pointer to the actual protobuf message (map or struct)
+	wrap interface{} // Pointer to the actual protobuf message (map or struct)
 }
 
 // String returns the JSON string representation of the map/struct value.
 func (j *JSONValue) String() string {
-	if j.wrap == nil {
-		return "{}"
-	}
-
-	// Convert protobuf message to JSON
-	jsonBytes, err := json.Marshal(j.wrap.Interface())
+	jsonBytes, err := json.Marshal(j.wrap)
 	if err != nil {
 		return "{}"
 	}
@@ -40,49 +34,25 @@ func (j *JSONValue) Set(value string) error {
 	if j.wrap == nil {
 		return fmt.Errorf("cannot set value on nil message")
 	}
-
-	// Parse JSON string into a generic interface{}
-	var jsonData interface{}
-	if err := json.Unmarshal([]byte(value), &jsonData); err != nil {
-		return fmt.Errorf("invalid JSON: %v", err)
+	if err := json.Unmarshal([]byte(value), j.wrap); err != nil {
+		return fmt.Errorf("cannot unmarshal JSON: %w", err)
 	}
-
-	// Convert to protobuf struct
-	structVal, err := structpb.NewStruct(jsonData.(map[string]interface{}))
-	if err != nil {
-		return fmt.Errorf("cannot convert JSON to protobuf struct: %v", err)
-	}
-
-	// Find the appropriate field to set - try common field names
-	fields := j.wrap.Descriptor().Fields()
-
-	// For map fields, look for "fields" field
-	if field := fields.ByName("fields"); field != nil {
-		j.wrap.Set(field, protoreflect.ValueOfMessage(structVal.ProtoReflect()))
-		return nil
-	}
-
-	// For other struct types, try to unmarshal directly
-	// This is a simplified approach - in production you might need more sophisticated handling
-	return fmt.Errorf("cannot set JSON value: no suitable field found")
+	return nil
 }
 
 // Type returns the type name for help text.
 func (j *JSONValue) Type() string {
-	return "JSON"
+	return "JSONValue"
 }
 
 // JSON creates a new JSONValue for the given protobuf message pointer.
 func JSON(v interface{}) *JSONValue {
 	if v == nil {
-		return &JSONValue{wrap: nil}
+		panic("JSON: nil value")
 	}
-
-	// Ensure we have a message type
-	msg, ok := v.(protoreflect.Message)
-	if !ok {
-		return &JSONValue{wrap: nil}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() != reflect.Pointer || rv.IsNil() {
+		panic("JSON: non-nil pointer")
 	}
-
-	return &JSONValue{wrap: msg}
+	return &JSONValue{wrap: v}
 }

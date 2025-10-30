@@ -86,6 +86,16 @@ message MyMessage {
 - **github.com/spf13/pflag**: POSIX/GNU-style command-line flag parsing
 - **google.golang.org/protobuf**: Google's protocol buffer implementation
 
+## Testing Guidelines
+
+When writing test cases, prioritize using the `github.com/stretchr/testify` package for assertions. Use methods like:
+- `assert.NoError(t, err)` for error checking
+- `assert.Equal(t, expected, actual)` for value comparisons
+- `assert.Len(t, slice, length)` for length checks
+- `assert.Error(t, err)` for expecting errors
+
+This provides cleaner, more readable test code with better failure messages.
+
 ## Buf Configuration
 
 The project uses buf for protobuf linting and generation:

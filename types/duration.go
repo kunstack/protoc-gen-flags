@@ -16,7 +16,7 @@ func (d *DurationValue) String() string {
 	if d == nil {
 		return "0s"
 	}
-	return (*durationpb.Duration)(d).AsDuration().String()
+	return fmt.Sprintf("%s", (*durationpb.Duration)(d).AsDuration())
 }
 
 func (d *DurationValue) Set(s string) error {

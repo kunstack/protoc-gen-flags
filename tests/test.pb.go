@@ -48,6 +48,7 @@ const (
 	TestEnum1_TEST_ENUM_VALUE1      TestEnum1 = 1
 	TestEnum1_TEST_ENUM_VALUE2      TestEnum1 = 2
 	TestEnum1_TEST_ENUM_VALUE3      TestEnum1 = 3
+	TestEnum1_test_enum_value4      TestEnum1 = 4
 )
 
 // Enum value maps for TestEnum1.
@@ -57,12 +58,14 @@ var (
 		1: "TEST_ENUM_VALUE1",
 		2: "TEST_ENUM_VALUE2",
 		3: "TEST_ENUM_VALUE3",
+		4: "test_enum_value4",
 	}
 	TestEnum1_value = map[string]int32{
 		"TEST_ENUM_UNSPECIFIED": 0,
 		"TEST_ENUM_VALUE1":      1,
 		"TEST_ENUM_VALUE2":      2,
 		"TEST_ENUM_VALUE3":      3,
+		"test_enum_value4":      4,
 	}
 )
 
@@ -1216,7 +1219,7 @@ type DefaultValueTestMessage struct {
 	MaxConnections int64      `protobuf:"varint,4,opt,name=max_connections,json=maxConnections,proto3" json:"max_connections,omitempty"`
 	BufferSize     uint32     `protobuf:"varint,5,opt,name=buffer_size,json=bufferSize,proto3" json:"buffer_size,omitempty"`
 	MemoryLimit    uint64     `protobuf:"varint,6,opt,name=memory_limit,json=memoryLimit,proto3" json:"memory_limit,omitempty"`
-	DebugMode      bool       `protobuf:"varint,7,opt,name=debug_mode,json=debugMode,proto3" json:"debug_mode,omitempty"`
+	DebugMode      *bool      `protobuf:"varint,7,opt,name=debug_mode,json=debugMode,proto3,oneof" json:"debug_mode,omitempty"`
 	LogLevel       string     `protobuf:"bytes,8,opt,name=log_level,json=logLevel,proto3" json:"log_level,omitempty"`
 	DefaultMode    TestEnum1  `protobuf:"varint,9,opt,name=default_mode,json=defaultMode,proto3,enum=tests.TestEnum1" json:"default_mode,omitempty"`
 	DefaultMode2   *TestEnum1 `protobuf:"varint,10,opt,name=default_mode2,json=defaultMode2,proto3,enum=tests.TestEnum1,oneof" json:"default_mode2,omitempty"`
@@ -1297,8 +1300,8 @@ func (x *DefaultValueTestMessage) GetMemoryLimit() uint64 {
 }
 
 func (x *DefaultValueTestMessage) GetDebugMode() bool {
-	if x != nil {
-		return x.DebugMode
+	if x != nil && x.DebugMode != nil {
+		return *x.DebugMode
 	}
 	return false
 }
@@ -1885,6 +1888,85 @@ func (x *ComprehensiveMapTestMessage) GetSecretConfig() map[string]string {
 	return nil
 }
 
+// Dedicated message for testing TimestampSliceValue functionality
+type TimestampSliceTestMessage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Test various timestamp slice configurations
+	EventTimes     []*timestamppb.Timestamp `protobuf:"bytes,1,rep,name=event_times,json=eventTimes,proto3" json:"event_times,omitempty"`
+	LogTimestamps  []*timestamppb.Timestamp `protobuf:"bytes,2,rep,name=log_timestamps,json=logTimestamps,proto3" json:"log_timestamps,omitempty"`
+	ScheduledTasks []*timestamppb.Timestamp `protobuf:"bytes,3,rep,name=scheduled_tasks,json=scheduledTasks,proto3" json:"scheduled_tasks,omitempty"`
+	BackupTimes    []*timestamppb.Timestamp `protobuf:"bytes,4,rep,name=backup_times,json=backupTimes,proto3" json:"backup_times,omitempty"`
+	// Test timestamp slice with custom formats
+	CustomFormatTimes []*timestamppb.Timestamp `protobuf:"bytes,5,rep,name=custom_format_times,json=customFormatTimes,proto3" json:"custom_format_times,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *TimestampSliceTestMessage) Reset() {
+	*x = TimestampSliceTestMessage{}
+	mi := &file_tests_test_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TimestampSliceTestMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TimestampSliceTestMessage) ProtoMessage() {}
+
+func (x *TimestampSliceTestMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_tests_test_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TimestampSliceTestMessage.ProtoReflect.Descriptor instead.
+func (*TimestampSliceTestMessage) Descriptor() ([]byte, []int) {
+	return file_tests_test_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *TimestampSliceTestMessage) GetEventTimes() []*timestamppb.Timestamp {
+	if x != nil {
+		return x.EventTimes
+	}
+	return nil
+}
+
+func (x *TimestampSliceTestMessage) GetLogTimestamps() []*timestamppb.Timestamp {
+	if x != nil {
+		return x.LogTimestamps
+	}
+	return nil
+}
+
+func (x *TimestampSliceTestMessage) GetScheduledTasks() []*timestamppb.Timestamp {
+	if x != nil {
+		return x.ScheduledTasks
+	}
+	return nil
+}
+
+func (x *TimestampSliceTestMessage) GetBackupTimes() []*timestamppb.Timestamp {
+	if x != nil {
+		return x.BackupTimes
+	}
+	return nil
+}
+
+func (x *TimestampSliceTestMessage) GetCustomFormatTimes() []*timestamppb.Timestamp {
+	if x != nil {
+		return x.CustomFormatTimes
+	}
+	return nil
+}
+
 var File_tests_test_proto protoreflect.FileDescriptor
 
 const file_tests_test_proto_rawDesc = "" +
@@ -2024,13 +2106,13 @@ const file_tests_test_proto_rawDesc = "" +
 	"#\x12\x06scores\x1a\x02sc\"\x15Multiple score valuesR\x06scores:\x03\xa8I\x01B\x0f\n" +
 	"\r_single_valueB\x0e\n" +
 	"\f_temperatureB\x0e\n" +
-	"\f_probability\"\x96\x06\n" +
+	"\f_probability\"\x9b\x06\n" +
 	"\x18DurationSliceTestMessage\x12k\n" +
 	"\x06delays\x18\x01 \x03(\v2\x19.google.protobuf.DurationB8\x9aI5\x8a\x012\x8a\x01/\x12\x06delays\x1a\x01d\"\"Delay durations (e.g., 1s, 2m, 3h)R\x06delays\x12\x86\x01\n" +
 	"\tintervals\x18\x02 \x03(\v2\x19.google.protobuf.DurationBM\x9aIJ\x8a\x01G\x8a\x01D\x12\tintervals\x1a\x01i\"4Time intervals between events (e.g., 500ms, 10s, 5m)R\tintervals\x12\x83\x01\n" +
 	"\btimeouts\x18\x03 \x03(\v2\x19.google.protobuf.DurationBL\x9aII\x8a\x01F\x8a\x01C\x12\btimeouts\x1a\x01t\"4Timeout durations for operations (e.g., 30s, 5m, 1h)R\btimeouts\x12\x9f\x01\n" +
-	"\x11polling_intervals\x18\x04 \x03(\v2\x19.google.protobuf.DurationBW\x9aIT\x8a\x01Q\x8a\x01N\x12\x11polling-intervals\x1a\x01p\"6Polling intervals for monitoring (e.g., 100ms, 5s, 1m)R\x10pollingIntervals\x12S\n" +
-	"\bdeadline\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x1b\x9aI\x18\xa2\x01\x15\"\x0edeadline usageB\x03abcR\bdeadline\x12l\n" +
+	"\x11polling_intervals\x18\x04 \x03(\v2\x19.google.protobuf.DurationBW\x9aIT\x8a\x01Q\x8a\x01N\x12\x11polling-intervals\x1a\x01p\"6Polling intervals for monitoring (e.g., 100ms, 5s, 1m)R\x10pollingIntervals\x12X\n" +
+	"\bdeadline\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB \x9aI\x1d\xa2\x01\x1a\"\x0edeadline usageB\x03abcJ\x03nowR\bdeadline\x12l\n" +
 	"\x11optional_deadline\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x1e\x9aI\x1b\xa2\x01\x18\"\x11optional_deadlineB\x03abcH\x00R\x10optionalDeadline\x88\x01\x01:\x03\xa8I\x01B\x14\n" +
 	"\x12_optional_deadline\"\x80\x02\n" +
 	"\x0fDisabledMessage\x12B\n" +
@@ -2051,7 +2133,7 @@ const file_tests_test_proto_rawDesc = "" +
 	"\n" +
 	"secret_key\x18\x01 \x01(\tB-\x9aI*r(\x12\n" +
 	"secret-key\"\x18Secret configuration key(\x01R\tsecretKey\x12I\n" +
-	"\atimeout\x18\x02 \x01(\x05B/\x9aI,\x1a*\x12\atimeout\"\x1dConnection timeout in seconds@\x1eR\atimeout:\x06\xa0I\x01\xa8I\x01\"\xd5\x06\n" +
+	"\atimeout\x18\x02 \x01(\x05B/\x9aI,\x1a*\x12\atimeout\"\x1dConnection timeout in seconds@\x1eR\atimeout:\x06\xa0I\x01\xa8I\x01\"\xe9\x06\n" +
 	"\x17DefaultValueTestMessage\x121\n" +
 	"\x02pi\x18\x01 \x01(\x02B!\x9aI\x1e\n" +
 	"\x1c\x12\x02pi\"\x11Pi constant valueE\xd0\x0fI@R\x02pi\x12;\n" +
@@ -2060,14 +2142,15 @@ const file_tests_test_proto_rawDesc = "" +
 	"\x0fmax_connections\x18\x04 \x01(\x03B6\x9aI3\"1\x12\x0fmax-connections\"\x1bMaximum allowed connections@\xe8\aR\x0emaxConnections\x12L\n" +
 	"\vbuffer_size\x18\x05 \x01(\rB+\x9aI(*&\x12\vbuffer-size\"\x14Buffer size in bytes@\x80 R\n" +
 	"bufferSize\x12S\n" +
-	"\fmemory_limit\x18\x06 \x01(\x04B0\x9aI-2+\x12\fmemory-limit\"\x15Memory limit in bytes@\x80\x80\x80\x80\x04R\vmemoryLimit\x12E\n" +
+	"\fmemory_limit\x18\x06 \x01(\x04B0\x9aI-2+\x12\fmemory-limit\"\x15Memory limit in bytes@\x80\x80\x80\x80\x04R\vmemoryLimit\x12J\n" +
 	"\n" +
 	"debug_mode\x18\a \x01(\bB&\x9aI#j!\x12\n" +
-	"debug-mode\"\x11Enable debug mode@\x01R\tdebugMode\x12F\n" +
+	"debug-mode\"\x11Enable debug mode@\x01H\x00R\tdebugMode\x88\x01\x01\x12F\n" +
 	"\tlog_level\x18\b \x01(\tB)\x9aI&r$\x12\tlog-level\"\x11Default log levelB\x04infoR\blogLevel\x12c\n" +
 	"\fdefault_mode\x18\t \x01(\x0e2\x10.tests.TestEnum1B.\x9aI+\x82\x01(\x12\fdefault-mode\"\x16Default operation mode@\x01R\vdefaultMode\x12k\n" +
 	"\rdefault_mode2\x18\n" +
-	" \x01(\x0e2\x10.tests.TestEnum1B/\x9aI,\x82\x01)\x12\rdefault-mode1\"\x16Default operation mode@\x01H\x00R\fdefaultMode2\x88\x01\x01:\x03\xa8I\x01B\x10\n" +
+	" \x01(\x0e2\x10.tests.TestEnum1B/\x9aI,\x82\x01)\x12\rdefault-mode1\"\x16Default operation mode@\x01H\x01R\fdefaultMode2\x88\x01\x01:\x03\xa8I\x01B\r\n" +
+	"\v_debug_modeB\x10\n" +
 	"\x0e_default_mode2\"\xd4\x06\n" +
 	"\x16StringValueTestMessage\x12\x8a\x01\n" +
 	"\fsingle_value\x18\x01 \x01(\v2\x1c.google.protobuf.StringValueBD\x9aIAr?\x12\fsingle-value\x1a\x02sv\"\x1bSingle string value wrapperB\x0edefault-singleH\x00R\vsingleValue\x88\x01\x01\x12\x87\x01\n" +
@@ -2147,12 +2230,20 @@ const file_tests_test_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a?\n" +
 	"\x11SecretConfigEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x03\xa8I\x01*h\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x03\xa8I\x01\"\xb0\x06\n" +
+	"\x19TimestampSliceTestMessage\x12\xa5\x01\n" +
+	"\vevent_times\x18\x01 \x03(\v2\x1a.google.protobuf.TimestampBh\x9aIe\x8a\x01b\x92\x01_\x12\vevent-times\x1a\x02et\"CEvent timestamps (e.g., 2023-01-01T00:00:00Z, 2023-12-31T23:59:59Z)B\aRFC3339R\n" +
+	"eventTimes\x12\x91\x01\n" +
+	"\x0elog_timestamps\x18\x02 \x03(\v2\x1a.google.protobuf.TimestampBN\x9aIK\x8a\x01H\x92\x01E\x12\x0elog-timestamps\x1a\x02lt\"&Log entry timestamps in RFC3339 formatB\aRFC3339R\rlogTimestamps\x12\x8c\x01\n" +
+	"\x0fscheduled_tasks\x18\x03 \x03(\v2\x1a.google.protobuf.TimestampBG\x9aID\x8a\x01A\x92\x01>\x12\x0fscheduled-tasks\x1a\x02st\"\x1eScheduled task execution timesB\aRFC3339R\x0escheduledTasks\x12\x9c\x01\n" +
+	"\fbackup_times\x18\x04 \x03(\v2\x1a.google.protobuf.TimestampB]\x9aIZ\x8a\x01W\x92\x01T\x12\fbackup-times\x1a\x02bt\"7Backup schedule timestamps (e.g., 2024-01-01T02:00:00Z)B\aRFC3339R\vbackupTimes\x12\xa3\x01\n" +
+	"\x13custom_format_times\x18\x05 \x03(\v2\x1a.google.protobuf.TimestampBW\x9aIT\x8a\x01Q\x92\x01N\x12\x13custom-format-times\x1a\x03cft\"\x18Custom format timestampsB\aRFC3339B\aISO8601B\x06RFC822R\x11customFormatTimes:\x03\xa8I\x01*~\n" +
 	"\tTestEnum1\x12\x19\n" +
 	"\x15TEST_ENUM_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10TEST_ENUM_VALUE1\x10\x01\x12\x14\n" +
 	"\x10TEST_ENUM_VALUE2\x10\x02\x12\x14\n" +
-	"\x10TEST_ENUM_VALUE3\x10\x03B2Z0github.com/kunstack/protoc-gen-flags/tests;testsb\x06proto3"
+	"\x10TEST_ENUM_VALUE3\x10\x03\x12\x14\n" +
+	"\x10test_enum_value4\x10\x04B2Z0github.com/kunstack/protoc-gen-flags/tests;testsb\x06proto3"
 
 var (
 	file_tests_test_proto_rawDescOnce sync.Once
@@ -2167,7 +2258,7 @@ func file_tests_test_proto_rawDescGZIP() []byte {
 }
 
 var file_tests_test_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_tests_test_proto_msgTypes = make([]protoimpl.MessageInfo, 36)
+var file_tests_test_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
 var file_tests_test_proto_goTypes = []any{
 	(TestEnum1)(0),                       // 0: tests.TestEnum1
 	(*TestForMessage)(nil),               // 1: tests.TestForMessage
@@ -2191,114 +2282,120 @@ var file_tests_test_proto_goTypes = []any{
 	(*NestedMessageTestMessage)(nil),     // 19: tests.NestedMessageTestMessage
 	(*NestedLevel2Message)(nil),          // 20: tests.NestedLevel2Message
 	(*ComprehensiveMapTestMessage)(nil),  // 21: tests.ComprehensiveMapTestMessage
-	nil,                                  // 22: tests.TestForMessage.LabelsEntry
-	nil,                                  // 23: tests.TestForMessage.CountersEntry
-	nil,                                  // 24: tests.TestForMessage.StringMapEntry
-	nil,                                  // 25: tests.TestForMessage.Int32MapEntry
-	nil,                                  // 26: tests.TestForMessage.Int64MapEntry
-	nil,                                  // 27: tests.TestForMessage.Uint32MapEntry
-	nil,                                  // 28: tests.TestForMessage.Uint64MapEntry
-	nil,                                  // 29: tests.TestForMessage.Sfixed32MapEntry
-	nil,                                  // 30: tests.TestForMessage.Sfixed64MapEntry
-	nil,                                  // 31: tests.TestForMessage.JsonMapEntry
-	nil,                                  // 32: tests.ComprehensiveMapTestMessage.JsonLabelsEntry
-	nil,                                  // 33: tests.ComprehensiveMapTestMessage.NativeLabelsEntry
-	nil,                                  // 34: tests.ComprehensiveMapTestMessage.DefaultCountersEntry
-	nil,                                  // 35: tests.ComprehensiveMapTestMessage.LegacyConfigEntry
-	nil,                                  // 36: tests.ComprehensiveMapTestMessage.SecretConfigEntry
-	(*durationpb.Duration)(nil),          // 37: google.protobuf.Duration
-	(*wrapperspb.BoolValue)(nil),         // 38: google.protobuf.BoolValue
-	(*wrapperspb.DoubleValue)(nil),       // 39: google.protobuf.DoubleValue
-	(*wrapperspb.BytesValue)(nil),        // 40: google.protobuf.BytesValue
-	(*wrapperspb.FloatValue)(nil),        // 41: google.protobuf.FloatValue
-	(*timestamppb.Timestamp)(nil),        // 42: google.protobuf.Timestamp
-	(*wrapperspb.StringValue)(nil),       // 43: google.protobuf.StringValue
-	(*wrapperspb.Int32Value)(nil),        // 44: google.protobuf.Int32Value
-	(*wrapperspb.Int64Value)(nil),        // 45: google.protobuf.Int64Value
-	(*wrapperspb.UInt32Value)(nil),       // 46: google.protobuf.UInt32Value
-	(*wrapperspb.UInt64Value)(nil),       // 47: google.protobuf.UInt64Value
+	(*TimestampSliceTestMessage)(nil),    // 22: tests.TimestampSliceTestMessage
+	nil,                                  // 23: tests.TestForMessage.LabelsEntry
+	nil,                                  // 24: tests.TestForMessage.CountersEntry
+	nil,                                  // 25: tests.TestForMessage.StringMapEntry
+	nil,                                  // 26: tests.TestForMessage.Int32MapEntry
+	nil,                                  // 27: tests.TestForMessage.Int64MapEntry
+	nil,                                  // 28: tests.TestForMessage.Uint32MapEntry
+	nil,                                  // 29: tests.TestForMessage.Uint64MapEntry
+	nil,                                  // 30: tests.TestForMessage.Sfixed32MapEntry
+	nil,                                  // 31: tests.TestForMessage.Sfixed64MapEntry
+	nil,                                  // 32: tests.TestForMessage.JsonMapEntry
+	nil,                                  // 33: tests.ComprehensiveMapTestMessage.JsonLabelsEntry
+	nil,                                  // 34: tests.ComprehensiveMapTestMessage.NativeLabelsEntry
+	nil,                                  // 35: tests.ComprehensiveMapTestMessage.DefaultCountersEntry
+	nil,                                  // 36: tests.ComprehensiveMapTestMessage.LegacyConfigEntry
+	nil,                                  // 37: tests.ComprehensiveMapTestMessage.SecretConfigEntry
+	(*durationpb.Duration)(nil),          // 38: google.protobuf.Duration
+	(*wrapperspb.BoolValue)(nil),         // 39: google.protobuf.BoolValue
+	(*wrapperspb.DoubleValue)(nil),       // 40: google.protobuf.DoubleValue
+	(*wrapperspb.BytesValue)(nil),        // 41: google.protobuf.BytesValue
+	(*wrapperspb.FloatValue)(nil),        // 42: google.protobuf.FloatValue
+	(*timestamppb.Timestamp)(nil),        // 43: google.protobuf.Timestamp
+	(*wrapperspb.StringValue)(nil),       // 44: google.protobuf.StringValue
+	(*wrapperspb.Int32Value)(nil),        // 45: google.protobuf.Int32Value
+	(*wrapperspb.Int64Value)(nil),        // 46: google.protobuf.Int64Value
+	(*wrapperspb.UInt32Value)(nil),       // 47: google.protobuf.UInt32Value
+	(*wrapperspb.UInt64Value)(nil),       // 48: google.protobuf.UInt64Value
 }
 var file_tests_test_proto_depIdxs = []int32{
 	0,  // 0: tests.TestForMessage.test_enum:type_name -> tests.TestEnum1
-	37, // 1: tests.TestForMessage.timeout_duration:type_name -> google.protobuf.Duration
+	38, // 1: tests.TestForMessage.timeout_duration:type_name -> google.protobuf.Duration
 	2,  // 2: tests.TestForMessage.simple_field:type_name -> tests.SimpleMessage
-	22, // 3: tests.TestForMessage.labels:type_name -> tests.TestForMessage.LabelsEntry
-	23, // 4: tests.TestForMessage.counters:type_name -> tests.TestForMessage.CountersEntry
-	24, // 5: tests.TestForMessage.string_map:type_name -> tests.TestForMessage.StringMapEntry
-	25, // 6: tests.TestForMessage.int32_map:type_name -> tests.TestForMessage.Int32MapEntry
-	26, // 7: tests.TestForMessage.int64_map:type_name -> tests.TestForMessage.Int64MapEntry
-	27, // 8: tests.TestForMessage.uint32_map:type_name -> tests.TestForMessage.Uint32MapEntry
-	28, // 9: tests.TestForMessage.uint64_map:type_name -> tests.TestForMessage.Uint64MapEntry
-	29, // 10: tests.TestForMessage.sfixed32_map:type_name -> tests.TestForMessage.Sfixed32MapEntry
-	30, // 11: tests.TestForMessage.sfixed64_map:type_name -> tests.TestForMessage.Sfixed64MapEntry
-	31, // 12: tests.TestForMessage.json_map:type_name -> tests.TestForMessage.JsonMapEntry
-	37, // 13: tests.TestForMessage.delays:type_name -> google.protobuf.Duration
-	37, // 14: tests.TestForMessage.intervals:type_name -> google.protobuf.Duration
-	37, // 15: tests.TestForMessage.timeouts:type_name -> google.protobuf.Duration
-	38, // 16: tests.WrapperValueMessage.name:type_name -> google.protobuf.BoolValue
-	39, // 17: tests.WrapperValueMessage.double_value:type_name -> google.protobuf.DoubleValue
-	39, // 18: tests.WrapperValueMessage.double_values:type_name -> google.protobuf.DoubleValue
-	40, // 19: tests.WrapperValueMessage.bytes_value:type_name -> google.protobuf.BytesValue
-	40, // 20: tests.WrapperValueMessage.bytes_values:type_name -> google.protobuf.BytesValue
-	40, // 21: tests.WrapperValueMessage.bytes_hex_values:type_name -> google.protobuf.BytesValue
-	39, // 22: tests.DoubleSliceTestMessage.measurements:type_name -> google.protobuf.DoubleValue
-	39, // 23: tests.DoubleSliceTestMessage.scientific_values:type_name -> google.protobuf.DoubleValue
-	39, // 24: tests.DoubleSliceTestMessage.temperature_readings:type_name -> google.protobuf.DoubleValue
-	39, // 25: tests.DoubleSliceTestMessage.coordinates:type_name -> google.protobuf.DoubleValue
-	40, // 26: tests.BytesSliceTestMessage.data_chunks:type_name -> google.protobuf.BytesValue
-	40, // 27: tests.BytesSliceTestMessage.file_contents:type_name -> google.protobuf.BytesValue
-	40, // 28: tests.BytesSliceTestMessage.hex_data:type_name -> google.protobuf.BytesValue
-	40, // 29: tests.BytesSliceTestMessage.binary_payloads:type_name -> google.protobuf.BytesValue
-	41, // 30: tests.FloatValueTestMessage.single_value:type_name -> google.protobuf.FloatValue
-	41, // 31: tests.FloatValueTestMessage.float_values:type_name -> google.protobuf.FloatValue
-	41, // 32: tests.FloatValueTestMessage.temperature:type_name -> google.protobuf.FloatValue
-	41, // 33: tests.FloatValueTestMessage.sensor_readings:type_name -> google.protobuf.FloatValue
-	41, // 34: tests.FloatValueTestMessage.probability:type_name -> google.protobuf.FloatValue
-	41, // 35: tests.FloatValueTestMessage.scores:type_name -> google.protobuf.FloatValue
-	37, // 36: tests.DurationSliceTestMessage.delays:type_name -> google.protobuf.Duration
-	37, // 37: tests.DurationSliceTestMessage.intervals:type_name -> google.protobuf.Duration
-	37, // 38: tests.DurationSliceTestMessage.timeouts:type_name -> google.protobuf.Duration
-	37, // 39: tests.DurationSliceTestMessage.polling_intervals:type_name -> google.protobuf.Duration
-	42, // 40: tests.DurationSliceTestMessage.deadline:type_name -> google.protobuf.Timestamp
-	42, // 41: tests.DurationSliceTestMessage.optional_deadline:type_name -> google.protobuf.Timestamp
+	23, // 3: tests.TestForMessage.labels:type_name -> tests.TestForMessage.LabelsEntry
+	24, // 4: tests.TestForMessage.counters:type_name -> tests.TestForMessage.CountersEntry
+	25, // 5: tests.TestForMessage.string_map:type_name -> tests.TestForMessage.StringMapEntry
+	26, // 6: tests.TestForMessage.int32_map:type_name -> tests.TestForMessage.Int32MapEntry
+	27, // 7: tests.TestForMessage.int64_map:type_name -> tests.TestForMessage.Int64MapEntry
+	28, // 8: tests.TestForMessage.uint32_map:type_name -> tests.TestForMessage.Uint32MapEntry
+	29, // 9: tests.TestForMessage.uint64_map:type_name -> tests.TestForMessage.Uint64MapEntry
+	30, // 10: tests.TestForMessage.sfixed32_map:type_name -> tests.TestForMessage.Sfixed32MapEntry
+	31, // 11: tests.TestForMessage.sfixed64_map:type_name -> tests.TestForMessage.Sfixed64MapEntry
+	32, // 12: tests.TestForMessage.json_map:type_name -> tests.TestForMessage.JsonMapEntry
+	38, // 13: tests.TestForMessage.delays:type_name -> google.protobuf.Duration
+	38, // 14: tests.TestForMessage.intervals:type_name -> google.protobuf.Duration
+	38, // 15: tests.TestForMessage.timeouts:type_name -> google.protobuf.Duration
+	39, // 16: tests.WrapperValueMessage.name:type_name -> google.protobuf.BoolValue
+	40, // 17: tests.WrapperValueMessage.double_value:type_name -> google.protobuf.DoubleValue
+	40, // 18: tests.WrapperValueMessage.double_values:type_name -> google.protobuf.DoubleValue
+	41, // 19: tests.WrapperValueMessage.bytes_value:type_name -> google.protobuf.BytesValue
+	41, // 20: tests.WrapperValueMessage.bytes_values:type_name -> google.protobuf.BytesValue
+	41, // 21: tests.WrapperValueMessage.bytes_hex_values:type_name -> google.protobuf.BytesValue
+	40, // 22: tests.DoubleSliceTestMessage.measurements:type_name -> google.protobuf.DoubleValue
+	40, // 23: tests.DoubleSliceTestMessage.scientific_values:type_name -> google.protobuf.DoubleValue
+	40, // 24: tests.DoubleSliceTestMessage.temperature_readings:type_name -> google.protobuf.DoubleValue
+	40, // 25: tests.DoubleSliceTestMessage.coordinates:type_name -> google.protobuf.DoubleValue
+	41, // 26: tests.BytesSliceTestMessage.data_chunks:type_name -> google.protobuf.BytesValue
+	41, // 27: tests.BytesSliceTestMessage.file_contents:type_name -> google.protobuf.BytesValue
+	41, // 28: tests.BytesSliceTestMessage.hex_data:type_name -> google.protobuf.BytesValue
+	41, // 29: tests.BytesSliceTestMessage.binary_payloads:type_name -> google.protobuf.BytesValue
+	42, // 30: tests.FloatValueTestMessage.single_value:type_name -> google.protobuf.FloatValue
+	42, // 31: tests.FloatValueTestMessage.float_values:type_name -> google.protobuf.FloatValue
+	42, // 32: tests.FloatValueTestMessage.temperature:type_name -> google.protobuf.FloatValue
+	42, // 33: tests.FloatValueTestMessage.sensor_readings:type_name -> google.protobuf.FloatValue
+	42, // 34: tests.FloatValueTestMessage.probability:type_name -> google.protobuf.FloatValue
+	42, // 35: tests.FloatValueTestMessage.scores:type_name -> google.protobuf.FloatValue
+	38, // 36: tests.DurationSliceTestMessage.delays:type_name -> google.protobuf.Duration
+	38, // 37: tests.DurationSliceTestMessage.intervals:type_name -> google.protobuf.Duration
+	38, // 38: tests.DurationSliceTestMessage.timeouts:type_name -> google.protobuf.Duration
+	38, // 39: tests.DurationSliceTestMessage.polling_intervals:type_name -> google.protobuf.Duration
+	43, // 40: tests.DurationSliceTestMessage.deadline:type_name -> google.protobuf.Timestamp
+	43, // 41: tests.DurationSliceTestMessage.optional_deadline:type_name -> google.protobuf.Timestamp
 	2,  // 42: tests.DisabledMessage.simple_message:type_name -> tests.SimpleMessage
-	42, // 43: tests.DisabledMessage.created_at:type_name -> google.protobuf.Timestamp
-	41, // 44: tests.WrapperMessage.value:type_name -> google.protobuf.FloatValue
+	43, // 43: tests.DisabledMessage.created_at:type_name -> google.protobuf.Timestamp
+	42, // 44: tests.WrapperMessage.value:type_name -> google.protobuf.FloatValue
 	0,  // 45: tests.DefaultValueTestMessage.default_mode:type_name -> tests.TestEnum1
 	0,  // 46: tests.DefaultValueTestMessage.default_mode2:type_name -> tests.TestEnum1
-	43, // 47: tests.StringValueTestMessage.single_value:type_name -> google.protobuf.StringValue
-	43, // 48: tests.StringValueTestMessage.string_values:type_name -> google.protobuf.StringValue
-	43, // 49: tests.StringValueTestMessage.config_path:type_name -> google.protobuf.StringValue
-	43, // 50: tests.StringValueTestMessage.include_paths:type_name -> google.protobuf.StringValue
-	43, // 51: tests.StringValueTestMessage.environment:type_name -> google.protobuf.StringValue
-	43, // 52: tests.StringValueTestMessage.tags:type_name -> google.protobuf.StringValue
-	44, // 53: tests.IntegerValueTestMessage.int32_value:type_name -> google.protobuf.Int32Value
-	45, // 54: tests.IntegerValueTestMessage.int64_value:type_name -> google.protobuf.Int64Value
-	46, // 55: tests.IntegerValueTestMessage.uint32_value:type_name -> google.protobuf.UInt32Value
-	47, // 56: tests.IntegerValueTestMessage.uint64_value:type_name -> google.protobuf.UInt64Value
-	44, // 57: tests.IntegerValueTestMessage.int32_values:type_name -> google.protobuf.Int32Value
-	45, // 58: tests.IntegerValueTestMessage.int64_values:type_name -> google.protobuf.Int64Value
-	38, // 59: tests.BoolValueTestMessage.single_value:type_name -> google.protobuf.BoolValue
-	38, // 60: tests.BoolValueTestMessage.bool_values:type_name -> google.protobuf.BoolValue
-	38, // 61: tests.BoolValueTestMessage.enable_feature:type_name -> google.protobuf.BoolValue
-	38, // 62: tests.BoolValueTestMessage.feature_flags:type_name -> google.protobuf.BoolValue
-	38, // 63: tests.BoolValueTestMessage.verbose_logging:type_name -> google.protobuf.BoolValue
-	38, // 64: tests.BoolValueTestMessage.debug_options:type_name -> google.protobuf.BoolValue
+	44, // 47: tests.StringValueTestMessage.single_value:type_name -> google.protobuf.StringValue
+	44, // 48: tests.StringValueTestMessage.string_values:type_name -> google.protobuf.StringValue
+	44, // 49: tests.StringValueTestMessage.config_path:type_name -> google.protobuf.StringValue
+	44, // 50: tests.StringValueTestMessage.include_paths:type_name -> google.protobuf.StringValue
+	44, // 51: tests.StringValueTestMessage.environment:type_name -> google.protobuf.StringValue
+	44, // 52: tests.StringValueTestMessage.tags:type_name -> google.protobuf.StringValue
+	45, // 53: tests.IntegerValueTestMessage.int32_value:type_name -> google.protobuf.Int32Value
+	46, // 54: tests.IntegerValueTestMessage.int64_value:type_name -> google.protobuf.Int64Value
+	47, // 55: tests.IntegerValueTestMessage.uint32_value:type_name -> google.protobuf.UInt32Value
+	48, // 56: tests.IntegerValueTestMessage.uint64_value:type_name -> google.protobuf.UInt64Value
+	45, // 57: tests.IntegerValueTestMessage.int32_values:type_name -> google.protobuf.Int32Value
+	46, // 58: tests.IntegerValueTestMessage.int64_values:type_name -> google.protobuf.Int64Value
+	39, // 59: tests.BoolValueTestMessage.single_value:type_name -> google.protobuf.BoolValue
+	39, // 60: tests.BoolValueTestMessage.bool_values:type_name -> google.protobuf.BoolValue
+	39, // 61: tests.BoolValueTestMessage.enable_feature:type_name -> google.protobuf.BoolValue
+	39, // 62: tests.BoolValueTestMessage.feature_flags:type_name -> google.protobuf.BoolValue
+	39, // 63: tests.BoolValueTestMessage.verbose_logging:type_name -> google.protobuf.BoolValue
+	39, // 64: tests.BoolValueTestMessage.debug_options:type_name -> google.protobuf.BoolValue
 	2,  // 65: tests.NestedMessageTestMessage.server_config:type_name -> tests.SimpleMessage
 	2,  // 66: tests.NestedMessageTestMessage.client_config:type_name -> tests.SimpleMessage
 	2,  // 67: tests.NestedMessageTestMessage.database_config:type_name -> tests.SimpleMessage
 	20, // 68: tests.NestedMessageTestMessage.deep_config:type_name -> tests.NestedLevel2Message
 	2,  // 69: tests.NestedLevel2Message.nested_simple:type_name -> tests.SimpleMessage
-	32, // 70: tests.ComprehensiveMapTestMessage.json_labels:type_name -> tests.ComprehensiveMapTestMessage.JsonLabelsEntry
-	33, // 71: tests.ComprehensiveMapTestMessage.native_labels:type_name -> tests.ComprehensiveMapTestMessage.NativeLabelsEntry
-	34, // 72: tests.ComprehensiveMapTestMessage.default_counters:type_name -> tests.ComprehensiveMapTestMessage.DefaultCountersEntry
-	35, // 73: tests.ComprehensiveMapTestMessage.legacy_config:type_name -> tests.ComprehensiveMapTestMessage.LegacyConfigEntry
-	36, // 74: tests.ComprehensiveMapTestMessage.secret_config:type_name -> tests.ComprehensiveMapTestMessage.SecretConfigEntry
-	75, // [75:75] is the sub-list for method output_type
-	75, // [75:75] is the sub-list for method input_type
-	75, // [75:75] is the sub-list for extension type_name
-	75, // [75:75] is the sub-list for extension extendee
-	0,  // [0:75] is the sub-list for field type_name
+	33, // 70: tests.ComprehensiveMapTestMessage.json_labels:type_name -> tests.ComprehensiveMapTestMessage.JsonLabelsEntry
+	34, // 71: tests.ComprehensiveMapTestMessage.native_labels:type_name -> tests.ComprehensiveMapTestMessage.NativeLabelsEntry
+	35, // 72: tests.ComprehensiveMapTestMessage.default_counters:type_name -> tests.ComprehensiveMapTestMessage.DefaultCountersEntry
+	36, // 73: tests.ComprehensiveMapTestMessage.legacy_config:type_name -> tests.ComprehensiveMapTestMessage.LegacyConfigEntry
+	37, // 74: tests.ComprehensiveMapTestMessage.secret_config:type_name -> tests.ComprehensiveMapTestMessage.SecretConfigEntry
+	43, // 75: tests.TimestampSliceTestMessage.event_times:type_name -> google.protobuf.Timestamp
+	43, // 76: tests.TimestampSliceTestMessage.log_timestamps:type_name -> google.protobuf.Timestamp
+	43, // 77: tests.TimestampSliceTestMessage.scheduled_tasks:type_name -> google.protobuf.Timestamp
+	43, // 78: tests.TimestampSliceTestMessage.backup_times:type_name -> google.protobuf.Timestamp
+	43, // 79: tests.TimestampSliceTestMessage.custom_format_times:type_name -> google.protobuf.Timestamp
+	80, // [80:80] is the sub-list for method output_type
+	80, // [80:80] is the sub-list for method input_type
+	80, // [80:80] is the sub-list for extension type_name
+	80, // [80:80] is the sub-list for extension extendee
+	0,  // [0:80] is the sub-list for field type_name
 }
 
 func init() { file_tests_test_proto_init() }
@@ -2322,7 +2419,7 @@ func file_tests_test_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tests_test_proto_rawDesc), len(file_tests_test_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   36,
+			NumMessages:   37,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

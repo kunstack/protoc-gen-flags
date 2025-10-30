@@ -2,7 +2,6 @@ package types
 
 import (
 	"encoding/hex"
-	"io"
 	"strings"
 
 	"github.com/spf13/pflag"
@@ -21,37 +20,48 @@ type BytesHexSliceValue struct {
 	changed bool
 }
 
-// Set converts, and assigns, the comma-separated hexadecimal-encoded bytes argument string representation as the []*wrapperspb.BytesValue value of this flag.
-// If Set is called on a flag that already has a []*wrapperspb.BytesValue assigned, the newly converted values will be appended.
 func (s *BytesHexSliceValue) Set(val string) error {
-	// remove all quote characters
-	rmQuote := strings.NewReplacer(`"`, "", `'`, "", "`", "")
-
-	// read flag arguments with CSV parser
-	hexStrSlice, err := utils.ReadAsCSV(rmQuote.Replace(val))
-	if err != nil && err != io.EOF {
+	decodedBytes, err := hex.DecodeString(strings.TrimSpace(val))
+	if err != nil {
 		return err
 	}
+	if !s.changed {
+		*s.value = []*wrapperspb.BytesValue{{Value: decodedBytes}}
+		s.changed = true
+	} else {
+		*s.value = append(*s.value, wrapperspb.Bytes(decodedBytes))
+	}
+	return nil
+}
 
-	// parse hexadecimal values into slice
-	out := make([]*wrapperspb.BytesValue, 0, len(hexStrSlice))
-	for _, hexStr := range hexStrSlice {
-		decodedBytes, err := hex.DecodeString(strings.TrimSpace(hexStr))
+func (s *BytesHexSliceValue) Append(val string) error {
+	decodedBytes, err := hex.DecodeString(strings.TrimSpace(val))
+	if err != nil {
+		return err
+	}
+	*s.value = append(*s.value, wrapperspb.Bytes(decodedBytes))
+	return nil
+}
+
+func (s *BytesHexSliceValue) Replace(val []string) error {
+	out := make([]*wrapperspb.BytesValue, len(val))
+	for i, d := range val {
+		decodedBytes, err := hex.DecodeString(strings.TrimSpace(d))
 		if err != nil {
 			return err
 		}
-		out = append(out, wrapperspb.Bytes(decodedBytes))
+		out[i] = wrapperspb.Bytes(decodedBytes)
 	}
-
-	if !s.changed {
-		*s.value = out
-	} else {
-		*s.value = append(*s.value, out...)
-	}
-
-	s.changed = true
-
+	*s.value = out
 	return nil
+}
+
+func (s *BytesHexSliceValue) GetSlice() []string {
+	out := make([]string, len(*s.value))
+	for i, d := range *s.value {
+		out[i] = strings.ToUpper(hex.EncodeToString(d.Value))
+	}
+	return out
 }
 
 // Type returns a string that uniquely represents this flag's type.
@@ -75,37 +85,48 @@ type BytesHexNativeSliceValue struct {
 	changed bool
 }
 
-// Set converts, and assigns, the comma-separated hex-encoded bytes argument string representation as the [][]byte value of this flag.
-// If Set is called on a flag that already has a [][]byte assigned, the newly converted values will be appended.
 func (s *BytesHexNativeSliceValue) Set(val string) error {
-	// remove all quote characters
-	rmQuote := strings.NewReplacer(`"`, "", `'`, "", "`", "")
-
-	// read flag arguments with CSV parser
-	bytesStrSlice, err := utils.ReadAsCSV(rmQuote.Replace(val))
-	if err != nil && err != io.EOF {
+	decodedBytes, err := hex.DecodeString(strings.TrimSpace(val))
+	if err != nil {
 		return err
 	}
+	if !s.changed {
+		*s.value = [][]byte{decodedBytes}
+		s.changed = true
+	} else {
+		*s.value = append(*s.value, decodedBytes)
+	}
+	return nil
+}
 
-	// parse hex values into slice
-	out := make([][]byte, 0, len(bytesStrSlice))
-	for _, bytesStr := range bytesStrSlice {
-		decodedBytes, err := hex.DecodeString(strings.TrimSpace(bytesStr))
+func (s *BytesHexNativeSliceValue) Append(val string) error {
+	decodedBytes, err := hex.DecodeString(strings.TrimSpace(val))
+	if err != nil {
+		return err
+	}
+	*s.value = append(*s.value, decodedBytes)
+	return nil
+}
+
+func (s *BytesHexNativeSliceValue) Replace(val []string) error {
+	out := make([][]byte, len(val))
+	for i, d := range val {
+		decodedBytes, err := hex.DecodeString(strings.TrimSpace(d))
 		if err != nil {
 			return err
 		}
-		out = append(out, decodedBytes)
+		out[i] = decodedBytes
 	}
-
-	if !s.changed {
-		*s.value = out
-	} else {
-		*s.value = append(*s.value, out...)
-	}
-
-	s.changed = true
-
+	*s.value = out
 	return nil
+}
+
+func (s *BytesHexNativeSliceValue) GetSlice() []string {
+	out := make([]string, len(*s.value))
+	for i, d := range *s.value {
+		out[i] = strings.ToUpper(hex.EncodeToString(d))
+	}
+	return out
 }
 
 // Type returns a string that uniquely represents this flag's type.

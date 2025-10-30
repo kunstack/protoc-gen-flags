@@ -1,123 +1,228 @@
-package types
+package types_test
 
 import (
 	"testing"
 	"time"
 
-	"github.com/spf13/pflag"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
+
+	"github.com/kunstack/protoc-gen-flags/types"
 )
 
-func TestDuration_String(t *testing.T) {
-	duration := DurationValue(*durationpb.New(5 * time.Minute))
-	expected := "5m0s"
-	if got := duration.String(); got != expected {
-		t.Errorf("DurationValue.String() = %v, want %v", got, expected)
-	}
-}
-
-func TestDurationValue_Set(t *testing.T) {
+func TestDurationValue_String(t *testing.T) {
 	tests := []struct {
-		name    string
-		input   string
-		want    time.Duration
-		wantErr bool
+		name     string
+		duration *durationpb.Duration
+		expected string
 	}{
 		{
-			name:  "valid duration",
-			input: "5m30s",
-			want:  5*time.Minute + 30*time.Second,
+			name:     "nil duration",
+			duration: nil,
+			expected: "0s",
 		},
 		{
-			name:  "hours",
-			input: "2h15m",
-			want:  2*time.Hour + 15*time.Minute,
+			name:     "zero duration",
+			duration: &durationpb.Duration{Seconds: 0, Nanos: 0},
+			expected: "0s",
 		},
 		{
-			name:    "invalid duration",
-			input:   "invalid",
-			wantErr: true,
+			name:     "seconds only",
+			duration: &durationpb.Duration{Seconds: 5, Nanos: 0},
+			expected: "5s",
 		},
 		{
-			name:  "milliseconds",
-			input: "500ms",
-			want:  500 * time.Millisecond,
+			name:     "nanoseconds only",
+			duration: &durationpb.Duration{Seconds: 0, Nanos: 500000000},
+			expected: "500ms",
+		},
+		{
+			name:     "seconds and nanoseconds",
+			duration: &durationpb.Duration{Seconds: 2, Nanos: 500000000},
+			expected: "2.5s",
+		},
+		{
+			name:     "negative duration",
+			duration: &durationpb.Duration{Seconds: -1, Nanos: 0},
+			expected: "-1s",
+		},
+		{
+			name:     "large duration",
+			duration: &durationpb.Duration{Seconds: 3600, Nanos: 0},
+			expected: "1h0m0s",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var d DurationValue
-			err := d.Set(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("DurationValue.Set() error = %v, wantErr %v", err, tt.wantErr)
-				return
+			var dv *types.DurationValue
+			if tt.duration != nil {
+				dv = types.Duration(tt.duration)
 			}
-			if !tt.wantErr {
-				got := (*durationpb.Duration)(&d).AsDuration()
-				if got != tt.want {
-					t.Errorf("DurationValue.Set() = %v, want %v", got, tt.want)
-				}
+			assert.Equal(t, tt.expected, dv.String())
+		})
+	}
+}
+
+func TestDurationValue_Set(t *testing.T) {
+	tests := []struct {
+		name        string
+		input       string
+		expected    *durationpb.Duration
+		expectError bool
+	}{
+		{
+			name:     "valid seconds",
+			input:    "5s",
+			expected: &durationpb.Duration{Seconds: 5, Nanos: 0},
+		},
+		{
+			name:     "valid milliseconds",
+			input:    "500ms",
+			expected: &durationpb.Duration{Seconds: 0, Nanos: 500000000},
+		},
+		{
+			name:     "valid minutes",
+			input:    "2m",
+			expected: &durationpb.Duration{Seconds: 120, Nanos: 0},
+		},
+		{
+			name:     "valid hours",
+			input:    "1h",
+			expected: &durationpb.Duration{Seconds: 3600, Nanos: 0},
+		},
+		{
+			name:     "valid complex duration",
+			input:    "1h30m45s",
+			expected: &durationpb.Duration{Seconds: 5445, Nanos: 0},
+		},
+		{
+			name:     "valid fractional seconds",
+			input:    "2.5s",
+			expected: &durationpb.Duration{Seconds: 2, Nanos: 500000000},
+		},
+		{
+			name:     "valid microseconds",
+			input:    "100us",
+			expected: &durationpb.Duration{Seconds: 0, Nanos: 100000},
+		},
+		{
+			name:     "valid nanoseconds",
+			input:    "50ns",
+			expected: &durationpb.Duration{Seconds: 0, Nanos: 50},
+		},
+		{
+			name:        "invalid format",
+			input:       "invalid",
+			expectError: true,
+		},
+		{
+			name:        "empty string",
+			input:       "",
+			expectError: true,
+		},
+		{
+			name:     "zero duration",
+			input:    "0s",
+			expected: &durationpb.Duration{Seconds: 0, Nanos: 0},
+		},
+		{
+			name:     "negative duration",
+			input:    "-30s",
+			expected: &durationpb.Duration{Seconds: -30, Nanos: 0},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var duration durationpb.Duration
+			dv := types.Duration(&duration)
+
+			err := dv.Set(tt.input)
+
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				assert.Equal(t, tt.expected.Seconds, duration.Seconds)
+				assert.Equal(t, tt.expected.Nanos, duration.Nanos)
 			}
 		})
 	}
 }
 
+func TestDurationValue_Set_NilReceiver(t *testing.T) {
+	var dv *types.DurationValue
+	err := dv.Set("5s")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "cannot set nil Duration")
+}
+
 func TestDurationValue_Type(t *testing.T) {
-	var d DurationValue
-	if got := d.Type(); got != "durationValue" {
-		t.Errorf("DurationValue.Type() = %v, want %v", got, "durationValue")
+	duration := &durationpb.Duration{}
+	dv := types.Duration(duration)
+	assert.Equal(t, "durationValue", dv.Type())
+}
+
+func TestDurationValue_RoundTrip(t *testing.T) {
+	// Test that we can set a duration and get the same string representation
+	testDurations := []string{
+		"1s",
+		"500ms",
+		"2m30s",
+		"1h15m",
+		"100us",
+		"50ns",
+		"0s",
+		"-30s",
+	}
+
+	for _, durationStr := range testDurations {
+		t.Run(durationStr, func(t *testing.T) {
+			var duration durationpb.Duration
+			dv := types.Duration(&duration)
+
+			// Set the duration
+			err := dv.Set(durationStr)
+			require.NoError(t, err)
+
+			// Parse the original duration for comparison
+			expectedDuration, err := time.ParseDuration(durationStr)
+			require.NoError(t, err)
+
+			// Check that the protobuf duration matches
+			protobufDuration := duration.AsDuration()
+			assert.Equal(t, expectedDuration, protobufDuration)
+
+			// Check that the string representation is reasonable
+			// (Note: String() uses Go's duration formatting which may differ slightly)
+			dvStr := dv.String()
+			assert.NotEmpty(t, dvStr)
+		})
 	}
 }
 
-func TestDurationValue_pflagInterface(t *testing.T) {
-	// Test that DurationValue implements pflag.Value interface
-	var _ pflag.Value = (*DurationValue)(nil)
+func TestDurationValue_EdgeCases(t *testing.T) {
+	t.Run("very large nanoseconds", func(t *testing.T) {
+		var duration durationpb.Duration
+		dv := types.Duration(&duration)
 
-	// Test with actual pflag usage
-	fs := pflag.NewFlagSet("test", pflag.ContinueOnError)
-	var d DurationValue
+		// Set a duration with nanoseconds > 1e9
+		err := dv.Set("1.999999999s")
+		require.NoError(t, err)
+		assert.Equal(t, int64(1), duration.Seconds)
+		assert.Equal(t, int32(999999999), duration.Nanos)
+	})
 
-	fs.Var(&d, "duration", "Test duration")
+	t.Run("fractional conversion", func(t *testing.T) {
+		var duration durationpb.Duration
+		dv := types.Duration(&duration)
 
-	// Test parsing
-	err := fs.Parse([]string{"--duration", "1h30m"})
-	if err != nil {
-		t.Fatalf("Failed to parse duration: %v", err)
-	}
-
-	expected := 1*time.Hour + 30*time.Minute
-	got := (*durationpb.Duration)(&d).AsDuration()
-
-	if got != expected {
-		t.Errorf("Parsed duration = %v, want %v", got, expected)
-	}
-}
-
-func TestDurationValue_EmptyString(t *testing.T) {
-	var d DurationValue
-	err := d.Set("")
-	if err == nil {
-		t.Error("DurationValue.Set(\"\") should return an error")
-	}
-}
-
-func TestDurationValue_NilPointer(t *testing.T) {
-	var d *DurationValue = nil
-
-	// Test String() on nil pointer
-	if got := d.String(); got != "0s" {
-		t.Errorf("DurationValue.String() on nil = %v, want %v", got, "0s")
-	}
-
-	// Test Set() on nil pointer
-	err := d.Set("5m")
-	if err == nil {
-		t.Error("DurationValue.Set() on nil should return an error")
-	}
-
-	// Test Type() on nil pointer
-	if got := d.Type(); got != "durationValue" {
-		t.Errorf("DurationValue.Type() on nil = %v, want %v", got, "durationValue")
-	}
+		// Test that fractional seconds are properly converted
+		err := dv.Set("0.123s")
+		require.NoError(t, err)
+		assert.Equal(t, int64(0), duration.Seconds)
+		assert.Equal(t, int32(123000000), duration.Nanos)
+	})
 }

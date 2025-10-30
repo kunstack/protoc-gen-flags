@@ -54,6 +54,7 @@ syntax = "proto3";
 package flags;
 
 import "google/protobuf/descriptor.proto";
+import "google/protobuf/timestamp.proto";
 
 // buf:lint:ignore PACKAGE_SAME_GO_PACKAGE
 option go_package = "github.com/kunstack/protoc-gen-flags/flags;flags";
@@ -97,6 +98,8 @@ enum BytesEncodingType {
   BYTES_ENCODING_TYPE_HEX = 2;
 }
 
+
+
 // BytesFlag contains configuration specifically for bytes fields with encoding type selection.
 //
 // This message allows customization of how bytes fields are encoded and decoded
@@ -130,47 +133,6 @@ message BytesFlag {
 
   // Default specifies the default value for this flag.
   optional bytes default = 9;
-}
-
-// FieldFlags encapsulates the flag configuration for each type of field.
-//
-// The oneof type field ensures type safety and allows the code generator to
-// determine which pflag method to use (StringVarP, IntVarP, etc.) for each
-// field type. Only one of the type fields should be set, corresponding to
-// the actual protobuf field type.
-message FieldFlags {
-  oneof type {
-    // Scalar Field Types - each type has its own flag configuration with default value support
-    FloatFlag float = 1; // 32-bit floating point
-    DoubleFlag double = 2; // 64-bit floating point
-    Int32Flag int32 = 3; // 32-bit signed integer
-    Int64Flag int64 = 4; // 64-bit signed integer
-    Uint32Flag uint32 = 5; // 32-bit unsigned integer
-    Uint64Flag uint64 = 6; // 64-bit unsigned integer
-    Sint32Flag sint32 = 7; // 32-bit signed integer (zigzag encoded)
-    Sint64Flag sint64 = 8; // 64-bit signed integer (zigzag encoded)
-    Fixed32Flag fixed32 = 9; // 32-bit fixed-point integer
-    Fixed64Flag fixed64 = 10; // 64-bit fixed-point integer
-    Sfixed32Flag sfixed32 = 11; // 32-bit signed fixed-point integer
-    Sfixed64Flag sfixed64 = 12; // 64-bit signed fixed-point integer
-    BoolFlag bool = 13; // Boolean value
-    StringFlag string = 14; // UTF-8 string
-
-    // Bytes field type with encoding type selection
-    BytesFlag bytes = 15; // Arbitrary bytes with encoding format
-
-    // Complex Field Types
-    EnumFlag enum = 16; // Enum type
-    RepeatedFlags repeated = 17; // Repeated field (slice/array)
-    MapFlag map = 18; // Map field
-
-    // Well-Known Field Types
-    DurationFlag duration = 19; // google.protobuf.Duration
-    TimestampFlag timestamp = 20; // google.protobuf.Timestamp
-
-    // Message field type - used for nested message configurations
-    MessageFlag message = 21;
-  }
 }
 
 // PrimitiveFlag contains the core configuration for all primitive flag types.
@@ -1073,6 +1035,39 @@ message RepeatedDurationFlag {
   repeated string default = 8;
 }
 
+// RepeatedTimestampFlag contains configuration for repeated timestamp fields with default value support.
+message RepeatedTimestampFlag {
+  // Disabled skips generation of flags for this field when set to true.
+  bool disabled = 1;
+
+  // Name specifies a custom flag name. When empty, defaults to field name
+  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  string name = 2;
+
+  // Short specifies a short flag alias (single character).
+  string short = 3;
+
+  // Usage provides the description text shown in help output for this flag.
+  string usage = 4;
+
+  // Hidden hides this flag from help output when set to true.
+  bool hidden = 5;
+
+  // Deprecated marks this flag as deprecated when set to true.
+  bool deprecated = 6;
+
+  // DeprecatedUsage provides additional context shown in help output for deprecated flags.
+  string deprecated_usage = 7;
+
+  // Formats specifies the acceptable timestamp format strings for parsing.
+  // Common formats include: "RFC3339", "ISO8601", "RFC822", "Stamp", etc.
+  // When empty, defaults to RFC3339 format.
+  repeated string formats = 8;
+
+  // Default specifies the default values for this flag.
+  repeated string default = 9;
+}
+
 // EnumFlag contains configuration for enum fields with default value support.
 message EnumFlag {
   // Disabled skips generation of flags for this field when set to true.
@@ -1203,7 +1198,13 @@ message TimestampFlag {
   // DeprecatedUsage provides additional context shown in help output for deprecated flags.
   string deprecated_usage = 7;
 
+  // Formats specifies the acceptable timestamp format strings for parsing.
+  // Common formats include: "RFC3339", "ISO8601", "RFC822", "Stamp", etc.
+  // When empty, defaults to RFC3339 format.
   repeated string formats = 8;
+
+  // Default specifies the default value for this flag.
+  optional string default = 9;
 }
 
 // MessageFlag contains configuration for message fields that contain nested flag configurations.
@@ -1262,5 +1263,48 @@ message RepeatedFlags {
 
     RepeatedEnumFlag enum = 16; // Repeated enum values
     RepeatedDurationFlag duration = 17; // Repeated duration values
+    RepeatedTimestampFlag timestamp = 18; // Repeated timestamp values
+  }
+}
+
+
+// FieldFlags encapsulates the flag configuration for each type of field.
+//
+// The oneof type field ensures type safety and allows the code generator to
+// determine which pflag method to use (StringVarP, IntVarP, etc.) for each
+// field type. Only one of the type fields should be set, corresponding to
+// the actual protobuf field type.
+message FieldFlags {
+  oneof type {
+    // Scalar Field Types - each type has its own flag configuration with default value support
+    FloatFlag float = 1; // 32-bit floating point
+    DoubleFlag double = 2; // 64-bit floating point
+    Int32Flag int32 = 3; // 32-bit signed integer
+    Int64Flag int64 = 4; // 64-bit signed integer
+    Uint32Flag uint32 = 5; // 32-bit unsigned integer
+    Uint64Flag uint64 = 6; // 64-bit unsigned integer
+    Sint32Flag sint32 = 7; // 32-bit signed integer (zigzag encoded)
+    Sint64Flag sint64 = 8; // 64-bit signed integer (zigzag encoded)
+    Fixed32Flag fixed32 = 9; // 32-bit fixed-point integer
+    Fixed64Flag fixed64 = 10; // 64-bit fixed-point integer
+    Sfixed32Flag sfixed32 = 11; // 32-bit signed fixed-point integer
+    Sfixed64Flag sfixed64 = 12; // 64-bit signed fixed-point integer
+    BoolFlag bool = 13; // Boolean value
+    StringFlag string = 14; // UTF-8 string
+
+    // Bytes field type with encoding type selection
+    BytesFlag bytes = 15; // Arbitrary bytes with encoding format
+
+    // Complex Field Types
+    EnumFlag enum = 16; // Enum type
+    RepeatedFlags repeated = 17; // Repeated field (slice/array)
+    MapFlag map = 18; // Map field
+
+    // Well-Known Field Types
+    DurationFlag duration = 19; // google.protobuf.Duration
+    TimestampFlag timestamp = 20; // google.protobuf.Timestamp
+
+    // Message field type - used for nested message configurations
+    MessageFlag message = 21;
   }
 }

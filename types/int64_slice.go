@@ -1,7 +1,6 @@
 package types
 
 import (
-	"io"
 	"strconv"
 	"strings"
 
@@ -18,36 +17,24 @@ type Int64SliceValue struct {
 	changed bool
 }
 
-// Set converts, and assigns, the comma-separated int64 argument string representation as the []*wrapperspb.Int64Value value of this flag.
-// If Set is called on a flag that already has a []*wrapperspb.Int64Value assigned, the newly converted values will be appended.
 func (s *Int64SliceValue) Set(val string) error {
-	// remove all quote characters
-	rmQuote := strings.NewReplacer(`"`, "", "'", "", "`", "")
-
-	// read flag arguments with CSV parser
-	int64StrSlice, err := utils.ReadAsCSV(rmQuote.Replace(val))
-	if err != nil && err != io.EOF {
-		return err
-	}
-
-	// parse int64 values into slice
-	out := make([]*wrapperspb.Int64Value, 0, len(int64StrSlice))
-	for _, int64Str := range int64StrSlice {
-		v, err := strconv.ParseInt(strings.TrimSpace(int64Str), 10, 64)
+	ss := strings.Split(val, ",")
+	out := make([]*wrapperspb.Int64Value, len(ss))
+	for i, d := range ss {
+		var err error
+		var temp int64
+		temp, err = strconv.ParseInt(strings.TrimSpace(d), 10, 64)
 		if err != nil {
 			return err
 		}
-		out = append(out, wrapperspb.Int64(v))
+		out[i] = wrapperspb.Int64(temp)
 	}
-
 	if !s.changed {
 		*s.value = out
 	} else {
 		*s.value = append(*s.value, out...)
 	}
-
 	s.changed = true
-
 	return nil
 }
 

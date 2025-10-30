@@ -284,6 +284,7 @@ enum TestEnum1 {
   TEST_ENUM_VALUE1 = 1;
   TEST_ENUM_VALUE2 = 2;
   TEST_ENUM_VALUE3 = 3;
+  test_enum_value4 = 4;
 }
 
 message SimpleMessage {
@@ -508,7 +509,8 @@ message DurationSliceTestMessage {
 
   google.protobuf.Timestamp deadline = 5 [(flags.value).timestamp = {
     formats: ["abc"]
-    usage: "deadline usage"
+    usage: "deadline usage",
+    default: "now"
   }];
 
   optional google.protobuf.Timestamp optional_deadline = 6 [(flags.value).timestamp = {
@@ -616,7 +618,7 @@ message DefaultValueTestMessage {
     default: 1073741824
   }];
 
-  bool debug_mode = 7 [(flags.value).bool = {
+  optional bool debug_mode = 7 [(flags.value).bool = {
     name: "debug-mode"
     usage: "Enable debug mode"
     default: true
@@ -938,5 +940,47 @@ message ComprehensiveMapTestMessage {
     usage: "Secret configuration map"
     format: MAP_FORMAT_TYPE_JSON
     hidden: true
+  }];
+}
+
+// Dedicated message for testing TimestampSliceValue functionality
+message TimestampSliceTestMessage {
+  option (flags.allow_empty) = true;
+
+  // Test various timestamp slice configurations
+  repeated google.protobuf.Timestamp event_times = 1 [(flags.value).repeated.timestamp = {
+    name: "event-times"
+    short: "et"
+    usage: "Event timestamps (e.g., 2023-01-01T00:00:00Z, 2023-12-31T23:59:59Z)"
+    formats: ["RFC3339"]
+  }];
+
+  repeated google.protobuf.Timestamp log_timestamps = 2 [(flags.value).repeated.timestamp = {
+    name: "log-timestamps"
+    short: "lt"
+    usage: "Log entry timestamps in RFC3339 format"
+    formats: ["RFC3339"]
+  }];
+
+  repeated google.protobuf.Timestamp scheduled_tasks = 3 [(flags.value).repeated.timestamp = {
+    name: "scheduled-tasks"
+    short: "st"
+    usage: "Scheduled task execution times"
+    formats: ["RFC3339"]
+  }];
+
+  repeated google.protobuf.Timestamp backup_times = 4 [(flags.value).repeated.timestamp = {
+    name: "backup-times"
+    short: "bt"
+    usage: "Backup schedule timestamps (e.g., 2024-01-01T02:00:00Z)"
+    formats: ["RFC3339"]
+  }];
+
+  // Test timestamp slice with custom formats
+  repeated google.protobuf.Timestamp custom_format_times = 5 [(flags.value).repeated.timestamp = {
+    name: "custom-format-times"
+    short: "cft"
+    usage: "Custom format timestamps"
+    formats: ["RFC3339", "ISO8601", "RFC822"]
   }];
 }

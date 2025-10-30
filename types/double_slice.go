@@ -1,7 +1,6 @@
 package types
 
 import (
-	"io"
 	"strconv"
 	"strings"
 
@@ -21,33 +20,23 @@ type DoubleSliceValue struct {
 // Set converts, and assigns, the comma-separated double argument string representation as the []*wrapperspb.DoubleValue value of this flag.
 // If Set is called on a flag that already has a []*wrapperspb.DoubleValue assigned, the newly converted values will be appended.
 func (s *DoubleSliceValue) Set(val string) error {
-	// remove all quote characters
-	rmQuote := strings.NewReplacer(`"`, "", `'`, "", "`", "")
-
-	// read flag arguments with CSV parser
-	doubleStrSlice, err := utils.ReadAsCSV(rmQuote.Replace(val))
-	if err != nil && err != io.EOF {
-		return err
-	}
-
-	// parse double values into slice
-	out := make([]*wrapperspb.DoubleValue, 0, len(doubleStrSlice))
-	for _, doubleStr := range doubleStrSlice {
-		d, err := strconv.ParseFloat(strings.TrimSpace(doubleStr), 64)
+	ss := strings.Split(val, ",")
+	out := make([]*wrapperspb.DoubleValue, len(ss))
+	for i, d := range ss {
+		var err error
+		var temp64 float64
+		temp64, err = strconv.ParseFloat(d, 64)
 		if err != nil {
 			return err
 		}
-		out = append(out, wrapperspb.Double(d))
+		out[i] = wrapperspb.Double(temp64)
 	}
-
 	if !s.changed {
 		*s.value = out
 	} else {
 		*s.value = append(*s.value, out...)
 	}
-
 	s.changed = true
-
 	return nil
 }
 

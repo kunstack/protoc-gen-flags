@@ -18,6 +18,32 @@ func (m *Module) checkMessage(typ pgs.FieldType, flag *flags.MessageFlag) {
 	}
 }
 
+func (m *Module) genMessageDefaults(f pgs.Field, name pgs.Name, flag *flags.MessageFlag) string {
+	var (
+		declBuilder = &strings.Builder{}
+	)
+	if !flag.GetNested() {
+		return fmt.Sprint("\n// ", name, ": flags disabled by [(flags.value).message = {nested: false}]")
+	}
+	if flag.GetNested() {
+		_, _ = fmt.Fprintf(declBuilder, `
+				if x.%s == nil {
+					x.%s = new(%s)
+				}
+        	`,
+			name, name, m.ctx.Type(f).Value(),
+		)
+	}
+	_, _ = fmt.Fprintf(declBuilder, `
+			if v, ok := interface{}(x.%s).(flags.Defaulter); ok {
+				v.SetDefaults()
+			}
+        `,
+		name,
+	)
+	return declBuilder.String()
+}
+
 func (m *Module) genMessage(f pgs.Field, name pgs.Name, flag *flags.MessageFlag) string {
 	var (
 		declBuilder = &strings.Builder{}
