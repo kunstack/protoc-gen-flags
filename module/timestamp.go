@@ -96,9 +96,6 @@ func (m *Module) genTimestampDefaults(f pgs.Field, name pgs.Name, flag *flags.Ti
 	if flag.Default == nil || *flag.Default == "" {
 		return ""
 	}
-	if flag.GetName() == "" {
-		flag.Name = strings.ToLower(name.String())
-	}
 	if isNowStr(flag.Default) {
 		_, _ = fmt.Fprintf(timeBuilder, "timestamppb.Now()")
 	} else {
@@ -111,19 +108,19 @@ func (m *Module) genTimestampDefaults(f pgs.Field, name pgs.Name, flag *flags.Ti
 
 	_, _ = fmt.Fprintf(declBuilder, `
 			if x.%s  == nil {
-				x.%s = new(%s)
+				x.%s = %s
 			}
 		`,
-		name, name, m.ctx.Type(f).Value(),
+		name, name, timeBuilder.String(),
 	)
-
-	_, _ = fmt.Fprint(declBuilder, `
-		if x.`, name, `.Seconds == 0 && x.`, name, `.Nanos == 0 {
-			v := `, timeBuilder.String(), `
-			x.`, name, `.Seconds = v.Seconds
-			x.`, name, `.Nanos = v.Nanos
-		}
-	`)
+	//
+	//_, _ = fmt.Fprint(declBuilder, `
+	//	if x.`, name, `.Seconds == 0 && x.`, name, `.Nanos == 0 {
+	//		v := `, timeBuilder.String(), `
+	//		x.`, name, `.Seconds = v.Seconds
+	//		x.`, name, `.Nanos = v.Nanos
+	//	}
+	//`)
 
 	_, _ = declBuilder.WriteString(m.genMark(flag))
 	return declBuilder.String()

@@ -2,6 +2,7 @@ package module
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/kunstack/protoc-gen-flags/flags"
 	pgs "github.com/lyft/protoc-gen-star"
@@ -56,25 +57,132 @@ func (m *Module) genFieldDefaults(f pgs.Field) string {
 	case *flags.FieldFlags_Bool:
 		return m.genCommonDefaults(f, name, false, r.Bool.Default, wk)
 	case *flags.FieldFlags_String_:
+		if r.String_.Default != nil {
+			return m.genCommonDefaults(f, name, `""`, fmt.Sprint(`"`, r.String_.GetDefault(), `"`), wk)
+		}
 		return ""
-		//return m.genCommonDefaults(f, name, `""`, r.String_.Default, wk)
 	case *flags.FieldFlags_Bytes:
-		return ""
+		return m.genBytesDefaults(f, name, r.Bytes, wk)
 	case *flags.FieldFlags_Enum:
+		if r.Enum.Default != nil {
+			return m.genCommonDefaults(f, name, 0, r.Enum.GetDefault(), wk)
+		}
 		return ""
 	case *flags.FieldFlags_Duration:
-		return ""
+		return m.genDurationDefaults(f, name, r.Duration)
 	case *flags.FieldFlags_Timestamp:
-		return ""
+		return m.genTimestampDefaults(f, name, r.Timestamp)
 	case *flags.FieldFlags_Message:
 		return m.genMessageDefaults(f, name, r.Message)
 	case *flags.FieldFlags_Map:
 		return ""
 	case *flags.FieldFlags_Repeated:
-		return ""
+		return m.processRepeatedDefaults(f, name, r.Repeated)
 	case nil: // noop
 	default:
 		m.Failf("unknown rule type (%T)", field.Type)
 	}
 	return fmt.Sprint("\n// ", f.Name())
+}
+
+// processRepeatedDefaults handles default value generation for repeated fields
+func (m *Module) processRepeatedDefaults(f pgs.Field, name pgs.Name, repeated *flags.RepeatedFlags) string {
+	if repeated == nil {
+		return ""
+	}
+	wk := pgs.UnknownWKT
+	if emb := f.Type().Element().Embed(); emb != nil {
+		wk = emb.WellKnownType()
+	}
+
+	switch r := repeated.Type.(type) {
+	case *flags.RepeatedFlags_Bytes:
+		return m.genBytesSliceDefaults(f, name, r.Bytes, wk)
+	case *flags.RepeatedFlags_Float:
+		return m.genCommonSliceDefaults(f, name, r.Float.GetDefault(), "%f", wk)
+	case *flags.RepeatedFlags_Double:
+		return m.genCommonSliceDefaults(f, name, r.Double.GetDefault(), "%f", wk)
+	case *flags.RepeatedFlags_Int32:
+		return m.genCommonSliceDefaults(f, name, r.Int32.GetDefault(), "%d", wk)
+	case *flags.RepeatedFlags_Int64:
+		return m.genCommonSliceDefaults(f, name, r.Int64.GetDefault(), "%d", wk)
+	case *flags.RepeatedFlags_Uint32:
+		return m.genCommonSliceDefaults(f, name, r.Uint32.GetDefault(), "%d", wk)
+	case *flags.RepeatedFlags_Uint64:
+		return m.genCommonSliceDefaults(f, name, r.Uint64.GetDefault(), "%d", wk)
+	case *flags.RepeatedFlags_Sint32:
+		return m.genCommonSliceDefaults(f, name, r.Sint32.GetDefault(), "%d", wk)
+	case *flags.RepeatedFlags_Sint64:
+		return m.genCommonSliceDefaults(f, name, r.Sint64.GetDefault(), "%d", wk)
+	case *flags.RepeatedFlags_Fixed32:
+		return m.genCommonSliceDefaults(f, name, r.Fixed32.GetDefault(), "%d", wk)
+	case *flags.RepeatedFlags_Fixed64:
+		return m.genCommonSliceDefaults(f, name, r.Fixed64.GetDefault(), "%d", wk)
+	case *flags.RepeatedFlags_Sfixed32:
+		return m.genCommonSliceDefaults(f, name, r.Sfixed32.GetDefault(), "%d", wk)
+	case *flags.RepeatedFlags_Sfixed64:
+		return m.genCommonSliceDefaults(f, name, r.Sfixed64.GetDefault(), "%d", wk)
+	case *flags.RepeatedFlags_Bool:
+		return m.genCommonSliceDefaults(f, name, r.Bool.GetDefault(), "%v", wk)
+	case *flags.RepeatedFlags_String_:
+		return m.genCommonSliceDefaults(f, name, r.String_.GetDefault(), "%q", wk)
+	case *flags.RepeatedFlags_Enum:
+		return m.genCommonSliceDefaults(f, name, r.Enum.GetDefault(), "%d", wk)
+	case *flags.RepeatedFlags_Duration:
+		return m.genDurationSliceDefaults(f, name, r.Duration, wk)
+	case *flags.RepeatedFlags_Timestamp:
+		return m.genTimestampSliceDefaults(f, name, r.Timestamp)
+	case nil: // noop
+	default:
+		m.Failf("unknown rule type (%T)", f.Type)
+	}
+	return ""
+}
+
+// genDurationSliceDefaults generates default value assignment code for repeated duration fields
+func (m *Module) genDurationSliceDefaults(f pgs.Field, name pgs.Name, flag *flags.RepeatedDurationFlag, wk pgs.WellKnownType) string {
+	if flag.Default == nil || len(flag.GetDefault()) == 0 {
+		return ""
+	}
+
+	var code strings.Builder
+
+	// Check if the slice is empty before setting defaults
+	code.WriteString(fmt.Sprintf(`
+	if len(x.%s) == 0 {`, name))
+
+	for i, defaultValue := range flag.Default {
+		varName := fmt.Sprintf("defaultDuration_%d", i)
+		code.WriteString(fmt.Sprintf(`
+		%s, _ := time.ParseDuration(%q)
+		x.%s = append(x.%s, %s)`, varName, defaultValue, name, name, varName))
+	}
+
+	code.WriteString(`
+	}`)
+	return code.String()
+}
+
+// genTimestampSliceDefaults generates default value assignment code for repeated timestamp fields
+func (m *Module) genTimestampSliceDefaults(f pgs.Field, name pgs.Name, flag *flags.RepeatedTimestampFlag) string {
+	if flag.Default == nil || len(flag.GetDefault()) == 0 {
+		return ""
+	}
+
+	var code strings.Builder
+
+	// Check if the slice is empty before setting defaults
+	code.WriteString(fmt.Sprintf(`
+	if len(x.%s) == 0 {`, name))
+
+	for i, defaultValue := range flag.Default {
+		varName := fmt.Sprintf("defaultTimestamp_%d", i)
+		code.WriteString(fmt.Sprintf(`
+		%s, _ := time.Parse(%q, %q)
+		x.%s = append(x.%s, timestamppb.New(%s))`, varName, "RFC3339", defaultValue, name, name, varName))
+	}
+
+	code.WriteString(`
+	}`)
+	return code.String()
 }

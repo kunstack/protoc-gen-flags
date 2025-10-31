@@ -34,7 +34,7 @@ type Defaulter interface {
 // Parameters:
 //   - fs: The pflag.FlagSet to which flags will be added
 //   - prefix: Optional prefix strings that will be prepended to flag names
-//             for hierarchical flag organization (e.g., "server", "database")
+//     for hierarchical flag organization (e.g., "server", "database")
 type Flagger interface {
 	AddFlags(fs *pflag.FlagSet, prefix ...string)
 }

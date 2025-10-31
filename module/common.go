@@ -61,38 +61,42 @@ func (m *Module) genCommonDefaults(f pgs.Field, name pgs.Name, zero, value any, 
 	`)
 }
 
-func (m *Module) genCommonSliceDefaults(f pgs.Field, name pgs.Name, flag commonFlag, wk pgs.WellKnownType, wrapper, nativeWrapper string) string {
-	var (
-		declBuilder = &strings.Builder{}
-	)
-
-	if flag.GetDisabled() {
-		return fmt.Sprint("\n// ", name, ": flags disabled by disabled=true\n")
+// genCommonSliceDefaults generates default value assignment code for repeated fields using a common pattern
+func (m *Module) genCommonSliceDefaults(f pgs.Field, name pgs.Name, values interface{}, format string, wk pgs.WellKnownType) string {
+	if values == nil {
+		return ""
 	}
 
-	flagName := flag.GetName()
-
-	if flagName == "" {
-		flagName = strings.ToLower(name.String())
+	// Use reflection to handle different slice types
+	v := reflect.ValueOf(values)
+	if v.Kind() != reflect.Slice {
+		return ""
 	}
 
-	declBuilder.WriteString(fmt.Sprintf("// %s\n", flagName))
+	if v.Len() == 0 {
+		return ""
+	}
 
-	//
-	//if wk != "" && wk != pgs.UnknownWKT {
-	//	_, _ = fmt.Fprintf(declBuilder, `
-	//			fs.VarP(types.%s(&x.%s), utils.BuildFlagName(prefix,%q), %q, %q)
-	//		`,
-	//		wrapper, name, flagName, flag.GetShort(), flag.GetUsage())
-	//} else {
-	//	_, _ = fmt.Fprintf(declBuilder, `
-	//			fs.%s(&x.%s, utils.BuildFlagName(prefix, %q), %q, x.%s, %q)
-	//		`,
-	//		nativeWrapper, name, flagName, flag.GetShort(), name, flag.GetUsage())
-	//}
+	if format == "" {
+		format = "%v"
+	}
 
-	_, _ = declBuilder.WriteString(m.genMark(flag))
-	return declBuilder.String()
+	defaultValues := make([]string, 0, v.Len())
+
+	for i := 0; i < v.Len(); i++ {
+		defaultValue := v.Index(i).Interface()
+		if wk != "" && wk != pgs.UnknownWKT {
+			defaultValues = append(defaultValues, fmt.Sprintf("{Value: "+format+" }", defaultValue))
+		} else {
+			defaultValues = append(defaultValues, fmt.Sprintf(format, defaultValue))
+		}
+	}
+
+	return fmt.Sprintf(`
+		if len(x.%s) == 0 {
+			x.%s = %s{%s}
+		}
+	`, name, name, m.ctx.Type(f).Value(), strings.Join(defaultValues, ","))
 }
 
 func (m *Module) genCommon(f pgs.Field, name pgs.Name, flag commonFlag, wk pgs.WellKnownType, wrapper, nativeWrapper string) string {

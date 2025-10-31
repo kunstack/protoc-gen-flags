@@ -54,7 +54,6 @@ syntax = "proto3";
 package flags;
 
 import "google/protobuf/descriptor.proto";
-import "google/protobuf/timestamp.proto";
 
 // buf:lint:ignore PACKAGE_SAME_GO_PACKAGE
 option go_package = "github.com/kunstack/protoc-gen-flags/flags;flags";
@@ -97,8 +96,6 @@ enum BytesEncodingType {
   // BYTES_ENCODING_TYPE_HEX uses hexadecimal encoding for bytes fields.
   BYTES_ENCODING_TYPE_HEX = 2;
 }
-
-
 
 // BytesFlag contains configuration specifically for bytes fields with encoding type selection.
 //
