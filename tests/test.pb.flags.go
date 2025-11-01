@@ -10,9 +10,6 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
-
-	"encoding/base64"
-	"encoding/hex"
 )
 
 var (
@@ -126,28 +123,16 @@ func (x *TestForMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 
 func (x *TestForMessage) SetDefaults() {
 	if len(x.Byte) == 0 {
-		bin, _ := hex.DecodeString("0000546573742048656c6c6f2054657874")
-		x.Byte = bin
+		x.Byte = utils.MustDecodeHex("0000546573742048656c6c6f2054657874")
 	}
 	if len(x.ConfigData) == 0 {
-		bin, _ := base64.StdEncoding.DecodeString("aGVsbG8gd29ybGQ=")
-		x.ConfigData = bin
+		x.ConfigData = utils.MustDecodeBase64("aGVsbG8gd29ybGQ=")
 	}
 	if len(x.Base64Defaults) == 0 {
-		defaultBytes_0, _ := base64.StdEncoding.DecodeString("aGVsbG8gd29ybGQ=")
-		x.Base64Defaults = append(x.Base64Defaults, defaultBytes_0)
-		defaultBytes_1, _ := base64.StdEncoding.DecodeString("dGVzdCBkYXRh")
-		x.Base64Defaults = append(x.Base64Defaults, defaultBytes_1)
-		defaultBytes_2, _ := base64.StdEncoding.DecodeString("c2FtcGxlIGNvbnRlbnQ=")
-		x.Base64Defaults = append(x.Base64Defaults, defaultBytes_2)
+		x.Base64Defaults = []*wrapperspb.BytesValue{{Value: utils.MustDecodeBase64("aGVsbG8gd29ybGQ=")}, {Value: utils.MustDecodeBase64("dGVzdCBkYXRh")}, {Value: utils.MustDecodeBase64("c2FtcGxlIGNvbnRlbnQ=")}}
 	}
 	if len(x.HexDefaults) == 0 {
-		defaultBytes_0, _ := hex.DecodeString("48656c6c6f20576f726c64")
-		x.HexDefaults = append(x.HexDefaults, defaultBytes_0)
-		defaultBytes_1, _ := hex.DecodeString("546573742044617461")
-		x.HexDefaults = append(x.HexDefaults, defaultBytes_1)
-		defaultBytes_2, _ := hex.DecodeString("53616d706c6520436f6e74656e74")
-		x.HexDefaults = append(x.HexDefaults, defaultBytes_2)
+		x.HexDefaults = [][]byte{utils.MustDecodeHex("48656c6c6f20576f726c64"), utils.MustDecodeHex("546573742044617461"), utils.MustDecodeHex("53616d706c6520436f6e74656e74")}
 	}
 	if len(x.TestEnum) == 0 {
 		x.TestEnum = []TestEnum1{1, 3}
@@ -218,16 +203,13 @@ func (x *WrapperValueMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 
 func (x *WrapperValueMessage) SetDefaults() {
 	if x.BytesValue == nil {
-		bin, _ := base64.StdEncoding.DecodeString("aGVsbG8gd29ybGQ=")
-		x.BytesValue = &wrapperspb.BytesValue{Value: bin}
+		x.BytesValue = &wrapperspb.BytesValue{Value: utils.MustDecodeBase64("aGVsbG8gd29ybGQ=")}
 	}
 	if x.BytesValues == nil {
-		bin, _ := base64.StdEncoding.DecodeString("aGVsbG8gd29ybGQ=")
-		x.BytesValues = &wrapperspb.BytesValue{Value: bin}
+		x.BytesValues = &wrapperspb.BytesValue{Value: utils.MustDecodeBase64("aGVsbG8gd29ybGQ=")}
 	}
 	if x.BytesHexValuesx == nil {
-		bin, _ := base64.StdEncoding.DecodeString("aGVsbG8gd29ybGQ=")
-		x.BytesHexValuesx = &wrapperspb.BytesValue{Value: bin}
+		x.BytesHexValuesx = &wrapperspb.BytesValue{Value: utils.MustDecodeBase64("aGVsbG8gd29ybGQ=")}
 	}
 }
 
@@ -753,6 +735,10 @@ func (x *TimestampSliceTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string
 }
 
 func (x *TimestampSliceTestMessage) SetDefaults() {
+	if len(x.EventTimes) == 0 {
+		x.EventTimes = []*timestamppb.Timestamp{&timestamppb.Timestamp{Seconds: 1703500200, Nanos: 0}, timestamppb.Now()}
+	}
+
 }
 
 func (x *RepeatedBytesTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
@@ -774,35 +760,15 @@ func (x *RepeatedBytesTestMessage) AddFlags(fs *pflag.FlagSet, prefix ...string)
 
 func (x *RepeatedBytesTestMessage) SetDefaults() {
 	if len(x.DefaultBase64) == 0 {
-		defaultBytes_0, _ := base64.StdEncoding.DecodeString("SGVsbG8gV29ybGQ=")
-		x.DefaultBase64 = append(x.DefaultBase64, defaultBytes_0)
-		defaultBytes_1, _ := base64.StdEncoding.DecodeString("VGVzdCBEYXRh")
-		x.DefaultBase64 = append(x.DefaultBase64, defaultBytes_1)
-		defaultBytes_2, _ := base64.StdEncoding.DecodeString("U2FtcGxlIENvbnRlbnQ=")
-		x.DefaultBase64 = append(x.DefaultBase64, defaultBytes_2)
+		x.DefaultBase64 = []*wrapperspb.BytesValue{{Value: utils.MustDecodeBase64("SGVsbG8gV29ybGQ=")}, {Value: utils.MustDecodeBase64("VGVzdCBEYXRh")}, {Value: utils.MustDecodeBase64("U2FtcGxlIENvbnRlbnQ=")}}
 	}
 	if len(x.DefaultHex) == 0 {
-		defaultBytes_0, _ := hex.DecodeString("48656c6c6f20576f726c64")
-		x.DefaultHex = append(x.DefaultHex, defaultBytes_0)
-		defaultBytes_1, _ := hex.DecodeString("546573742044617461")
-		x.DefaultHex = append(x.DefaultHex, defaultBytes_1)
-		defaultBytes_2, _ := hex.DecodeString("53616d706c6520436f6e74656e74")
-		x.DefaultHex = append(x.DefaultHex, defaultBytes_2)
+		x.DefaultHex = []*wrapperspb.BytesValue{{Value: utils.MustDecodeHex("48656c6c6f20576f726c64")}, {Value: utils.MustDecodeHex("546573742044617461")}, {Value: utils.MustDecodeHex("53616d706c6520436f6e74656e74")}}
 	}
 	if len(x.MixedHex) == 0 {
-		defaultBytes_0, _ := hex.DecodeString("aBc123DeF456")
-		x.MixedHex = append(x.MixedHex, defaultBytes_0)
-		defaultBytes_1, _ := hex.DecodeString("789AbCdE0123")
-		x.MixedHex = append(x.MixedHex, defaultBytes_1)
-		defaultBytes_2, _ := hex.DecodeString("fFeEdDcCbBaA")
-		x.MixedHex = append(x.MixedHex, defaultBytes_2)
+		x.MixedHex = [][]byte{utils.MustDecodeHex("aBc123DeF456"), utils.MustDecodeHex("789AbCdE0123"), utils.MustDecodeHex("fFeEdDcCbBaA")}
 	}
 	if len(x.SpecialB64) == 0 {
-		defaultBytes_0, _ := base64.StdEncoding.DecodeString("w6TDtsO8w4Q=")
-		x.SpecialB64 = append(x.SpecialB64, defaultBytes_0)
-		defaultBytes_1, _ := base64.StdEncoding.DecodeString("8J+YgA==")
-		x.SpecialB64 = append(x.SpecialB64, defaultBytes_1)
-		defaultBytes_2, _ := base64.StdEncoding.DecodeString("w4PDoMOgw6E=")
-		x.SpecialB64 = append(x.SpecialB64, defaultBytes_2)
+		x.SpecialB64 = [][]byte{utils.MustDecodeBase64("w6TDtsO8w4Q="), utils.MustDecodeBase64("8J+YgA=="), utils.MustDecodeBase64("w4PDoMOgw6E=")}
 	}
 }

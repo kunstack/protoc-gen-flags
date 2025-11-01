@@ -78,6 +78,12 @@ func (m *Module) checkTimestampSlice(ft FieldType, r *flags.RepeatedTimestampFla
 	}
 
 	for i, item := range r.Default {
+		if item == "" {
+			m.Failf("timestamp default value at index %d is empty", i)
+		}
+		if isNowStr(&item) {
+			continue
+		}
 		_, err := m.parseTimestamp(item, r.Formats)
 		if err != nil {
 			m.Failf("timestamp default value '%s' at index %d  is invalid: %v", item, i, err)
@@ -113,17 +119,39 @@ func (m *Module) genTimestampDefaults(f pgs.Field, name pgs.Name, flag *flags.Ti
 		`,
 		name, name, timeBuilder.String(),
 	)
-	//
-	//_, _ = fmt.Fprint(declBuilder, `
-	//	if x.`, name, `.Seconds == 0 && x.`, name, `.Nanos == 0 {
-	//		v := `, timeBuilder.String(), `
-	//		x.`, name, `.Seconds = v.Seconds
-	//		x.`, name, `.Nanos = v.Nanos
-	//	}
-	//`)
 
 	_, _ = declBuilder.WriteString(m.genMark(flag))
 	return declBuilder.String()
+}
+
+// genTimestampSliceDefaults generates default value assignment code for repeated timestamp fields
+func (m *Module) genTimestampSliceDefaults(f pgs.Field, name pgs.Name, flag *flags.RepeatedTimestampFlag) string {
+	if flag.Default == nil || len(flag.GetDefault()) == 0 {
+		return ""
+	}
+
+	var code strings.Builder
+
+	defaultValues := make([]string, len(flag.GetDefault()))
+
+	for i, defaultValue := range flag.Default {
+		if isNowStr(&defaultValue) {
+			defaultValues[i] = "timestamppb.Now()"
+		} else {
+			t, err := m.parseTimestamp(defaultValue, flag.GetFormats())
+			if err != nil {
+				m.Failf("timestamp default value '%s' is invalid: %v", defaultValue, err)
+			}
+			defaultValues[i] = fmt.Sprintf("&timestamppb.Timestamp{Seconds: %d, Nanos: %d}", t.Seconds, t.Nanos)
+		}
+	}
+
+	_, _ = fmt.Fprintf(&code, `
+		if len(x.%s) == 0 {
+		x.%s = %s{%s}
+	}
+`, name, name, m.ctx.Type(f).Value(), strings.Join(defaultValues, ","))
+	return code.String()
 }
 
 func (m *Module) genTimestamp(f pgs.Field, name pgs.Name, flag *flags.TimestampFlag) string {

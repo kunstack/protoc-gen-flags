@@ -2,7 +2,6 @@ package module
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/kunstack/protoc-gen-flags/flags"
 	pgs "github.com/lyft/protoc-gen-star"
@@ -137,52 +136,4 @@ func (m *Module) processRepeatedDefaults(f pgs.Field, name pgs.Name, repeated *f
 		m.Failf("unknown rule type (%T)", f.Type)
 	}
 	return ""
-}
-
-// genDurationSliceDefaults generates default value assignment code for repeated duration fields
-func (m *Module) genDurationSliceDefaults(f pgs.Field, name pgs.Name, flag *flags.RepeatedDurationFlag, wk pgs.WellKnownType) string {
-	if flag.Default == nil || len(flag.GetDefault()) == 0 {
-		return ""
-	}
-
-	var code strings.Builder
-
-	// Check if the slice is empty before setting defaults
-	code.WriteString(fmt.Sprintf(`
-	if len(x.%s) == 0 {`, name))
-
-	for i, defaultValue := range flag.Default {
-		varName := fmt.Sprintf("defaultDuration_%d", i)
-		code.WriteString(fmt.Sprintf(`
-		%s, _ := time.ParseDuration(%q)
-		x.%s = append(x.%s, %s)`, varName, defaultValue, name, name, varName))
-	}
-
-	code.WriteString(`
-	}`)
-	return code.String()
-}
-
-// genTimestampSliceDefaults generates default value assignment code for repeated timestamp fields
-func (m *Module) genTimestampSliceDefaults(f pgs.Field, name pgs.Name, flag *flags.RepeatedTimestampFlag) string {
-	if flag.Default == nil || len(flag.GetDefault()) == 0 {
-		return ""
-	}
-
-	var code strings.Builder
-
-	// Check if the slice is empty before setting defaults
-	code.WriteString(fmt.Sprintf(`
-	if len(x.%s) == 0 {`, name))
-
-	for i, defaultValue := range flag.Default {
-		varName := fmt.Sprintf("defaultTimestamp_%d", i)
-		code.WriteString(fmt.Sprintf(`
-		%s, _ := time.Parse(%q, %q)
-		x.%s = append(x.%s, timestamppb.New(%s))`, varName, "RFC3339", defaultValue, name, name, varName))
-	}
-
-	code.WriteString(`
-	}`)
-	return code.String()
 }

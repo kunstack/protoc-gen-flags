@@ -148,7 +148,7 @@ message TestForMessage {
   }];
 
   // Test repeated bytes with default values
-  repeated bytes base64_defaults = 40 [(flags.value).repeated.bytes = {
+  repeated google.protobuf.BytesValue base64_defaults = 40 [(flags.value).repeated.bytes = {
     name: "base64-defaults"
     short: "bd"
     usage: "Default base64 encoded values"
@@ -535,6 +535,7 @@ message DurationSliceTestMessage {
     usage: "deadline usage",
     default: "now"
   }];
+
 
   optional google.protobuf.Timestamp optional_deadline = 6 [(flags.value).timestamp = {
     formats: ["abc"]
@@ -991,6 +992,7 @@ message TimestampSliceTestMessage {
     short: "et"
     usage: "Event timestamps (e.g., 2023-01-01T00:00:00Z, 2023-12-31T23:59:59Z)"
     formats: ["RFC3339"]
+    default: ["2023-12-25T10:30:00Z","now()"]
   }];
 
   repeated google.protobuf.Timestamp log_timestamps = 2 [(flags.value).repeated.timestamp = {
@@ -1044,7 +1046,7 @@ message RepeatedBytesTestMessage {
   }];
 
   // Test repeated bytes with default values (base64)
-  repeated bytes default_base64 = 3 [(flags.value).repeated.bytes = {
+  repeated google.protobuf.BytesValue default_base64 = 3 [(flags.value).repeated.bytes = {
     name: "default-base64"
     short: "db64"
     usage: "Default base64 encoded values"
@@ -1053,7 +1055,7 @@ message RepeatedBytesTestMessage {
   }];
 
   // Test repeated bytes with default values (hex)
-  repeated bytes default_hex = 4 [(flags.value).repeated.bytes = {
+  repeated google.protobuf.BytesValue default_hex = 4 [(flags.value).repeated.bytes = {
     name: "default-hex"
     short: "dhx"
     usage: "Default hex encoded values"

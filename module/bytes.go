@@ -39,7 +39,6 @@ func (m *Module) validateBytesDefault(data []byte, encoding flags.BytesEncodingT
 			}
 			return fmt.Errorf("bytes default value is not valid hex: %v", err)
 		}
-		m.imports["encoding/hex"] = struct{}{}
 
 	case flags.BytesEncodingType_BYTES_ENCODING_TYPE_BASE64, flags.BytesEncodingType_BYTES_ENCODING_TYPE_UNSPECIFIED:
 		// Verify the default value is valid base64
@@ -49,7 +48,6 @@ func (m *Module) validateBytesDefault(data []byte, encoding flags.BytesEncodingT
 			}
 			return fmt.Errorf("bytes default value is not valid base64: %v", err)
 		}
-		m.imports["encoding/base64"] = struct{}{}
 	}
 
 	return nil
@@ -234,31 +232,26 @@ func (m *Module) genBytesDefaults(f pgs.Field, name pgs.Name, flag *flags.BytesF
 		if isWrapper {
 			return fmt.Sprintf(`
 			if x.%s == nil {
-				bin,_ := hex.DecodeString(%q)
-				x.%s = &wrapperspb.BytesValue{Value: bin}
-			}`, fieldName, defaultBytes, fieldName)
+				x.%s = &wrapperspb.BytesValue{Value: utils.MustDecodeHex(%q)}
+			}`, fieldName, fieldName, defaultBytes)
 		}
 		return fmt.Sprintf(`
 			if len(x.%s) == 0 {
-				bin,_ := hex.DecodeString(%q)
-				x.%s = bin
-			}`, fieldName, defaultBytes, fieldName)
+				x.%s = utils.MustDecodeHex(%q)
+			}`, fieldName, fieldName, defaultBytes)
 
 	case flags.BytesEncodingType_BYTES_ENCODING_TYPE_BASE64, flags.BytesEncodingType_BYTES_ENCODING_TYPE_UNSPECIFIED:
 		if isWrapper {
 			return fmt.Sprintf(`
 			if x.%s == nil {
-				bin, _ := base64.StdEncoding.DecodeString(%q)
-				x.%s = &wrapperspb.BytesValue{Value: bin}
-			}`, fieldName, defaultBytes, fieldName)
+				x.%s = &wrapperspb.BytesValue{Value: utils.MustDecodeBase64(%q)}
+			}`, fieldName, fieldName, defaultBytes)
 		}
 		return fmt.Sprintf(`
 			if len(x.%s) == 0 {
-				bin, _ := base64.StdEncoding.DecodeString(%q)
-				x.%s = bin
-			}`, fieldName, defaultBytes, fieldName)
+				x.%s = utils.MustDecodeBase64(%q)
+			}`, fieldName, fieldName, defaultBytes)
 	}
-
 	return ""
 }
 
@@ -283,24 +276,29 @@ func (m *Module) genBytesSliceDefaults(f pgs.Field, name pgs.Name, flag *flags.R
 	code.WriteString(fmt.Sprintf(`
 		if len(x.%s) == 0 {`, name))
 
+	defaultValues := make([]string, len(flag.GetDefault()))
+
 	// Generate default assignments for each value in the slice
 	for i, defaultBytes := range flag.Default {
-		// Generate a unique variable name for each iteration
-		varName := fmt.Sprintf("defaultBytes_%d", i)
-
 		switch flag.GetEncoding() {
 		case flags.BytesEncodingType_BYTES_ENCODING_TYPE_HEX:
-			code.WriteString(fmt.Sprintf(`
-				%s, _ := hex.DecodeString(%q)`, varName, defaultBytes))
+			if wk != "" && wk != pgs.UnknownWKT {
+				defaultValues[i] = fmt.Sprintf("{Value: utils.MustDecodeHex(%q) }", defaultBytes)
+			} else {
+				defaultValues[i] = fmt.Sprintf("utils.MustDecodeHex(%q)", defaultBytes)
+			}
 		case flags.BytesEncodingType_BYTES_ENCODING_TYPE_BASE64, flags.BytesEncodingType_BYTES_ENCODING_TYPE_UNSPECIFIED:
-			code.WriteString(fmt.Sprintf(`
-				%s, _ := base64.StdEncoding.DecodeString(%q)`, varName, defaultBytes))
+			if wk != "" && wk != pgs.UnknownWKT {
+				defaultValues[i] = fmt.Sprintf("{Value: utils.MustDecodeBase64(%q) }", defaultBytes)
+			} else {
+				defaultValues[i] = fmt.Sprintf("utils.MustDecodeBase64(%q)", defaultBytes)
+			}
 		}
-
-		// Append the decoded bytes to the slice
-		code.WriteString(fmt.Sprintf(`
-			x.%s = append(x.%s, %s)`, name, name, varName))
 	}
+
+	// Append the decoded bytes to the slice
+	code.WriteString(fmt.Sprintf(`
+			x.%s = %s{%s}`, name, m.ctx.Type(f).Value(), strings.Join(defaultValues, ",")))
 
 	code.WriteString(`
 		}`)

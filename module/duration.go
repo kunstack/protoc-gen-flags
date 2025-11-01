@@ -107,3 +107,27 @@ func (m *Module) genDurationDefaults(f pgs.Field, name pgs.Name, flag *flags.Dur
 	_, _ = declBuilder.WriteString(m.genMark(flag))
 	return declBuilder.String()
 }
+
+// genDurationSliceDefaults generates default value assignment code for repeated duration fields
+func (m *Module) genDurationSliceDefaults(f pgs.Field, name pgs.Name, flag *flags.RepeatedDurationFlag, wk pgs.WellKnownType) string {
+	if flag.Default == nil || len(flag.GetDefault()) == 0 {
+		return ""
+	}
+
+	var code strings.Builder
+
+	// Check if the slice is empty before setting defaults
+	code.WriteString(fmt.Sprintf(`
+	if len(x.%s) == 0 {`, name))
+
+	for i, defaultValue := range flag.Default {
+		varName := fmt.Sprintf("value%d", i)
+		code.WriteString(fmt.Sprintf(`
+		%s, _ := time.ParseDuration(%q)
+		x.%s = append(x.%s, %s)`, varName, defaultValue, name, name, varName))
+	}
+
+	code.WriteString(`
+	}`)
+	return code.String()
+}
