@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	pgs "github.com/lyft/protoc-gen-star"
+	pgs "github.com/lyft/protoc-gen-star/v2"
 )
 
 func (m *Module) checkCommon(typ FieldType, r commonFlag, pt pgs.ProtoType, wrapper pgs.WellKnownType, isSlice bool) {
@@ -49,7 +49,7 @@ func (m *Module) genCommonDefaults(f pgs.Field, name pgs.Name, zero, value any, 
 		zero = "nil"
 		return fmt.Sprint(`
 		if x.`, name, ` == `, zero, ` {
-			v := `, m.ctx.Type(f).Value(), `(`, value, `)
+			v := `, m.getFieldTypeName(f), `(`, value, `)
 			x.`, name, ` = &v
 		}
 		`)
@@ -96,7 +96,7 @@ func (m *Module) genCommonSliceDefaults(f pgs.Field, name pgs.Name, values inter
 		if len(x.%s) == 0 {
 			x.%s = %s{%s}
 		}
-	`, name, name, m.ctx.Type(f).Value(), strings.Join(defaultValues, ","))
+	`, name, name, m.getFieldTypeName(f), strings.Join(defaultValues, ","))
 }
 
 func (m *Module) genCommon(f pgs.Field, name pgs.Name, flag commonFlag, wk pgs.WellKnownType, wrapper, nativeWrapper string) string {
@@ -115,7 +115,7 @@ func (m *Module) genCommon(f pgs.Field, name pgs.Name, flag commonFlag, wk pgs.W
 				if x.%s == nil {
 					x.%s = new(%s)
 				}`,
-			name, name, m.ctx.Type(f).Value(),
+			name, name, m.getFieldTypeName(f),
 		)
 		_, _ = fmt.Fprintf(declBuilder, `
 				fs.VarP(types.%s(x.%s), utils.BuildFlagName(prefix,%q), %q, %q)
@@ -126,7 +126,7 @@ func (m *Module) genCommon(f pgs.Field, name pgs.Name, flag commonFlag, wk pgs.W
 				if x.%s == nil {
 					x.%s = new(%s)
 				}`,
-			name, name, m.ctx.Type(f).Value(),
+			name, name, m.getFieldTypeName(f),
 		)
 		_, _ = fmt.Fprintf(declBuilder, `
 				fs.%s(x.%s, utils.BuildFlagName(prefix, %q), %q, *(x.%s), %q)

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package tests.types;
+
+option go_package = "github.com/kunstack/protoc-gen-flags/tests/types";
+
+// CustomType represents a custom type for testing
+message CustomType {
+  string name = 1;
+  int32 value = 2;
+  bool enabled = 3;
+}

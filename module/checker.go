@@ -2,7 +2,7 @@ package module
 
 import (
 	"github.com/kunstack/protoc-gen-flags/flags"
-	pgs "github.com/lyft/protoc-gen-star"
+	pgs "github.com/lyft/protoc-gen-star/v2"
 )
 
 // Heavily taken from https://github.com/envoyproxy/protoc-gen-validate/blob/main/module/checker.go
@@ -33,6 +33,9 @@ func (m *Module) Check(msg pgs.Message) {
 		return
 	}
 
+	// Check for duplicate flag names within this message
+	m.checkFlagName(msg)
+
 	for _, f := range msg.Fields() {
 		m.Push(f.Name().String())
 
@@ -41,6 +44,146 @@ func (m *Module) Check(msg pgs.Message) {
 		m.CheckErr(err, "unable to read flags from field")
 		m.CheckFieldRules(f, &field)
 		m.Pop()
+	}
+}
+
+func (m *Module) checkFlagName(msg pgs.Message) {
+	// Track flag names to detect duplicates
+	flagNames := make(map[string]string) // flag name -> field name
+
+	for _, f := range msg.Fields() {
+		var field flags.FieldFlags
+		ok, err := f.Extension(flags.E_Value, &field)
+		if err != nil || !ok {
+			continue // Skip fields without flag configuration
+		}
+
+		flagName := m.getFlagName(&field)
+		if flagName == "" {
+			continue // Skip if no flag name
+		}
+
+		if existingField, exists := flagNames[flagName]; exists {
+			m.Failf("duplicate flag name '%s' found in message '%s': field '%s' and field '%s' both use this flag name",
+				flagName, msg.Name().String(), existingField, f.Name().String())
+		}
+
+		flagNames[flagName] = f.Name().String()
+	}
+}
+
+func (m *Module) getFlagName(field *flags.FieldFlags) string {
+	if field == nil {
+		return ""
+	}
+
+	// Extract flag name from the specific flag type
+	switch r := field.Type.(type) {
+	case *flags.FieldFlags_Float:
+		return m.getNameFromCommonFlag(r.Float)
+	case *flags.FieldFlags_Double:
+		return m.getNameFromCommonFlag(r.Double)
+	case *flags.FieldFlags_Int32:
+		return m.getNameFromCommonFlag(r.Int32)
+	case *flags.FieldFlags_Int64:
+		return m.getNameFromCommonFlag(r.Int64)
+	case *flags.FieldFlags_Uint32:
+		return m.getNameFromCommonFlag(r.Uint32)
+	case *flags.FieldFlags_Uint64:
+		return m.getNameFromCommonFlag(r.Uint64)
+	case *flags.FieldFlags_Sint32:
+		return m.getNameFromCommonFlag(r.Sint32)
+	case *flags.FieldFlags_Sint64:
+		return m.getNameFromCommonFlag(r.Sint64)
+	case *flags.FieldFlags_Fixed32:
+		return m.getNameFromCommonFlag(r.Fixed32)
+	case *flags.FieldFlags_Fixed64:
+		return m.getNameFromCommonFlag(r.Fixed64)
+	case *flags.FieldFlags_Sfixed32:
+		return m.getNameFromCommonFlag(r.Sfixed32)
+	case *flags.FieldFlags_Sfixed64:
+		return m.getNameFromCommonFlag(r.Sfixed64)
+	case *flags.FieldFlags_Bool:
+		return m.getNameFromCommonFlag(r.Bool)
+	case *flags.FieldFlags_String_:
+		return m.getNameFromCommonFlag(r.String_)
+	case *flags.FieldFlags_Bytes:
+		return m.getNameFromCommonFlag(r.Bytes)
+	case *flags.FieldFlags_Enum:
+		return m.getNameFromCommonFlag(r.Enum)
+	case *flags.FieldFlags_Duration:
+		return m.getNameFromCommonFlag(r.Duration)
+	case *flags.FieldFlags_Timestamp:
+		return m.getNameFromCommonFlag(r.Timestamp)
+	case *flags.FieldFlags_Repeated:
+		return m.getNameFromRepeatedFlag(r.Repeated)
+	case *flags.FieldFlags_Map:
+		return m.getNameFromCommonFlag(r.Map)
+	case *flags.FieldFlags_Message:
+		return "" // Skip Message types
+	default:
+		return ""
+	}
+}
+
+func (m *Module) getNameFromCommonFlag(flag commonFlag) string {
+	if flag == nil || flag.GetDisabled() {
+		return ""
+	}
+
+	if flag.GetName() != "" {
+		return flag.GetName()
+	}
+
+	// If no custom name is provided, use the field name converted to kebab-case
+	// This matches the default behavior in the flag generation
+	return ""
+}
+
+func (m *Module) getNameFromRepeatedFlag(flag *flags.RepeatedFlags) string {
+	if flag == nil {
+		return ""
+	}
+
+	switch r := flag.Type.(type) {
+	case *flags.RepeatedFlags_Float:
+		return m.getNameFromCommonFlag(r.Float)
+	case *flags.RepeatedFlags_Double:
+		return m.getNameFromCommonFlag(r.Double)
+	case *flags.RepeatedFlags_Int32:
+		return m.getNameFromCommonFlag(r.Int32)
+	case *flags.RepeatedFlags_Int64:
+		return m.getNameFromCommonFlag(r.Int64)
+	case *flags.RepeatedFlags_Uint32:
+		return m.getNameFromCommonFlag(r.Uint32)
+	case *flags.RepeatedFlags_Uint64:
+		return m.getNameFromCommonFlag(r.Uint64)
+	case *flags.RepeatedFlags_Sint32:
+		return m.getNameFromCommonFlag(r.Sint32)
+	case *flags.RepeatedFlags_Sint64:
+		return m.getNameFromCommonFlag(r.Sint64)
+	case *flags.RepeatedFlags_Fixed32:
+		return m.getNameFromCommonFlag(r.Fixed32)
+	case *flags.RepeatedFlags_Fixed64:
+		return m.getNameFromCommonFlag(r.Fixed64)
+	case *flags.RepeatedFlags_Sfixed32:
+		return m.getNameFromCommonFlag(r.Sfixed32)
+	case *flags.RepeatedFlags_Sfixed64:
+		return m.getNameFromCommonFlag(r.Sfixed64)
+	case *flags.RepeatedFlags_Bool:
+		return m.getNameFromCommonFlag(r.Bool)
+	case *flags.RepeatedFlags_String_:
+		return m.getNameFromCommonFlag(r.String_)
+	case *flags.RepeatedFlags_Bytes:
+		return m.getNameFromCommonFlag(r.Bytes)
+	case *flags.RepeatedFlags_Enum:
+		return m.getNameFromCommonFlag(r.Enum)
+	case *flags.RepeatedFlags_Duration:
+		return m.getNameFromCommonFlag(r.Duration)
+	case *flags.RepeatedFlags_Timestamp:
+		return m.getNameFromCommonFlag(r.Timestamp)
+	default:
+		return ""
 	}
 }
 
@@ -174,7 +317,7 @@ func (m *Module) CheckRepeatedFlag(typ FieldType, repeated *flags.RepeatedFlags)
 	case *flags.RepeatedFlags_String_:
 		m.checkCommon(typ, r.String_, pgs.StringT, pgs.StringValueWKT, true)
 	case *flags.RepeatedFlags_Bytes:
-		m.checkCommon(typ, r.Bytes, pgs.BytesT, pgs.BytesValueWKT, true)
+		m.checkBytesSlice(typ, r.Bytes)
 	case *flags.RepeatedFlags_Enum:
 		m.checkEnumSlice(typ, r.Enum, pgs.EnumT, pgs.UnknownWKT)
 	case *flags.RepeatedFlags_Duration:

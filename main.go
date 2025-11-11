@@ -16,8 +16,8 @@ package main
 
 import (
 	"github.com/kunstack/protoc-gen-flags/module"
-	pgs "github.com/lyft/protoc-gen-star"
-	pgsgo "github.com/lyft/protoc-gen-star/lang/go"
+	pgs "github.com/lyft/protoc-gen-star/v2"
+	pgsgo "github.com/lyft/protoc-gen-star/v2/lang/go"
 	"google.golang.org/protobuf/types/pluginpb"
 )
 

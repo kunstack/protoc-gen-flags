@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/kunstack/protoc-gen-flags/flags"
-	pgs "github.com/lyft/protoc-gen-star"
+	pgs "github.com/lyft/protoc-gen-star/v2"
 )
 
 func (m *Module) checkMessage(typ pgs.FieldType, flag *flags.MessageFlag) {
@@ -31,7 +31,7 @@ func (m *Module) genMessageDefaults(f pgs.Field, name pgs.Name, flag *flags.Mess
 					x.%s = new(%s)
 				}
         	`,
-			name, name, m.ctx.Type(f).Value(),
+			name, name, m.getFieldTypeName(f),
 		)
 	}
 	_, _ = fmt.Fprintf(declBuilder, `
@@ -62,7 +62,7 @@ func (m *Module) genMessage(f pgs.Field, name pgs.Name, flag *flags.MessageFlag)
 					x.%s = new(%s)
 				}
         	`,
-			name, name, m.ctx.Type(f).Value(),
+			name, name, m.getFieldTypeName(f),
 		)
 	}
 	_, _ = fmt.Fprintf(declBuilder, `

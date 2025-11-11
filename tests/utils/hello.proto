@@ -1,0 +1,26 @@
+syntax = "proto3";
+// buf:lint:ignore PACKAGE_VERSION_SUFFIX
+package tests.utils;
+
+import "flags/flags.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/kunstack/protoc-gen-flags/tests/utils";
+
+message SimpleMessage {
+  string name = 1 [(flags.value).string = {
+    name: "name"
+    usage: "Name parameter"
+  }];
+
+  // Test timestamp with default value
+  repeated google.protobuf.Timestamp created_at = 2 [(flags.value).repeated.timestamp = {
+    formats: [
+      "RFC3339",
+      "ISO8601"
+    ]
+    name: "created-at"
+    usage: "Creation timestamp"
+    default: "2023-01-01T00:00:00Z"
+  }];
+}

@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/kunstack/protoc-gen-flags/flags"
-	pgs "github.com/lyft/protoc-gen-star"
+	pgs "github.com/lyft/protoc-gen-star/v2"
 )
 
 // validateBytesEncoding validates the encoding type for bytes fields.
@@ -51,16 +51,6 @@ func (m *Module) validateBytesDefault(data []byte, encoding flags.BytesEncodingT
 	}
 
 	return nil
-}
-
-// configureBytesFlag sets up common configuration for bytes flags.
-// It handles name generation and returns early disable status.
-// Returns true if the flag is disabled (should skip generation).
-func (m *Module) configureBytesFlag(flag interface {
-	GetName() string
-	GetDisabled() bool
-}, name pgs.Name) bool {
-	return flag.GetDisabled()
 }
 
 // checkBytes validates the configuration of a bytes flag field.
@@ -133,7 +123,7 @@ func (m *Module) checkBytesSlice(ft FieldType, r *flags.RepeatedBytesFlag) {
 //   - wk: Well-known type information (e.g., google.protobuf.BytesValue)
 func (m *Module) genBytes(f pgs.Field, name pgs.Name, flag *flags.BytesFlag, wk pgs.WellKnownType) string {
 	// Configure the flag and check if it's disabled
-	if m.configureBytesFlag(flag, name) {
+	if flag.GetDisabled() {
 		return fmt.Sprintf("// %s: flags disabled by disabled=true\n", name)
 	}
 
@@ -156,7 +146,7 @@ func (m *Module) genBytes(f pgs.Field, name pgs.Name, flag *flags.BytesFlag, wk 
 				x.%s = new(%s)
 			}
 		`,
-			name, name, m.ctx.Type(f).Value(),
+			name, name, m.getFieldTypeName(f),
 		)
 		_, _ = fmt.Fprintf(declBuilder, `
 			fs.VarP(types.%s(x.%s), utils.BuildFlagName(prefix,%q), %q, %q)
@@ -182,9 +172,9 @@ func (m *Module) genBytes(f pgs.Field, name pgs.Name, flag *flags.BytesFlag, wk 
 //   - name: The field name for code generation
 //   - flag: The repeated bytes flag configuration
 //   - wk: Well-known type information (unused for slice types)
-func (m *Module) genBytesSlice(f pgs.Field, name pgs.Name, flag *flags.RepeatedBytesFlag, wk pgs.WellKnownType) string {
+func (m *Module) genBytesSlice(name pgs.Name, flag *flags.RepeatedBytesFlag) string {
 	// Configure the flag and check if it's disabled
-	if m.configureBytesFlag(flag, name) {
+	if flag.GetDisabled() {
 		return fmt.Sprintf("// %s: flags disabled by disabled=true\n", name)
 	}
 
@@ -232,24 +222,24 @@ func (m *Module) genBytesDefaults(f pgs.Field, name pgs.Name, flag *flags.BytesF
 		if isWrapper {
 			return fmt.Sprintf(`
 			if x.%s == nil {
-				x.%s = &wrapperspb.BytesValue{Value: utils.MustDecodeHex(%q)}
+				x.%s = &wrapperspb.BytesValue{Value:  utils.MustDecodeHex(%q)}
 			}`, fieldName, fieldName, defaultBytes)
 		}
 		return fmt.Sprintf(`
 			if len(x.%s) == 0 {
-				x.%s = utils.MustDecodeHex(%q)
+				x.%s =  utils.MustDecodeHex(%q)
 			}`, fieldName, fieldName, defaultBytes)
 
 	case flags.BytesEncodingType_BYTES_ENCODING_TYPE_BASE64, flags.BytesEncodingType_BYTES_ENCODING_TYPE_UNSPECIFIED:
 		if isWrapper {
 			return fmt.Sprintf(`
 			if x.%s == nil {
-				x.%s = &wrapperspb.BytesValue{Value: utils.MustDecodeBase64(%q)}
+				x.%s = &wrapperspb.BytesValue{Value:  utils.MustDecodeBase64(%q)}
 			}`, fieldName, fieldName, defaultBytes)
 		}
 		return fmt.Sprintf(`
 			if len(x.%s) == 0 {
-				x.%s = utils.MustDecodeBase64(%q)
+				x.%s =  utils.MustDecodeBase64(%q)
 			}`, fieldName, fieldName, defaultBytes)
 	}
 	return ""
@@ -283,22 +273,22 @@ func (m *Module) genBytesSliceDefaults(f pgs.Field, name pgs.Name, flag *flags.R
 		switch flag.GetEncoding() {
 		case flags.BytesEncodingType_BYTES_ENCODING_TYPE_HEX:
 			if wk != "" && wk != pgs.UnknownWKT {
-				defaultValues[i] = fmt.Sprintf("{Value: utils.MustDecodeHex(%q) }", defaultBytes)
+				defaultValues[i] = fmt.Sprintf("{Value:  utils.MustDecodeHex(%q) }", defaultBytes)
 			} else {
-				defaultValues[i] = fmt.Sprintf("utils.MustDecodeHex(%q)", defaultBytes)
+				defaultValues[i] = fmt.Sprintf(" utils.MustDecodeHex(%q)", defaultBytes)
 			}
 		case flags.BytesEncodingType_BYTES_ENCODING_TYPE_BASE64, flags.BytesEncodingType_BYTES_ENCODING_TYPE_UNSPECIFIED:
 			if wk != "" && wk != pgs.UnknownWKT {
-				defaultValues[i] = fmt.Sprintf("{Value: utils.MustDecodeBase64(%q) }", defaultBytes)
+				defaultValues[i] = fmt.Sprintf("{Value:  utils.MustDecodeBase64(%q) }", defaultBytes)
 			} else {
-				defaultValues[i] = fmt.Sprintf("utils.MustDecodeBase64(%q)", defaultBytes)
+				defaultValues[i] = fmt.Sprintf(" utils.MustDecodeBase64(%q)", defaultBytes)
 			}
 		}
 	}
 
 	// Append the decoded bytes to the slice
 	code.WriteString(fmt.Sprintf(`
-			x.%s = %s{%s}`, name, m.ctx.Type(f).Value(), strings.Join(defaultValues, ",")))
+			x.%s = %s{%s}`, name, m.getFieldTypeName(f), strings.Join(defaultValues, ",")))
 
 	code.WriteString(`
 		}`)

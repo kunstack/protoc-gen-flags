@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/kunstack/protoc-gen-flags/flags"
-	pgs "github.com/lyft/protoc-gen-star"
+	pgs "github.com/lyft/protoc-gen-star/v2"
 )
 
 func (m *Module) checkEnum(ft FieldType, flag *flags.EnumFlag, pt pgs.ProtoType, wrapper pgs.WellKnownType) {
@@ -72,7 +72,7 @@ func (m *Module) genEnum(f pgs.Field, name pgs.Name, flag *flags.EnumFlag, wk pg
 				x.%s = new(%s)
 			}
 		`,
-			name, name, m.ctx.Type(f).Value(),
+			name, name, m.getFieldTypeName(f),
 		)
 		_, _ = fmt.Fprintf(declBuilder, `
 			fs.VarP(types.Enum(x.%s), utils.BuildFlagName(prefix, %q), %q, %q)

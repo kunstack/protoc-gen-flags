@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/kunstack/protoc-gen-flags/flags"
-	pgs "github.com/lyft/protoc-gen-star"
+	pgs "github.com/lyft/protoc-gen-star/v2"
 )
 
 func (m *Module) genDuration(f pgs.Field, name pgs.Name, flag *flags.DurationFlag, wk pgs.WellKnownType) string {
@@ -25,7 +25,7 @@ func (m *Module) genDuration(f pgs.Field, name pgs.Name, flag *flags.DurationFla
 				x.%s = new(%s)
 			}
 		`,
-		name, name, m.ctx.Type(f).Value(),
+		name, name, m.getFieldTypeName(f),
 	)
 
 	_, _ = fmt.Fprintf(declBuilder, `

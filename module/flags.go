@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/kunstack/protoc-gen-flags/flags"
-	pgs "github.com/lyft/protoc-gen-star"
+	pgs "github.com/lyft/protoc-gen-star/v2"
 )
 
 func (m *Module) genMark(flag commonFlag) string {
@@ -64,7 +64,7 @@ func (m *Module) processRepeatedFlag(f pgs.Field, name pgs.Name, repeated *flags
 	case *flags.RepeatedFlags_String_:
 		return m.genCommonSlice(f, name, r.String_, wk, "StringSlice", "StringSliceVarP")
 	case *flags.RepeatedFlags_Bytes:
-		return m.genBytesSlice(f, name, r.Bytes, wk)
+		return m.genBytesSlice(name, r.Bytes)
 	case *flags.RepeatedFlags_Enum:
 		return m.genEnumSlice(f, name, r.Enum, wk)
 	case *flags.RepeatedFlags_Duration:

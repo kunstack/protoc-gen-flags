@@ -6,22 +6,34 @@ import (
 	"text/template"
 
 	"github.com/kunstack/protoc-gen-flags/flags"
-	pgs "github.com/lyft/protoc-gen-star"
-	pgsgo "github.com/lyft/protoc-gen-star/lang/go"
+	pgs "github.com/lyft/protoc-gen-star/v2"
+	pgsgo "github.com/lyft/protoc-gen-star/v2/lang/go"
 )
 
 func Flags() *Module {
 	return &Module{
-		ModuleBase: &pgs.ModuleBase{},
-		imports:    make(map[string]struct{}),
+		ModuleBase:      &pgs.ModuleBase{},
+		imports:         make(map[string]struct{}),
+		packageAliases:  make(map[string]string),
+		nameCollisions:  make(map[string]int),
+		normalizedPaths: make(map[string]struct{}),
 	}
+}
+
+// ImportInfo stores normalized import information
+type ImportInfo struct {
+	Path  string
+	Alias string
 }
 
 type Module struct {
 	*pgs.ModuleBase
-	ctx     pgsgo.Context
-	tpl     *template.Template
-	imports map[string]struct{}
+	ctx             pgsgo.Context
+	tpl             *template.Template
+	imports         map[string]struct{}
+	packageAliases  map[string]string // import path -> alias (if needed)
+	nameCollisions  map[string]int    // package name -> collision count
+	normalizedPaths map[string]struct{}
 }
 
 func (m *Module) Name() string {
@@ -31,6 +43,18 @@ func (m *Module) Name() string {
 func (m *Module) InitContext(c pgs.BuildContext) {
 	m.ModuleBase.InitContext(c)
 	m.ctx = pgsgo.InitContext(c.Parameters())
+
+	// Initialize standard package names that might collide
+	// Based on example.go enumPackages implementation
+	m.nameCollisions = map[string]int{
+		"pflag":       0,
+		"utils":       0,
+		"types":       0,
+		"flags":       0,
+		"durationpb":  0,
+		"timestamppb": 0,
+		"wrapperspb":  0,
+	}
 
 	tpl := template.New("fields").Funcs(map[string]interface{}{
 		"package": m.ctx.PackageName,
@@ -63,11 +87,7 @@ func (m *Module) InitContext(c pgs.BuildContext) {
 			return out
 		},
 		"imports": func() string {
-			var imports string
-			for v := range m.imports {
-				imports += fmt.Sprintf("\"%s\"\n", v)
-			}
-			return imports
+			return m.generateImports()
 		},
 		"enabled": func(msg pgs.Message) bool {
 			var (
@@ -131,7 +151,7 @@ import (
     "github.com/kunstack/protoc-gen-flags/flags"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"google.golang.org/protobuf/types/known/wrapperspb"	
+	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	{{ imports }}
 )
@@ -162,3 +182,121 @@ func (x *{{ name . }}) {{ defaultMethodName . }}() {
 {{- end }}
 {{ end }}
 `
+
+// normalizeImports processes all imports and assigns aliases to packages with name collisions
+// This is based on the enumPackages implementation in example.go
+func (m *Module) normalizeImports() {
+	for importPath := range m.imports {
+		if _, ok := m.normalizedPaths[importPath]; ok {
+			continue
+		}
+
+		// Get the package name from the import path
+		pkgName := m.getPackageNameFromPath(importPath)
+
+		// Check if this package name has collision
+		if collision, ok := m.nameCollisions[pkgName]; ok {
+			// Package name collides, assign an alias
+			m.nameCollisions[pkgName] = collision + 1
+			alias := fmt.Sprintf("%s%d", pkgName, m.nameCollisions[pkgName])
+			m.packageAliases[importPath] = alias
+		} else {
+			// First occurrence of this package name
+			m.nameCollisions[pkgName] = 0
+			// No alias needed for first occurrence
+		}
+
+		m.normalizedPaths[importPath] = struct{}{}
+	}
+}
+
+// generateImports generates the import statements with proper aliases
+func (m *Module) generateImports() string {
+	m.normalizeImports()
+
+	var imports strings.Builder
+	for importPath := range m.imports {
+		if alias, ok := m.packageAliases[importPath]; ok {
+			imports.WriteString(fmt.Sprintf("%s \"%s\"\n", alias, importPath))
+		} else {
+			imports.WriteString(fmt.Sprintf("\"%s\"\n", importPath))
+		}
+	}
+	return imports.String()
+}
+
+// getPackageNameFromPath extracts the package name from an import path
+func (m *Module) getPackageNameFromPath(importPath string) string {
+	parts := strings.Split(importPath, "/")
+	if len(parts) > 0 {
+		return parts[len(parts)-1]
+	}
+	return importPath
+}
+
+// getPackageAlias returns the package alias or package name for a given import path
+// This is used when generating type references to ensure we use the correct package name
+func (m *Module) getPackageAlias(importPath string) string {
+	if alias, ok := m.packageAliases[importPath]; ok {
+		return alias
+	}
+	return m.getPackageNameFromPath(importPath)
+}
+
+// resolveTypeReference resolves a type reference string and replaces package names with aliases
+// For example, "utils.ByteSlice" might become "utils1.ByteSlice" if utils has a collision
+// For repeated types like "[]utils.ByteSlice", it becomes "[]utils1.ByteSlice"
+func (m *Module) resolveTypeReference(typeRef string, field pgs.Field) string {
+	// Handle slice types - extract the element type, resolve it, then add [] back
+	if strings.HasPrefix(typeRef, "[]") {
+		elementType := strings.TrimPrefix(typeRef, "[]")
+		resolvedElement := m.resolveTypeReference(elementType, field)
+		return "[]" + resolvedElement
+	}
+
+	// Handle pointer types
+	if strings.HasPrefix(typeRef, "*") {
+		elementType := strings.TrimPrefix(typeRef, "*")
+		resolvedElement := m.resolveTypeReference(elementType, field)
+		return "*" + resolvedElement
+	}
+
+	// Check if the type reference contains a package qualifier (e.g., "utils.ByteSlice")
+	parts := strings.SplitN(typeRef, ".", 2)
+	if len(parts) != 2 {
+		// No package qualifier, return as-is
+		return typeRef
+	}
+
+	typeName := parts[1]
+
+	// Get the import path for this field's type
+	var importPath string
+
+	if field.Type().IsEmbed() {
+		importPath = m.ctx.ImportPath(field.Type().Embed()).String()
+	} else if field.Type().IsEnum() {
+		importPath = m.ctx.ImportPath(field.Type().Enum()).String()
+	} else if field.Type().IsRepeated() && field.Type().Element() != nil {
+		if field.Type().Element().IsEmbed() {
+			importPath = m.ctx.ImportPath(field.Type().Element().Embed()).String()
+		} else if field.Type().Element().IsEnum() {
+			importPath = m.ctx.ImportPath(field.Type().Element().Enum()).String()
+		}
+	}
+
+	// If we found an import path and has an alias, use the alias
+	alias, ok := m.packageAliases[importPath]
+	if ok && importPath != "" {
+		return fmt.Sprintf("%s.%s", alias, typeName)
+	}
+	// Return as-is if no alias found
+	return typeRef
+}
+
+// getFieldTypeName returns the type name for a field with proper package alias resolution
+// This handles repeated fields, pointer types, and package name collisions
+func (m *Module) getFieldTypeName(f pgs.Field) string {
+	typeName := m.ctx.Type(f).Value().String()
+	return m.resolveTypeReference(typeName, f)
+}

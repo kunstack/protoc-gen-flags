@@ -6,11 +6,24 @@ import "flags/flags.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
+import "tests/utils/hello.proto";
+import "tests/utils/utils/hello.proto";
+import "tests/types/types.proto";
+import "tests/wrapperspb/wrapperspb.proto";
 
 option go_package = "github.com/kunstack/protoc-gen-flags/tests;tests";
 
 message TestForMessage {
   option (flags.allow_empty) = true;
+
+  tests.wrapperspb.CustomWrapper custom_wrapper = 10 [(flags.value).message = {
+    nested: true
+  }];
+
+  tests.utils.SimpleMessage simple_message = 60 [(flags.value).message = {
+    name: "simple-messagex1"
+    nested: true
+  }];
 
   float hello = 1 [(flags.value).float = {
     name: "hello"
@@ -70,7 +83,7 @@ message TestForMessage {
     usage: "Size in bytes"
   }];
 
-  sint32 temperature = 10 [(flags.value).sint32 = {
+  sint32 temperature = 98 [(flags.value).sint32 = {
     name: "temperature"
     short: "t"
     usage: "Temperature value"
@@ -111,8 +124,8 @@ message TestForMessage {
     hidden: false
     deprecated: false
     deprecated_usage: ""
-    encoding: BYTES_ENCODING_TYPE_HEX,
-    default: "0000546573742048656c6c6f2054657874",
+    encoding: BYTES_ENCODING_TYPE_HEX
+    default: "0000546573742048656c6c6f2054657874"
   }];
 
   // Additional native bytes fields with different configurations
@@ -153,7 +166,11 @@ message TestForMessage {
     short: "bd"
     usage: "Default base64 encoded values"
     encoding: BYTES_ENCODING_TYPE_BASE64
-    default: ["aGVsbG8gd29ybGQ=", "dGVzdCBkYXRh", "c2FtcGxlIGNvbnRlbnQ="]
+    default: [
+      "aGVsbG8gd29ybGQ=",
+      "dGVzdCBkYXRh",
+      "c2FtcGxlIGNvbnRlbnQ="
+    ]
   }];
 
   repeated bytes hex_defaults = 41 [(flags.value).repeated.bytes = {
@@ -161,19 +178,26 @@ message TestForMessage {
     short: "hd"
     usage: "Default hex encoded values"
     encoding: BYTES_ENCODING_TYPE_HEX
-    default: ["48656c6c6f20576f726c64", "546573742044617461", "53616d706c6520436f6e74656e74"]
+    default: [
+      "48656c6c6f20576f726c64",
+      "546573742044617461",
+      "53616d706c6520436f6e74656e74"
+    ]
   }];
 
   // Test enum type
-   repeated TestEnum1 test_enum = 17 [(flags.value).repeated.enum = {
+  repeated TestEnum1 test_enum = 17 [(flags.value).repeated.enum = {
     name: "test-enum"
     short: "e"
     usage: "Test enum field"
-    default: [1, 3]
+    default: [
+      1,
+      3
+    ]
   }];
 
   // Test duration type
-   google.protobuf.Duration timeout_duration = 18 [(flags.value).duration = {
+  google.protobuf.Duration timeout_duration = 18 [(flags.value).duration = {
     name: "timeout-duration"
     short: "d"
     usage: "Timeout duration (e.g., 30s, 5m, 1h)"
@@ -282,6 +306,18 @@ message TestForMessage {
     short: "t"
     usage: "Timeout durations for operations"
   }];
+
+  // This will create a utils package name conflict
+  tests.utils.utils.NestedMessage nested_test = 50 [(flags.value).message = {
+    name: "nested-test"
+    nested: true
+  }];
+
+  // Test types package import
+  tests.types.CustomType custom_type = 51 [(flags.value).message = {
+    name: "custom-type"
+    nested: true
+  }];
 }
 
 enum TestEnum1 {
@@ -300,7 +336,10 @@ message SimpleMessage {
 
   // Test timestamp with default value
   google.protobuf.Timestamp created_at = 2 [(flags.value).timestamp = {
-    formats: ["RFC3339", "ISO8601"]
+    formats: [
+      "RFC3339",
+      "ISO8601"
+    ]
     name: "created-at"
     usage: "Creation timestamp"
     default: "2023-01-01T00:00:00Z"
@@ -348,7 +387,7 @@ message WrapperValueMessage {
 
   // Test BytesHexSliceValue for repeated BytesValue with hex encoding
   repeated google.protobuf.BytesValue bytes_hex_values = 6 [(flags.value).repeated.bytes = {
-    name: "bytes-hex-values"
+    name: "bytes-hex-values666"
     short: "bhx"
     usage: "Multiple bytes values (hex encoded)"
     encoding: BYTES_ENCODING_TYPE_HEX
@@ -532,10 +571,9 @@ message DurationSliceTestMessage {
 
   google.protobuf.Timestamp deadline = 5 [(flags.value).timestamp = {
     formats: ["abc"]
-    usage: "deadline usage",
+    usage: "deadline usage"
     default: "now"
   }];
-
 
   optional google.protobuf.Timestamp optional_deadline = 6 [(flags.value).timestamp = {
     formats: ["abc"]
@@ -657,13 +695,13 @@ message DefaultValueTestMessage {
   TestEnum1 default_mode = 9 [(flags.value).enum = {
     name: "default-mode"
     usage: "Default operation mode"
-    default: 1  // TEST_ENUM_VALUE1
+    default: 1 // TEST_ENUM_VALUE1
   }];
 
   optional TestEnum1 default_mode2 = 10 [(flags.value).enum = {
     name: "default-mode1"
     usage: "Default operation mode"
-    default: 1  // TEST_ENUM_VALUE1
+    default: 1 // TEST_ENUM_VALUE1
   }];
 }
 
@@ -680,7 +718,7 @@ message StringValueTestMessage {
   }];
 
   // Test StringValue slice type
-   repeated google.protobuf.StringValue string_values = 2 [(flags.value).repeated.string = {
+  repeated google.protobuf.StringValue string_values = 2 [(flags.value).repeated.string = {
     name: "string-values"
     short: "svs"
     usage: "Multiple StringValue wrapper instances"
@@ -762,21 +800,30 @@ message IntegerValueTestMessage {
     name: "int64-values"
     short: "i64s"
     usage: "Multiple Int64 value wrapper instances"
-    default: [1,2]
+    default: [
+      1,
+      2
+    ]
   }];
 
   repeated google.protobuf.FloatValue float64_values = 7 [(flags.value).repeated.float = {
     name: "int64-valuesx"
     short: "i64s"
     usage: "Multiple FloatValue wrapper instances"
-    default: [1,2]
+    default: [
+      1,
+      2
+    ]
   }];
 
   repeated double double_values = 8 [(flags.value).repeated.double = {
     name: "double-valuesx"
     short: "i64sx"
     usage: "Multiple double value instances"
-    default: [1,2]
+    default: [
+      1,
+      2
+    ]
   }];
 }
 
@@ -986,13 +1033,18 @@ message ComprehensiveMapTestMessage {
 message TimestampSliceTestMessage {
   option (flags.allow_empty) = true;
 
+
+
   // Test various timestamp slice configurations
   repeated google.protobuf.Timestamp event_times = 1 [(flags.value).repeated.timestamp = {
     name: "event-times"
     short: "et"
     usage: "Event timestamps (e.g., 2023-01-01T00:00:00Z, 2023-12-31T23:59:59Z)"
     formats: ["RFC3339"]
-    default: ["2023-12-25T10:30:00Z","now()"]
+    default: [
+      "2023-12-25T10:30:00Z",
+      "now()"
+    ]
   }];
 
   repeated google.protobuf.Timestamp log_timestamps = 2 [(flags.value).repeated.timestamp = {
@@ -1021,7 +1073,11 @@ message TimestampSliceTestMessage {
     name: "custom-format-times"
     short: "cft"
     usage: "Custom format timestamps"
-    formats: ["RFC3339", "ISO8601", "RFC822"]
+    formats: [
+      "RFC3339",
+      "ISO8601",
+      "RFC822"
+    ]
   }];
 }
 
@@ -1051,7 +1107,11 @@ message RepeatedBytesTestMessage {
     short: "db64"
     usage: "Default base64 encoded values"
     encoding: BYTES_ENCODING_TYPE_BASE64
-    default: ["SGVsbG8gV29ybGQ=", "VGVzdCBEYXRh", "U2FtcGxlIENvbnRlbnQ="]
+    default: [
+      "SGVsbG8gV29ybGQ=",
+      "VGVzdCBEYXRh",
+      "U2FtcGxlIENvbnRlbnQ="
+    ]
   }];
 
   // Test repeated bytes with default values (hex)
@@ -1060,7 +1120,11 @@ message RepeatedBytesTestMessage {
     short: "dhx"
     usage: "Default hex encoded values"
     encoding: BYTES_ENCODING_TYPE_HEX
-    default: ["48656c6c6f20576f726c64", "546573742044617461", "53616d706c6520436f6e74656e74"]
+    default: [
+      "48656c6c6f20576f726c64",
+      "546573742044617461",
+      "53616d706c6520436f6e74656e74"
+    ]
   }];
 
   // Test repeated bytes without explicit encoding (defaults to base64)
@@ -1076,7 +1140,11 @@ message RepeatedBytesTestMessage {
     short: "mh"
     usage: "Mixed case hex data"
     encoding: BYTES_ENCODING_TYPE_HEX
-    default: ["aBc123DeF456", "789AbCdE0123", "fFeEdDcCbBaA"]
+    default: [
+      "aBc123DeF456",
+      "789AbCdE0123",
+      "fFeEdDcCbBaA"
+    ]
   }];
 
   // Test repeated bytes with special characters in base64
@@ -1085,6 +1153,10 @@ message RepeatedBytesTestMessage {
     short: "sb64"
     usage: "Special character base64 data"
     encoding: BYTES_ENCODING_TYPE_BASE64
-    default: ["w6TDtsO8w4Q=", "8J+YgA==", "w4PDoMOgw6E="]
+    default: [
+      "w6TDtsO8w4Q=",
+      "8J+YgA==",
+      "w4PDoMOgw6E="
+    ]
   }];
 }

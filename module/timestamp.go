@@ -8,7 +8,7 @@ import (
 
 	"github.com/kunstack/protoc-gen-flags/flags"
 	"github.com/kunstack/protoc-gen-flags/utils"
-	pgs "github.com/lyft/protoc-gen-star"
+	pgs "github.com/lyft/protoc-gen-star/v2"
 	"github.com/samber/lo"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -150,7 +150,7 @@ func (m *Module) genTimestampSliceDefaults(f pgs.Field, name pgs.Name, flag *fla
 		if len(x.%s) == 0 {
 		x.%s = %s{%s}
 	}
-`, name, name, m.ctx.Type(f).Value(), strings.Join(defaultValues, ","))
+`, name, name, m.getFieldTypeName(f), strings.Join(defaultValues, ","))
 	return code.String()
 }
 
@@ -184,7 +184,7 @@ func (m *Module) genTimestamp(f pgs.Field, name pgs.Name, flag *flags.TimestampF
 				x.%s = new(%s)
 			}
 		`,
-		name, name, m.ctx.Type(f).Value(),
+		name, name, m.getFieldTypeName(f),
 	)
 
 	_, _ = fmt.Fprintf(declBuilder, `

@@ -10,6 +10,11 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
+
+	types1 "github.com/kunstack/protoc-gen-flags/tests/types"
+	utils2 "github.com/kunstack/protoc-gen-flags/tests/utils"
+	utils1 "github.com/kunstack/protoc-gen-flags/tests/utils/utils"
+	wrapperspb1 "github.com/kunstack/protoc-gen-flags/tests/wrapperspb"
 )
 
 var (
@@ -23,6 +28,22 @@ var (
 )
 
 func (x *TestForMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
+	if x.CustomWrapper == nil {
+		x.CustomWrapper = new(wrapperspb1.CustomWrapper)
+	}
+
+	if v, ok := interface{}(x.CustomWrapper).(flags.Flagger); ok {
+		v.AddFlags(fs, "custom_wrapper")
+	}
+
+	if x.SimpleMessage == nil {
+		x.SimpleMessage = new(utils2.SimpleMessage)
+	}
+
+	if v, ok := interface{}(x.SimpleMessage).(flags.Flagger); ok {
+		v.AddFlags(fs, "simple-messagex1")
+	}
+
 	fs.Float32VarP(&x.Hello, utils.BuildFlagName(prefix, "hello"), "h", x.Hello, "Hello world '\"' flag")
 
 	fs.MarkHidden("hello")
@@ -119,9 +140,41 @@ func (x *TestForMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 
 	fs.VarP(types.DurationSlice(&x.Timeouts), utils.BuildFlagName(prefix, "timeouts"), "t", "Timeout durations for operations")
 
+	if x.NestedTest == nil {
+		x.NestedTest = new(utils1.NestedMessage)
+	}
+
+	if v, ok := interface{}(x.NestedTest).(flags.Flagger); ok {
+		v.AddFlags(fs, "nested-test")
+	}
+
+	if x.CustomType == nil {
+		x.CustomType = new(types1.CustomType)
+	}
+
+	if v, ok := interface{}(x.CustomType).(flags.Flagger); ok {
+		v.AddFlags(fs, "custom-type")
+	}
+
 }
 
 func (x *TestForMessage) SetDefaults() {
+	if x.CustomWrapper == nil {
+		x.CustomWrapper = new(wrapperspb1.CustomWrapper)
+	}
+
+	if v, ok := interface{}(x.CustomWrapper).(flags.Defaulter); ok {
+		v.SetDefaults()
+	}
+
+	if x.SimpleMessage == nil {
+		x.SimpleMessage = new(utils2.SimpleMessage)
+	}
+
+	if v, ok := interface{}(x.SimpleMessage).(flags.Defaulter); ok {
+		v.SetDefaults()
+	}
+
 	if len(x.Byte) == 0 {
 		x.Byte = utils.MustDecodeHex("0000546573742048656c6c6f2054657874")
 	}
@@ -146,6 +199,22 @@ func (x *TestForMessage) SetDefaults() {
 	}
 
 	if v, ok := interface{}(x.SimpleField).(flags.Defaulter); ok {
+		v.SetDefaults()
+	}
+
+	if x.NestedTest == nil {
+		x.NestedTest = new(utils1.NestedMessage)
+	}
+
+	if v, ok := interface{}(x.NestedTest).(flags.Defaulter); ok {
+		v.SetDefaults()
+	}
+
+	if x.CustomType == nil {
+		x.CustomType = new(types1.CustomType)
+	}
+
+	if v, ok := interface{}(x.CustomType).(flags.Defaulter); ok {
 		v.SetDefaults()
 	}
 
@@ -191,7 +260,7 @@ func (x *WrapperValueMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
 
 	fs.VarP(types.Bytes(x.BytesValues), utils.BuildFlagName(prefix, "bytes-values"), "bvs", "Multiple bytes values (base64 encoded)")
 
-	fs.VarP(types.BytesHexSlice(&x.BytesHexValues), utils.BuildFlagName(prefix, "bytes-hex-values"), "bhx", "Multiple bytes values (hex encoded)")
+	fs.VarP(types.BytesHexSlice(&x.BytesHexValues), utils.BuildFlagName(prefix, "bytes-hex-values666"), "bhx", "Multiple bytes values (hex encoded)")
 
 	if x.BytesHexValuesx == nil {
 		x.BytesHexValuesx = new(wrapperspb.BytesValue)

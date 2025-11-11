@@ -5,9 +5,8 @@ import (
 	"strings"
 
 	"github.com/kunstack/protoc-gen-flags/flags"
-	pgs "github.com/lyft/protoc-gen-star"
+	pgs "github.com/lyft/protoc-gen-star/v2"
 )
-
 
 func (m *Module) checkMap(typ FieldType, flag *flags.MapFlag) {
 	if flag == nil {
@@ -72,7 +71,6 @@ func (m *Module) checkMap(typ FieldType, flag *flags.MapFlag) {
 		m.Failf("unknown map format type: %v", flag.GetFormat())
 	}
 }
-
 
 func (m *Module) genMap(f pgs.Field, name pgs.Name, flag *flags.MapFlag) string {
 	var (

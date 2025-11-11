@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/kunstack/protoc-gen-flags/flags"
-	pgs "github.com/lyft/protoc-gen-star"
+	pgs "github.com/lyft/protoc-gen-star/v2"
 )
 
 func (m *Module) genFieldDefaults(f pgs.Field) string {

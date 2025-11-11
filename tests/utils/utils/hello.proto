@@ -1,0 +1,26 @@
+syntax = "proto3";
+// buf:lint:ignore PACKAGE_VERSION_SUFFIX
+package tests.utils.utils;
+
+import "flags/flags.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/kunstack/protoc-gen-flags/tests/utils/utils";
+
+message NestedMessage {
+  string nested_field = 1 [(flags.value).string = {
+    name: "nested-field"
+    usage: "Nested field parameter"
+  }];
+
+  // Test timestamp with default value
+  google.protobuf.Timestamp nested_timestamp = 2 [(flags.value).timestamp = {
+    formats: [
+      "RFC3339",
+      "ISO8601"
+    ]
+    name: "nested-timestamp"
+    usage: "Nested timestamp field"
+    default: "2024-01-01T00:00:00Z"
+  }];
+}
