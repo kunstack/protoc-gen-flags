@@ -14,7 +14,21 @@
 
 package flags
 
-import "github.com/spf13/pflag"
+import (
+	"strings"
+
+	"github.com/spf13/pflag"
+)
+
+const DelimiterDot = "."
+
+type Options struct {
+	Prefix    []string
+	Delimiter string
+	Renamer   func(string) string
+}
+
+type Option func(*Options)
 
 // This package provides protobuf extensions for generating AddFlags methods
 // using the protoc-gen-flags plugin.
@@ -37,4 +51,49 @@ type Defaulter interface {
 //     for hierarchical flag organization (e.g., "server", "database")
 type Flagger interface {
 	AddFlags(fs *pflag.FlagSet, prefix ...string)
+}
+
+func WithDelimiter(delimiter string) Option {
+	return func(o *Options) {
+		o.Delimiter = delimiter
+	}
+}
+
+func WithRenamer(renamer func(name string) string) Option {
+	return func(o *Options) {
+		o.Renamer = renamer
+	}
+}
+
+func WithPrefix(prefix ...string) Option {
+	var nonEmpty []string
+	for _, part := range prefix {
+		// Remove leading and trailing dots
+		trimmed := strings.Trim(part, ".")
+		if trimmed != "" {
+			nonEmpty = append(nonEmpty, trimmed)
+		}
+	}
+	return func(o *Options) {
+		o.Prefix = append(o.Prefix, nonEmpty...)
+	}
+}
+
+type NameBuilder struct {
+	options *Options
+}
+
+func (n NameBuilder) Build(name string) string {
+	return n.options.Renamer(strings.Join(append(n.options.Prefix, name), "."))
+}
+
+func NewNameBuilder(opts ...Option) NameBuilder {
+	options := &Options{
+		Delimiter: DelimiterDot,
+		Renamer:   func(s string) string { return s },
+	}
+	for _, opt := range opts {
+		opt(options)
+	}
+	return NameBuilder{options: options}
 }
