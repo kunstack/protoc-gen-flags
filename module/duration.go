@@ -29,7 +29,7 @@ func (m *Module) genDuration(f pgs.Field, name pgs.Name, flag *flags.DurationFla
 	)
 
 	_, _ = fmt.Fprintf(declBuilder, `
-			fs.VarP(types.Duration(x.%s), utils.BuildFlagName(prefix, %q), %q, %q)
+			fs.VarP(types.Duration(x.%s), builder.Build(%q), %q, %q)
 		`,
 		name, flag.Name, flag.GetShort(), flag.GetUsage(),
 	)
@@ -51,7 +51,7 @@ func (m *Module) genDurationSlice(f pgs.Field, name pgs.Name, flag *flags.Repeat
 	}
 
 	_, _ = fmt.Fprintf(declBuilder, `
-			fs.VarP(types.DurationSlice(&x.%s), utils.BuildFlagName(prefix, %q), %q, %q)
+			fs.VarP(types.DurationSlice(&x.%s), builder.Build( %q), %q, %q)
 		`,
 		name, flag.Name, flag.GetShort(), flag.GetUsage(),
 	)

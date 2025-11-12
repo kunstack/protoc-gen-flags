@@ -168,7 +168,9 @@ var (
 
 {{ range .AllMessages }}
 {{ if enabled . }}
-func (x *{{ name . }}) {{ methodName . }}(fs *pflag.FlagSet, prefix ...string) {
+func (x *{{ name . }}) {{ methodName . }}(fs *pflag.FlagSet, opts ...flags.Option) {
+	builder := flags.NewNameBuilder(opts...)
+	_ = builder
 	{{- range .Fields }}
 		{{- flags . }}
 	{{- end }}

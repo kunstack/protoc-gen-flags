@@ -118,7 +118,7 @@ func (m *Module) genCommon(f pgs.Field, name pgs.Name, flag commonFlag, wk pgs.W
 			name, name, m.getFieldTypeName(f),
 		)
 		_, _ = fmt.Fprintf(declBuilder, `
-				fs.VarP(types.%s(x.%s), utils.BuildFlagName(prefix,%q), %q, %q)
+				fs.VarP(types.%s(x.%s), builder.Build(%q), %q, %q)
 			`,
 			wrapper, name, flagName, flag.GetShort(), flag.GetUsage())
 	} else if f.HasOptionalKeyword() {
@@ -129,12 +129,12 @@ func (m *Module) genCommon(f pgs.Field, name pgs.Name, flag commonFlag, wk pgs.W
 			name, name, m.getFieldTypeName(f),
 		)
 		_, _ = fmt.Fprintf(declBuilder, `
-				fs.%s(x.%s, utils.BuildFlagName(prefix, %q), %q, *(x.%s), %q)
+				fs.%s(x.%s, builder.Build(%q), %q, *(x.%s), %q)
 			`,
 			nativeWrapper, name, flagName, flag.GetShort(), name, flag.GetUsage())
 	} else {
 		_, _ = fmt.Fprintf(declBuilder, `
-				fs.%s(&x.%s, utils.BuildFlagName(prefix, %q), %q, x.%s, %q)
+				fs.%s(&x.%s, builder.Build(%q), %q, x.%s, %q)
 			`,
 			nativeWrapper, name, flagName, flag.GetShort(), name, flag.GetUsage())
 	}
@@ -159,12 +159,12 @@ func (m *Module) genCommonSlice(f pgs.Field, name pgs.Name, flag commonFlag, wk 
 
 	if wk != "" && wk != pgs.UnknownWKT {
 		_, _ = fmt.Fprintf(declBuilder, `
-				fs.VarP(types.%s(&x.%s), utils.BuildFlagName(prefix,%q), %q, %q)
+				fs.VarP(types.%s(&x.%s), builder.Build(%q), %q, %q)
 			`,
 			wrapper, name, flagName, flag.GetShort(), flag.GetUsage())
 	} else {
 		_, _ = fmt.Fprintf(declBuilder, `
-				fs.%s(&x.%s, utils.BuildFlagName(prefix, %q), %q, x.%s, %q)
+				fs.%s(&x.%s, builder.Build(%q), %q, x.%s, %q)
 			`,
 			nativeWrapper, name, flagName, flag.GetShort(), name, flag.GetUsage())
 	}

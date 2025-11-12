@@ -22,10 +22,12 @@ var (
 	_ = (*timestamppb.Timestamp)(nil)
 )
 
-func (x *SimpleMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
-	fs.StringVarP(&x.Name, utils.BuildFlagName(prefix, "name"), "", x.Name, "Name parameter")
+func (x *SimpleMessage) AddFlags(fs *pflag.FlagSet, opts ...flags.Option) {
+	builder := flags.NewNameBuilder(opts...)
+	_ = builder
+	fs.StringVarP(&x.Name, builder.Build("name"), "", x.Name, "Name parameter")
 
-	fs.VarP(types.TimestampSlice(&x.CreatedAt, []string{"RFC3339", "ISO8601"}), utils.BuildFlagName(prefix, "created-at"), "", "Creation timestamp")
+	fs.VarP(types.TimestampSlice(&x.CreatedAt, []string{"RFC3339", "ISO8601"}), builder.Build("created-at"), "", "Creation timestamp")
 
 }
 

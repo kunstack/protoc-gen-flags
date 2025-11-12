@@ -20,14 +20,37 @@ import (
 	"github.com/spf13/pflag"
 )
 
-const DelimiterDot = "."
+// Delimiter constants are used for separating hierarchical flag names.
+// These provide common naming conventions for flag organization.
+const (
+	// DelimiterDot is the default delimiter used for separating hierarchical flag names.
+	// It is set to "." (dot) to enable dot-notation flag naming (e.g., "server.port").
+	DelimiterDot = "."
 
+	// DelimiterDash is a delimiter that uses hyphen/minus character for flag naming.
+	// Useful for kebab-case flag names (e.g., "server-port").
+	DelimiterDash = "-"
+
+	// DelimiterUnderscore is a delimiter that uses underscore character for flag naming.
+	// Useful for snake_case flag names (e.g., "server_port").
+	DelimiterUnderscore = "_"
+
+	// DelimiterColon is a delimiter that uses colon character for flag naming.
+	// Useful for namespace-style flag names (e.g., "server:port").
+	DelimiterColon = ":"
+)
+
+// Options holds configuration for flag name generation and formatting.
+// It contains settings for prefix handling, delimiter usage, and custom name transformations.
 type Options struct {
-	Prefix    []string
-	Delimiter string
-	Renamer   func(string) string
+	Prefix    []string            // Prefix segments to prepend to flag names for hierarchical organization
+	Delimiter string              // Separator used between name components (default: ".")
+	Renamer   func(string) string // Custom function to transform flag names after prefix application
 }
 
+// Option is a functional option pattern type that modifies Options instances.
+// Functions of this type can be passed to configuration functions to customize
+// flag generation behavior.
 type Option func(*Options)
 
 // This package provides protobuf extensions for generating AddFlags methods
@@ -50,21 +73,43 @@ type Defaulter interface {
 //   - prefix: Optional prefix strings that will be prepended to flag names
 //     for hierarchical flag organization (e.g., "server", "database")
 type Flagger interface {
-	AddFlags(fs *pflag.FlagSet, prefix ...string)
+	AddFlags(fs *pflag.FlagSet, opts ...Option)
 }
 
+// WithDelimiter returns an Option that sets the delimiter used for separating
+// hierarchical flag name components. The default delimiter is "." (dot).
+//
+// Example:
+//
+//	WithDelimiter("-") would create flags like "server-port" instead of "server.port"
 func WithDelimiter(delimiter string) Option {
 	return func(o *Options) {
 		o.Delimiter = delimiter
 	}
 }
 
+// WithRenamer returns an Option that sets a custom name transformation function.
+// This function is applied to flag names after prefixes are applied but before
+// the flag is registered. Common use cases include snake_case conversion,
+// kebab-case conversion, or adding namespace prefixes.
+//
+// Example:
+//
+//	WithRenamer(strings.ToLower) would convert all flag names to lowercase
 func WithRenamer(renamer func(name string) string) Option {
 	return func(o *Options) {
 		o.Renamer = renamer
 	}
 }
 
+// WithPrefix returns an Option that adds prefix segments to flag names.
+// Prefixes are useful for organizing flags hierarchically, such as by service
+// or module name. Leading and trailing dots are automatically trimmed from
+// each prefix segment to ensure consistent formatting.
+//
+// Example:
+//
+//	WithPrefix("server", "database") with field "port" creates "server.database.port"
 func WithPrefix(prefix ...string) Option {
 	var nonEmpty []string
 	for _, part := range prefix {
@@ -79,14 +124,42 @@ func WithPrefix(prefix ...string) Option {
 	}
 }
 
+// NameBuilder constructs full flag names by combining prefixes, base names,
+// and applying custom transformations. It encapsulates the naming logic and
+// formatting rules for generating consistent flag identifiers.
 type NameBuilder struct {
 	options *Options
 }
 
+// Build generates the complete flag name by joining the configured prefix
+// with the provided name using the configured delimiter, then applying
+// the custom renamer function if one is set.
+//
+// Parameters:
+//   - name: The base flag name to build upon
+//
+// Returns:
+//
+//	The fully qualified flag name including prefixes and transformations
 func (n NameBuilder) Build(name string) string {
-	return n.options.Renamer(strings.Join(append(n.options.Prefix, name), "."))
+	renamer := func(name string) string {
+		if n.options.Renamer == nil {
+			return name
+		}
+		return n.options.Renamer(name)
+	}
+	return renamer(strings.Join(append(n.options.Prefix, name), n.options.Delimiter))
 }
 
+// NewNameBuilder creates a new NameBuilder with the provided configuration options.
+// If no options are provided, it uses sensible defaults (dot delimiter, identity renamer).
+//
+// Parameters:
+//   - opts: Optional configuration functions to customize naming behavior
+//
+// Returns:
+//
+//	A configured NameBuilder instance ready to generate flag names
 func NewNameBuilder(opts ...Option) NameBuilder {
 	options := &Options{
 		Delimiter: DelimiterDot,

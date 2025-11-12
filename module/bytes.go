@@ -56,7 +56,7 @@ func (m *Module) validateBytesDefault(data []byte, encoding flags.BytesEncodingT
 // checkBytes validates the configuration of a bytes flag field.
 // It performs comprehensive validation including encoding type, default values,
 // and required fields for bytes-type protobuf fields.
-func (m *Module) checkBytes(ft FieldType, r *flags.BytesFlag) {
+func (m *Module) checkBytes(ft pgs.FieldType, r *flags.BytesFlag) {
 	// Perform common validation first (name, type compatibility, etc.)
 	m.checkCommon(ft, r, pgs.BytesT, pgs.BytesValueWKT, false)
 
@@ -149,13 +149,13 @@ func (m *Module) genBytes(f pgs.Field, name pgs.Name, flag *flags.BytesFlag, wk 
 			name, name, m.getFieldTypeName(f),
 		)
 		_, _ = fmt.Fprintf(declBuilder, `
-			fs.VarP(types.%s(x.%s), utils.BuildFlagName(prefix,%q), %q, %q)
+			fs.VarP(types.%s(x.%s), builder.Build(%q), %q, %q)
 		`,
 			wrapper, name, flag.GetName(), flag.GetShort(), flag.GetUsage(),
 		)
 	} else {
 		_, _ = fmt.Fprintf(declBuilder, `
-				fs.%s(&x.%s, utils.BuildFlagName(prefix,%q), %q, x.%s, %q)
+				fs.%s(&x.%s, builder.Build(%q), %q, x.%s, %q)
 			`,
 			nativeWrapper, name, flag.GetName(), flag.GetShort(), name, flag.GetUsage())
 	}
@@ -189,7 +189,7 @@ func (m *Module) genBytesSlice(name pgs.Name, flag *flags.RepeatedBytesFlag) str
 	}
 
 	_, _ = fmt.Fprintf(declBuilder, `
-			fs.VarP(types.%s(&x.%s), utils.BuildFlagName(prefix,%q), %q, %q)
+			fs.VarP(types.%s(&x.%s), builder.Build(%q), %q, %q)
 		`,
 		wrapper, name, flag.GetName(), flag.GetShort(), flag.GetUsage())
 

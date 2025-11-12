@@ -2,7 +2,7 @@ syntax = "proto3";
 // buf:lint:ignore PACKAGE_VERSION_SUFFIX
 package tests.utils;
 
-import "flags/flags.proto";
+import "flags/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/kunstack/protoc-gen-flags/tests/utils";

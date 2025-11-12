@@ -25,6 +25,7 @@ func main() {
 	var ver = uint64(
 		pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL,
 	)
+
 	pgs.Init(
 		pgs.DebugEnv("DEBUG"),
 		pgs.SupportedFeatures(&ver),

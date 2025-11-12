@@ -2145,7 +2145,7 @@ var File_tests_test_proto protoreflect.FileDescriptor
 
 const file_tests_test_proto_rawDesc = "" +
 	"\n" +
-	"\x10tests/test.proto\x12\x05tests\x1a\x11flags/flags.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17tests/utils/hello.proto\x1a\x1dtests/utils/utils/hello.proto\x1a\x17tests/types/types.proto\x1a!tests/wrapperspb/wrapperspb.proto\"\xd0'\n" +
+	"\x10tests/test.proto\x12\x05tests\x1a\x17flags/annotations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17tests/utils/hello.proto\x1a\x1dtests/utils/utils/hello.proto\x1a\x17tests/types/types.proto\x1a!tests/wrapperspb/wrapperspb.proto\"\xd0'\n" +
 	"\x0eTestForMessage\x12P\n" +
 	"\x0ecustom_wrapper\x18\n" +
 	" \x01(\v2\x1f.tests.wrapperspb.CustomWrapperB\b\x9aI\x05\xaa\x01\x02\b\x01R\rcustomWrapper\x12]\n" +
@@ -2438,7 +2438,7 @@ const file_tests_test_proto_rawDesc = "" +
 	"raw_chunks\x18\x05 \x03(\fB>\x9aI;\x8a\x018z6\x12\n" +
 	"raw-chunks\x1a\x02rc\"$Raw data chunks (defaults to base64)R\trawChunks\x12u\n" +
 	"\tmixed_hex\x18\x06 \x03(\fBX\x9aIU\x8a\x01RzP\x12\tmixed-hex\x1a\x02mh\"\x13Mixed case hex data@\x02J\faBc123DeF456J\f789AbCdE0123J\ffFeEdDcCbBaAR\bmixedHex\x12\x83\x01\n" +
-	"\vspecial_b64\x18\a \x03(\fBb\x9aI_\x8a\x01\\zZ\x12\vspecial-b64\x1a\x04sb64\"\x1dSpecial character base64 data@\x01J\fw6TDtsO8w4Q=J\b8J+YgA==J\fw4PDoMOgw6E=R\n" +
+	"\vspecial_b64\x18\a \x03(\fBb\x9aI_\x8a\x01\\zZ\x12\vspecial_b64\x1a\x04sb64\"\x1dSpecial character base64 data@\x01J\fw6TDtsO8w4Q=J\b8J+YgA==J\fw4PDoMOgw6E=R\n" +
 	"specialB64:\x03\xa8I\x01*~\n" +
 	"\tTestEnum1\x12\x19\n" +
 	"\x15TEST_ENUM_UNSPECIFIED\x10\x00\x12\x14\n" +

@@ -82,7 +82,7 @@ var File_tests_utils_hello_proto protoreflect.FileDescriptor
 
 const file_tests_utils_hello_proto_rawDesc = "" +
 	"\n" +
-	"\x17tests/utils/hello.proto\x12\vtests.utils\x1a\x11flags/flags.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcf\x01\n" +
+	"\x17tests/utils/hello.proto\x12\vtests.utils\x1a\x17flags/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcf\x01\n" +
 	"\rSimpleMessage\x12/\n" +
 	"\x04name\x18\x01 \x01(\tB\x1b\x9aI\x18r\x16\x12\x04name\"\x0eName parameterR\x04name\x12\x8c\x01\n" +
 	"\n" +

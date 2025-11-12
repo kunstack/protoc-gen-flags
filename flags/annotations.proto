@@ -14,10 +14,23 @@
 
 // Package flags provides protobuf extensions for generating command-line flag bindings.
 //
-// This package defines extensions that can be used in protobuf files to configure
-// how AddFlags methods are generated for messages and fields. The generated code
+// This package defines custom protobuf extensions that can be used to configure
+// how AddFlags methods are generated for protobuf messages and fields. The generated code
 // integrates with the spf13/pflag library to provide POSIX/GNU-style command-line
 // flag parsing.
+//
+// # Usage Example
+//
+// To use these extensions in your protobuf files, import this annotations file and
+// apply the options to your messages and fields:
+//
+//   syntax = "proto3";
+//   import "flags/annotations.proto";
+//
+//   message MyConfig {
+//     string name = 1 [(flags.value).string = { name: "name" short: "n" usage: "Name value" }];
+//     int32 port = 2 [(flags.value).int32 = { default: 8080 }];
+//   }
 //
 // # Message Level Options
 //
@@ -106,7 +119,6 @@ message BytesFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -141,7 +153,6 @@ message PrimitiveFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -166,7 +177,6 @@ message FloatFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -194,7 +204,6 @@ message DoubleFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -222,7 +231,6 @@ message Int32Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -250,7 +258,6 @@ message Int64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -278,7 +285,6 @@ message Uint32Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -306,7 +312,6 @@ message Uint64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -334,7 +339,6 @@ message Sint32Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -362,7 +366,6 @@ message Sint64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -390,7 +393,6 @@ message Fixed32Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -418,7 +420,6 @@ message Fixed64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -446,7 +447,7 @@ message Sfixed32Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -474,7 +475,7 @@ message Sfixed64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -502,7 +503,7 @@ message BoolFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -530,7 +531,7 @@ message StringFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -558,7 +559,7 @@ message RepeatedFloatFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -586,7 +587,7 @@ message RepeatedDoubleFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -614,7 +615,7 @@ message RepeatedInt32Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -642,7 +643,7 @@ message RepeatedInt64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -670,7 +671,6 @@ message RepeatedUint32Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -698,7 +698,7 @@ message RepeatedUint64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -726,7 +726,7 @@ message RepeatedSint32Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -754,7 +754,7 @@ message RepeatedSint64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -782,7 +782,7 @@ message RepeatedFixed32Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -810,7 +810,7 @@ message RepeatedFixed64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -838,7 +838,6 @@ message RepeatedSfixed32Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -866,7 +865,7 @@ message RepeatedSfixed64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -894,7 +893,7 @@ message RepeatedBoolFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -922,7 +921,7 @@ message RepeatedStringFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -950,7 +949,7 @@ message RepeatedBytesFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -982,7 +981,7 @@ message RepeatedEnumFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -1010,7 +1009,7 @@ message RepeatedDurationFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -1038,7 +1037,7 @@ message RepeatedTimestampFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -1071,7 +1070,7 @@ message EnumFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -1114,7 +1113,7 @@ message MapFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -1146,7 +1145,7 @@ message DurationFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
+  
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -1177,7 +1176,6 @@ message TimestampFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  // converted to hyphenated format (e.g., hello_world -> hello-world).
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -1226,9 +1224,6 @@ message MessageFlag {
   //   - name "server" would generate "--server.host", "--server.port"
   //   - name "database" would generate "--database.url", "--database.timeout"
   //   - empty name would generate "--host", "--port" (field names directly)
-  //
-  // The name is automatically converted to kebab-case format (underscores become hyphens)
-  // and separated from the flag name with a dot.
   string name = 2;
 }
 

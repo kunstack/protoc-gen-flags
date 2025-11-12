@@ -8,7 +8,7 @@ import (
 	pgs "github.com/lyft/protoc-gen-star/v2"
 )
 
-func (m *Module) checkEnum(ft FieldType, flag *flags.EnumFlag, pt pgs.ProtoType, wrapper pgs.WellKnownType) {
+func (m *Module) checkEnum(ft pgs.FieldType, flag *flags.EnumFlag, pt pgs.ProtoType, wrapper pgs.WellKnownType) {
 	m.checkCommon(ft, flag, pt, wrapper, false)
 
 	typ, ok := ft.(interface {
@@ -75,13 +75,13 @@ func (m *Module) genEnum(f pgs.Field, name pgs.Name, flag *flags.EnumFlag, wk pg
 			name, name, m.getFieldTypeName(f),
 		)
 		_, _ = fmt.Fprintf(declBuilder, `
-			fs.VarP(types.Enum(x.%s), utils.BuildFlagName(prefix, %q), %q, %q)
+			fs.VarP(types.Enum(x.%s), builder.Build(%q), %q, %q)
 		`,
 			name, flag.Name, flag.GetShort(), flag.GetUsage(),
 		)
 	} else {
 		_, _ = fmt.Fprintf(declBuilder, `
-			fs.VarP(types.Enum(&x.%s), utils.BuildFlagName(prefix, %q), %q, %q)
+			fs.VarP(types.Enum(&x.%s), builder.Build(%q), %q, %q)
 		`,
 			name, flag.Name, flag.GetShort(), flag.GetUsage(),
 		)
@@ -104,7 +104,7 @@ func (m *Module) genEnumSlice(f pgs.Field, name pgs.Name, flag *flags.RepeatedEn
 	}
 
 	_, _ = fmt.Fprintf(declBuilder, `
-			fs.VarP(types.EnumSlice(&x.%s), utils.BuildFlagName(prefix, %q), %q, %q)
+			fs.VarP(types.EnumSlice(&x.%s), builder.Build(%q), %q, %q)
 		`,
 		name, flag.Name, flag.GetShort(), flag.GetUsage(),
 	)

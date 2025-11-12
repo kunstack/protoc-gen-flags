@@ -53,7 +53,7 @@ func (m *Module) genMessage(f pgs.Field, name pgs.Name, flag *flags.MessageFlag)
 	}
 	prefix := flag.GetName()
 	if prefix == "" {
-		// use field name instead, convert to kebab-case
+		// use field name instead
 		prefix = strings.ToLower(f.Name().String())
 	}
 	if flag.GetNested() {
@@ -67,7 +67,7 @@ func (m *Module) genMessage(f pgs.Field, name pgs.Name, flag *flags.MessageFlag)
 	}
 	_, _ = fmt.Fprintf(declBuilder, `
 			if v, ok := interface{}(x.%s).(flags.Flagger); ok {
-				v.AddFlags(fs,%q )
+				v.AddFlags(fs, append(opts, flags.WithPrefix(%q))...)
 			}
         `,
 		name, prefix,

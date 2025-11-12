@@ -34,7 +34,7 @@ func (m *Module) parseTimestamp(t string, layouts []string) (*timestamppb.Timest
 	return nil, fmt.Errorf("timestamp '%s' could not be parsed with any of the provided formats: %v", t, layouts)
 }
 
-func (m *Module) checkTimestamp(ft FieldType, r *flags.TimestampFlag) {
+func (m *Module) checkTimestamp(ft pgs.FieldType, r *flags.TimestampFlag) {
 	m.checkCommon(ft, r, pgs.MessageT, pgs.TimestampWKT, false)
 	if len(r.Formats) == 0 {
 		m.Failf("at least one format must be specified for timestamp flag")
@@ -188,7 +188,7 @@ func (m *Module) genTimestamp(f pgs.Field, name pgs.Name, flag *flags.TimestampF
 	)
 
 	_, _ = fmt.Fprintf(declBuilder, `
-		fs.VarP(types.Timestamp(x.%s, %s), utils.BuildFlagName(prefix,%q), %q, %q)
+		fs.VarP(types.Timestamp(x.%s, %s), builder.Build(%q), %q, %q)
 	`,
 		name, formatsBuilder.String(), flag.GetName(), flag.GetShort(), flag.GetUsage(),
 	)
@@ -223,7 +223,7 @@ func (m *Module) genTimestampSlice(f pgs.Field, name pgs.Name, flag *flags.Repea
 	)
 
 	_, _ = fmt.Fprintf(declBuilder, `
-		fs.VarP(types.TimestampSlice(&x.%s, %s), utils.BuildFlagName(prefix,%q), %q, %q)
+		fs.VarP(types.TimestampSlice(&x.%s, %s), builder.Build(%q), %q, %q)
 	`,
 		name, formatsBuilder.String(), flag.GetName(), flag.GetShort(), flag.GetUsage(),
 	)

@@ -22,14 +22,16 @@ var (
 	_ = (*timestamppb.Timestamp)(nil)
 )
 
-func (x *NestedMessage) AddFlags(fs *pflag.FlagSet, prefix ...string) {
-	fs.StringVarP(&x.NestedField, utils.BuildFlagName(prefix, "nested-field"), "", x.NestedField, "Nested field parameter")
+func (x *NestedMessage) AddFlags(fs *pflag.FlagSet, opts ...flags.Option) {
+	builder := flags.NewNameBuilder(opts...)
+	_ = builder
+	fs.StringVarP(&x.NestedField, builder.Build("nested-field"), "", x.NestedField, "Nested field parameter")
 
 	if x.NestedTimestamp == nil {
 		x.NestedTimestamp = new(timestamppb.Timestamp)
 	}
 
-	fs.VarP(types.Timestamp(x.NestedTimestamp, []string{"RFC3339", "ISO8601"}), utils.BuildFlagName(prefix, "nested-timestamp"), "", "Nested timestamp field")
+	fs.VarP(types.Timestamp(x.NestedTimestamp, []string{"RFC3339", "ISO8601"}), builder.Build("nested-timestamp"), "", "Nested timestamp field")
 
 }
 

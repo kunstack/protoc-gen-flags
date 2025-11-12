@@ -82,7 +82,7 @@ var File_tests_utils_utils_hello_proto protoreflect.FileDescriptor
 
 const file_tests_utils_utils_hello_proto_rawDesc = "" +
 	"\n" +
-	"\x1dtests/utils/utils/hello.proto\x12\x11tests.utils.utils\x1a\x11flags/flags.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x81\x02\n" +
+	"\x1dtests/utils/utils/hello.proto\x12\x11tests.utils.utils\x1a\x17flags/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x81\x02\n" +
 	"\rNestedMessage\x12N\n" +
 	"\fnested_field\x18\x01 \x01(\tB+\x9aI(r&\x12\fnested-field\"\x16Nested field parameterR\vnestedField\x12\x9f\x01\n" +
 	"\x10nested_timestamp\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampBX\x9aIU\xa2\x01R\x12\x10nested-timestamp\"\x16Nested timestamp fieldB\aRFC3339B\aISO8601J\x142024-01-01T00:00:00ZR\x0fnestedTimestampB8Z6github.com/kunstack/protoc-gen-flags/tests/utils/utilsb\x06proto3"

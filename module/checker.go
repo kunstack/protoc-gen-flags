@@ -52,13 +52,7 @@ func (m *Module) checkFlagName(msg pgs.Message) {
 	flagNames := make(map[string]string) // flag name -> field name
 
 	for _, f := range msg.Fields() {
-		var field flags.FieldFlags
-		ok, err := f.Extension(flags.E_Value, &field)
-		if err != nil || !ok {
-			continue // Skip fields without flag configuration
-		}
-
-		flagName := m.getFlagName(&field)
+		flagName := m.getFlagName(f)
 		if flagName == "" {
 			continue // Skip if no flag name
 		}
@@ -72,53 +66,58 @@ func (m *Module) checkFlagName(msg pgs.Message) {
 	}
 }
 
-func (m *Module) getFlagName(field *flags.FieldFlags) string {
-	if field == nil {
+// getFlagName extracts the flag name from a protobuf field's flag configuration.
+// It returns the custom flag name if specified, otherwise returns the field name.
+// Returns empty string if the field is disabled or has no flag configuration.
+func (m *Module) getFlagName(f pgs.Field) string {
+	var field flags.FieldFlags
+	ok, err := f.Extension(flags.E_Value, &field)
+	if err != nil || !ok {
 		return ""
 	}
 
 	// Extract flag name from the specific flag type
 	switch r := field.Type.(type) {
 	case *flags.FieldFlags_Float:
-		return m.getNameFromCommonFlag(r.Float)
+		return m.getNameFromCommonFlag(r.Float, f.Name().String())
 	case *flags.FieldFlags_Double:
-		return m.getNameFromCommonFlag(r.Double)
+		return m.getNameFromCommonFlag(r.Double, f.Name().String())
 	case *flags.FieldFlags_Int32:
-		return m.getNameFromCommonFlag(r.Int32)
+		return m.getNameFromCommonFlag(r.Int32, f.Name().String())
 	case *flags.FieldFlags_Int64:
-		return m.getNameFromCommonFlag(r.Int64)
+		return m.getNameFromCommonFlag(r.Int64, f.Name().String())
 	case *flags.FieldFlags_Uint32:
-		return m.getNameFromCommonFlag(r.Uint32)
+		return m.getNameFromCommonFlag(r.Uint32, f.Name().String())
 	case *flags.FieldFlags_Uint64:
-		return m.getNameFromCommonFlag(r.Uint64)
+		return m.getNameFromCommonFlag(r.Uint64, f.Name().String())
 	case *flags.FieldFlags_Sint32:
-		return m.getNameFromCommonFlag(r.Sint32)
+		return m.getNameFromCommonFlag(r.Sint32, f.Name().String())
 	case *flags.FieldFlags_Sint64:
-		return m.getNameFromCommonFlag(r.Sint64)
+		return m.getNameFromCommonFlag(r.Sint64, f.Name().String())
 	case *flags.FieldFlags_Fixed32:
-		return m.getNameFromCommonFlag(r.Fixed32)
+		return m.getNameFromCommonFlag(r.Fixed32, f.Name().String())
 	case *flags.FieldFlags_Fixed64:
-		return m.getNameFromCommonFlag(r.Fixed64)
+		return m.getNameFromCommonFlag(r.Fixed64, f.Name().String())
 	case *flags.FieldFlags_Sfixed32:
-		return m.getNameFromCommonFlag(r.Sfixed32)
+		return m.getNameFromCommonFlag(r.Sfixed32, f.Name().String())
 	case *flags.FieldFlags_Sfixed64:
-		return m.getNameFromCommonFlag(r.Sfixed64)
+		return m.getNameFromCommonFlag(r.Sfixed64, f.Name().String())
 	case *flags.FieldFlags_Bool:
-		return m.getNameFromCommonFlag(r.Bool)
+		return m.getNameFromCommonFlag(r.Bool, f.Name().String())
 	case *flags.FieldFlags_String_:
-		return m.getNameFromCommonFlag(r.String_)
+		return m.getNameFromCommonFlag(r.String_, f.Name().String())
 	case *flags.FieldFlags_Bytes:
-		return m.getNameFromCommonFlag(r.Bytes)
+		return m.getNameFromCommonFlag(r.Bytes, f.Name().String())
 	case *flags.FieldFlags_Enum:
-		return m.getNameFromCommonFlag(r.Enum)
+		return m.getNameFromCommonFlag(r.Enum, f.Name().String())
 	case *flags.FieldFlags_Duration:
-		return m.getNameFromCommonFlag(r.Duration)
+		return m.getNameFromCommonFlag(r.Duration, f.Name().String())
 	case *flags.FieldFlags_Timestamp:
-		return m.getNameFromCommonFlag(r.Timestamp)
+		return m.getNameFromCommonFlag(r.Timestamp, f.Name().String())
 	case *flags.FieldFlags_Repeated:
-		return m.getNameFromRepeatedFlag(r.Repeated)
+		return m.getNameFromRepeatedFlag(r.Repeated, f.Name().String())
 	case *flags.FieldFlags_Map:
-		return m.getNameFromCommonFlag(r.Map)
+		return m.getNameFromCommonFlag(r.Map, f.Name().String())
 	case *flags.FieldFlags_Message:
 		return "" // Skip Message types
 	default:
@@ -126,7 +125,10 @@ func (m *Module) getFlagName(field *flags.FieldFlags) string {
 	}
 }
 
-func (m *Module) getNameFromCommonFlag(flag commonFlag) string {
+// getNameFromCommonFlag extracts the flag name from a common flag configuration.
+// Returns the custom flag name if specified, otherwise returns the fallback name.
+// Returns empty string if the flag is disabled or nil.
+func (m *Module) getNameFromCommonFlag(flag commonFlag, fallbackName string) string {
 	if flag == nil || flag.GetDisabled() {
 		return ""
 	}
@@ -135,53 +137,55 @@ func (m *Module) getNameFromCommonFlag(flag commonFlag) string {
 		return flag.GetName()
 	}
 
-	// If no custom name is provided, use the field name converted to kebab-case
-	// This matches the default behavior in the flag generation
-	return ""
+	// If no custom name is provided, use the field name as fallback
+	return fallbackName
 }
 
-func (m *Module) getNameFromRepeatedFlag(flag *flags.RepeatedFlags) string {
+// getNameFromRepeatedFlag extracts the flag name from a repeated flag configuration.
+// Returns the custom flag name if specified, otherwise returns the fallback name.
+// Returns empty string if the flag is disabled or nil.
+func (m *Module) getNameFromRepeatedFlag(flag *flags.RepeatedFlags, fallbackName string) string {
 	if flag == nil {
 		return ""
 	}
 
 	switch r := flag.Type.(type) {
 	case *flags.RepeatedFlags_Float:
-		return m.getNameFromCommonFlag(r.Float)
+		return m.getNameFromCommonFlag(r.Float, fallbackName)
 	case *flags.RepeatedFlags_Double:
-		return m.getNameFromCommonFlag(r.Double)
+		return m.getNameFromCommonFlag(r.Double, fallbackName)
 	case *flags.RepeatedFlags_Int32:
-		return m.getNameFromCommonFlag(r.Int32)
+		return m.getNameFromCommonFlag(r.Int32, fallbackName)
 	case *flags.RepeatedFlags_Int64:
-		return m.getNameFromCommonFlag(r.Int64)
+		return m.getNameFromCommonFlag(r.Int64, fallbackName)
 	case *flags.RepeatedFlags_Uint32:
-		return m.getNameFromCommonFlag(r.Uint32)
+		return m.getNameFromCommonFlag(r.Uint32, fallbackName)
 	case *flags.RepeatedFlags_Uint64:
-		return m.getNameFromCommonFlag(r.Uint64)
+		return m.getNameFromCommonFlag(r.Uint64, fallbackName)
 	case *flags.RepeatedFlags_Sint32:
-		return m.getNameFromCommonFlag(r.Sint32)
+		return m.getNameFromCommonFlag(r.Sint32, fallbackName)
 	case *flags.RepeatedFlags_Sint64:
-		return m.getNameFromCommonFlag(r.Sint64)
+		return m.getNameFromCommonFlag(r.Sint64, fallbackName)
 	case *flags.RepeatedFlags_Fixed32:
-		return m.getNameFromCommonFlag(r.Fixed32)
+		return m.getNameFromCommonFlag(r.Fixed32, fallbackName)
 	case *flags.RepeatedFlags_Fixed64:
-		return m.getNameFromCommonFlag(r.Fixed64)
+		return m.getNameFromCommonFlag(r.Fixed64, fallbackName)
 	case *flags.RepeatedFlags_Sfixed32:
-		return m.getNameFromCommonFlag(r.Sfixed32)
+		return m.getNameFromCommonFlag(r.Sfixed32, fallbackName)
 	case *flags.RepeatedFlags_Sfixed64:
-		return m.getNameFromCommonFlag(r.Sfixed64)
+		return m.getNameFromCommonFlag(r.Sfixed64, fallbackName)
 	case *flags.RepeatedFlags_Bool:
-		return m.getNameFromCommonFlag(r.Bool)
+		return m.getNameFromCommonFlag(r.Bool, fallbackName)
 	case *flags.RepeatedFlags_String_:
-		return m.getNameFromCommonFlag(r.String_)
+		return m.getNameFromCommonFlag(r.String_, fallbackName)
 	case *flags.RepeatedFlags_Bytes:
-		return m.getNameFromCommonFlag(r.Bytes)
+		return m.getNameFromCommonFlag(r.Bytes, fallbackName)
 	case *flags.RepeatedFlags_Enum:
-		return m.getNameFromCommonFlag(r.Enum)
+		return m.getNameFromCommonFlag(r.Enum, fallbackName)
 	case *flags.RepeatedFlags_Duration:
-		return m.getNameFromCommonFlag(r.Duration)
+		return m.getNameFromCommonFlag(r.Duration, fallbackName)
 	case *flags.RepeatedFlags_Timestamp:
-		return m.getNameFromCommonFlag(r.Timestamp)
+		return m.getNameFromCommonFlag(r.Timestamp, fallbackName)
 	default:
 		return ""
 	}

@@ -134,7 +134,7 @@ func (m *Module) genMap(f pgs.Field, name pgs.Name, flag *flags.MapFlag) string 
 	switch mapFormat {
 	case flags.MapFormatType_MAP_FORMAT_TYPE_STRING_TO_STRING:
 		_, _ = fmt.Fprintf(declBuilder, `
-				fs.StringToStringVarP(&x.%s, utils.BuildFlagName(prefix, %q), %q, x.%s, %q)
+				fs.StringToStringVarP(&x.%s, builder.Build(%q), %q, x.%s, %q)
 			`,
 			name, flag.GetName(), flag.GetShort(), name, flag.GetUsage(),
 		)
@@ -146,28 +146,28 @@ func (m *Module) genMap(f pgs.Field, name pgs.Name, flag *flags.MapFlag) string 
 		switch valueType.ProtoType() {
 		case pgs.Int64T, pgs.SInt64, pgs.SFixed64:
 			_, _ = fmt.Fprintf(declBuilder, `
-					fs.StringToInt64VarP(&x.%s, utils.BuildFlagName(prefix, %q), %q, x.%s, %q)
+					fs.StringToInt64VarP(&x.%s, builder.Build(%q), %q, x.%s, %q)
 				`,
 				name, flag.GetName(), flag.GetShort(), name, flag.GetUsage(),
 			)
 
 		case pgs.Int32T, pgs.SInt32, pgs.SFixed32:
 			_, _ = fmt.Fprintf(declBuilder, `
-					fs.VarP(types.StringToInt32(&x.%s), utils.BuildFlagName(prefix, %q), %q, %q)
+					fs.VarP(types.StringToInt32(&x.%s), builder.Build(%q), %q, %q)
 				`,
 				name, flag.GetName(), flag.GetShort(), flag.GetUsage(),
 			)
 
 		case pgs.UInt32T, pgs.Fixed32T:
 			_, _ = fmt.Fprintf(declBuilder, `
-					fs.VarP(types.StringToUint32(&x.%s), utils.BuildFlagName(prefix, %q), %q, %q)
+					fs.VarP(types.StringToUint32(&x.%s), builder.Build(%q), %q, %q)
 				`,
 				name, flag.GetName(), flag.GetShort(), flag.GetUsage(),
 			)
 
 		case pgs.UInt64T, pgs.Fixed64T:
 			_, _ = fmt.Fprintf(declBuilder, `
-					fs.VarP(types.StringToUint64(&x.%s), utils.BuildFlagName(prefix, %q), %q, %q)
+					fs.VarP(types.StringToUint64(&x.%s), builder.Build(%q), %q, %q)
 				`,
 				name, flag.GetName(), flag.GetShort(), flag.GetUsage(),
 			)
@@ -180,7 +180,7 @@ func (m *Module) genMap(f pgs.Field, name pgs.Name, flag *flags.MapFlag) string 
 	case flags.MapFormatType_MAP_FORMAT_TYPE_JSON:
 		// For JSON format, use the existing JSON handling
 		_, _ = fmt.Fprintf(declBuilder, `
-				fs.VarP(types.JSON(&x.%s), utils.BuildFlagName(prefix, %q), %q, %q)
+				fs.VarP(types.JSON(&x.%s), builder.Build(%q), %q, %q)
 			`,
 			name, flag.GetName(), flag.GetShort(), flag.GetUsage(),
 		)

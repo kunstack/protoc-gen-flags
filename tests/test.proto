@@ -1,8 +1,7 @@
 syntax = "proto3";
-// buf:lint:ignore PACKAGE_VERSION_SUFFIX
 package tests;
 
-import "flags/flags.proto";
+import "flags/annotations.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
@@ -1149,7 +1148,7 @@ message RepeatedBytesTestMessage {
 
   // Test repeated bytes with special characters in base64
   repeated bytes special_b64 = 7 [(flags.value).repeated.bytes = {
-    name: "special-b64"
+    name: "special_b64"
     short: "sb64"
     usage: "Special character base64 data"
     encoding: BYTES_ENCODING_TYPE_BASE64

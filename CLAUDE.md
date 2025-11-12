@@ -14,7 +14,6 @@ When creating commits:
 - Use English for all commit messages, titles, and descriptions
 - Follow conventional commit format: `type(scope): description`
 - Common types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`
-- Keep the subject line under 72 characters
 - Use the imperative mood ("add feature" not "added feature")
 - Include detailed description in the commit body when necessary
 
