@@ -15,13 +15,27 @@
 package main
 
 import (
+	"flag"
+	"os"
+
 	"github.com/kunstack/protoc-gen-flags/module"
+	"github.com/kunstack/protoc-gen-flags/version"
 	pgs "github.com/lyft/protoc-gen-star/v2"
 	pgsgo "github.com/lyft/protoc-gen-star/v2/lang/go"
 	"google.golang.org/protobuf/types/pluginpb"
 )
 
 func main() {
+	// Parse command line flags
+	versionFlag := flag.Bool("version", false, "Print version information and exit")
+	flag.Parse()
+
+	// Handle --version flag
+	if *versionFlag {
+		version.Print()
+		os.Exit(0)
+	}
+
 	var ver = uint64(
 		pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL,
 	)

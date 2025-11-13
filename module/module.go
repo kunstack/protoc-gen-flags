@@ -158,7 +158,7 @@ import (
 
 var (
 	_ = pflag.NewFlagSet
-	_ = utils.BuildFlagName
+	_ = utils.MustDecodeBase64
     _ = types.Bool
     _ = flags.Flagger(nil)
 	_ = wrapperspb.String

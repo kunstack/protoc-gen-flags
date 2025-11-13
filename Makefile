@@ -11,9 +11,7 @@ COMMIT ?= $(shell git rev-parse --short HEAD)
 BUILD_DATE ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Build-time ldflags for version injection
-LDFLAGS = -X musecut.com/musecut/pkg/version.gitVersion=$(VERSION) \
-		  -X musecut.com/musecut/pkg/version.gitCommit=$(COMMIT) \
-		  -X musecut.com/musecut/pkg/version.buildDate=$(BUILD_DATE)
+LDFLAGS = -X musecut.com/musecut/pkg/version.gitVersion=$(VERSION)
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(GOBIN))
@@ -78,7 +76,7 @@ BUF_GEN_VERSION ?= v1.54.0
 CI_LINT_VERSION ?= v2.3.0
 
 ## Proto tool versions
-PROTOC_GEN_GO_VERSION ?= v1.36.6
+PROTOC_GEN_GO_VERSION ?= v1.33.0
 
 .PHONY: deps
 deps: ## Download all dependencies locally if necessary. if not installed, installation will proceed.
