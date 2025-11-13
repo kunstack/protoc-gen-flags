@@ -198,7 +198,7 @@ customFS := pflag.NewFlagSet("custom", pflag.ExitOnError)
 config.AddFlags(customFS)
 ```
 
-## 完整集成教程
+## 集成教程
 
 本节提供完整的分步教程，帮助您在自己的项目中集成 protoc-gen-flags。
 
@@ -220,6 +220,9 @@ go get github.com/spf13/pflag
 
 # 安装 protobuf 运行时
 go get google.golang.org/protobuf
+
+# 安装 protoc-gen-flags 运行时库
+go get github.com/kunstack/protoc-gen-flags/flags
 ```
 
 创建项目结构：
@@ -236,11 +239,40 @@ myapp/
 
 您需要将 protoc-gen-flags 的注解文件添加到您的项目中。有两种方式：
 
-#### 方式 1：使用 Git Submodule（推荐）
+#### 方式 1：使用 Buf Schema Registry（推荐）
+
+在您的 `buf.yaml` 中添加依赖：
+
+```yaml
+version: v2
+deps:
+  - buf.build/kunstack/flags
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE
+```
+
+然后在 `buf.gen.yaml` 中配置代码生成：
+
+```yaml
+version: v2
+plugins:
+  - remote: buf.build/protocolbuffers/go
+    out: .
+    opt: paths=source_relative
+  - local: protoc-gen-flags
+    out: .
+    opt: paths=source_relative
+```
+
+运行 buf 命令更新依赖并生成代码：
 
 ```bash
-# 在项目根目录下
-git submodule add https://github.com/kunstack/protoc-gen-flags.git third_party/protoc-gen-flags
+buf mod update
+buf generate
 ```
 
 #### 方式 2：直接复制文件
@@ -307,7 +339,19 @@ message ServerConfig {
 
 ### 步骤 4：生成代码
 
-#### 使用 protoc 命令
+根据您在步骤2中选择的方式，使用相应的命令生成代码：
+
+#### 使用 buf（如果选择了方式1）
+
+如果您在步骤2中选择了 Buf Schema Registry 方式，代码已经在运行 `buf generate` 时生成。
+
+生成的文件：
+- `proto/config.pb.go` - 标准的 protobuf Go 代码
+- `proto/config.pb.flags.go` - 标志绑定代码
+
+#### 使用 protoc（如果选择了方式2）
+
+如果您在步骤2中选择了直接复制文件方式，使用 protoc 命令生成：
 
 ```bash
 protoc \
@@ -323,41 +367,6 @@ protoc \
 这将生成两个文件：
 - `proto/config.pb.go` - 标准的 protobuf Go 代码
 - `proto/config.pb.flags.go` - 标志绑定代码
-
-#### 使用 buf（推荐）
-
-创建 `buf.yaml`：
-
-```yaml
-version: v1
-breaking:
-  use:
-    - FILE
-lint:
-  use:
-    - DEFAULT
-```
-
-创建 `buf.gen.yaml`：
-
-```yaml
-version: v1
-plugins:
-  - name: go
-    out: .
-    opt:
-      - paths=source_relative
-  - name: flags
-    out: .
-    opt:
-      - paths=source_relative
-```
-
-运行生成：
-
-```bash
-buf generate proto
-```
 
 ### 步骤 5：在应用中使用
 
@@ -441,16 +450,57 @@ go build -o myapp
 
 ### 完整项目示例
 
-这里是一个完整的真实项目示例结构：
+根据您选择的方式，项目结构略有不同：
+
+#### 使用 Buf Schema Registry 的项目结构
 
 ```bash
 myapp/
 ├── go.mod
 ├── go.sum
 ├── main.go
-├── buf.yaml
-├── buf.gen.yaml
-├── Makefile          # 可选：自动化构建
+├── buf.yaml              # Buf 配置
+├── buf.gen.yaml          # 代码生成配置
+├── buf.lock              # 依赖锁文件（生成）
+├── Makefile              # 可选：自动化构建
+└── proto/
+    ├── config.proto
+    ├── config.pb.go          # 生成
+    └── config.pb.flags.go    # 生成
+```
+
+**Makefile 示例**（使用 buf）：
+
+```makefile
+.PHONY: generate build run clean
+
+# 生成 protobuf 代码
+generate:
+	buf mod update
+	buf generate
+
+# 构建应用
+build: generate
+	go build -o bin/myapp .
+
+# 运行应用
+run: build
+	./bin/myapp
+
+# 清理生成的文件
+clean:
+	rm -f proto/*.pb.go proto/*.pb.flags.go
+	rm -rf bin/
+```
+
+#### 使用直接复制文件的项目结构
+
+```bash
+myapp/
+├── go.mod
+├── go.sum
+├── main.go
+├── Makefile              # 可选：自动化构建
 └── proto/
     ├── config.proto
     ├── config.pb.go          # 生成
@@ -459,33 +509,34 @@ myapp/
         └── annotations.proto
 ```
 
-**Makefile 示例**：
+**Makefile 示例**（使用 protoc）：
 
 ```makefile
 .PHONY: generate build run clean
 
 # 生成 protobuf 代码
 generate:
-→protoc \
-→  -I./proto \
-→  --go_out=. \
-→  --go_opt=paths=source_relative \
-→  --flags_out=. \
-→  --flags_opt=paths=source_relative \
-→  proto/*.proto
+	protoc \
+	  -I./proto \
+	  -I./proto/flags \
+	  --go_out=. \
+	  --go_opt=paths=source_relative \
+	  --flags_out=. \
+	  --flags_opt=paths=source_relative \
+	  proto/*.proto
 
 # 构建应用
 build: generate
-→go build -o bin/myapp .
+	go build -o bin/myapp .
 
 # 运行应用
 run: build
-→./bin/myapp
+	./bin/myapp
 
 # 清理生成的文件
 clean:
-→rm -f proto/*.pb.go proto/*.pb.flags.go
-→rm -rf bin/
+	rm -f proto/*.pb.go proto/*.pb.flags.go
+	rm -rf bin/
 ```
 
 使用 Makefile：
@@ -499,6 +550,9 @@ make build
 
 # 运行
 make run
+
+# 清理
+make clean
 ```
 
 ### 高级集成：嵌套配置
@@ -569,43 +623,91 @@ fmt.Printf("DB: %s:%d\n", config.Database.Host, config.Database.Port)
 
 #### 问题 1：找不到 annotations.proto
 
-**错误**：
+**错误信息**：
 ```
-proto/config.proto: File not found.
+proto/config.proto:3:1: Import "flags/annotations.proto" was not found.
 ```
 
-**解决**：确保在 protoc 命令中包含正确的导入路径：
-```bash
-protoc -I./proto -I./proto/flags ...
-```
+**解决方案**：
+
+- **使用 buf 方式**：确保运行了 `buf mod update` 并且 `buf.yaml` 中正确配置了依赖：
+  ```yaml
+  deps:
+    - buf.build/kunstack/flags
+  ```
+
+- **使用 protoc 方式**：确保在 protoc 命令中包含正确的导入路径：
+  ```bash
+  protoc -I./proto -I./proto/flags ...
+  ```
 
 #### 问题 2：生成的代码编译错误
 
-**错误**：
+**错误信息**：
 ```
 undefined: flags.Option
+undefined: types.Duration
 ```
 
-**解决**：确保已安装运行时库：
+**解决方案**：确保已安装运行时库：
 ```bash
 go get github.com/kunstack/protoc-gen-flags/flags
+go get github.com/kunstack/protoc-gen-flags/types
+go get github.com/kunstack/protoc-gen-flags/utils
 ```
 
-并在代码中导入：
-```go
-import "github.com/kunstack/protoc-gen-flags/flags"
-```
+生成的代码会自动导入这些包，无需手动导入。
 
 #### 问题 3：标志未生效
 
+**现象**：命令行参数没有被读取，配置使用的是零值。
+
 **原因**：可能忘记调用 `SetDefaults()` 或 `AddFlags()`。
 
-**解决**：按正确顺序调用：
+**解决方案**：按正确顺序调用：
 ```go
+config := &proto.ServerConfig{}
 config.SetDefaults()  // 1. 设置默认值
 config.AddFlags(fs)   // 2. 注册标志
 fs.Parse(os.Args[1:]) // 3. 解析参数
 ```
+
+#### 问题 4：buf generate 失败
+
+**错误信息**：
+```
+Failure: plugin flags: not found
+```
+
+**解决方案**：确保 protoc-gen-flags 已安装并在 PATH 中：
+```bash
+# 安装插件
+go install github.com/kunstack/protoc-gen-flags@latest
+
+# 验证安装
+which protoc-gen-flags
+protoc-gen-flags --version
+```
+
+#### 问题 5：包名冲突
+
+**现象**：生成的代码中有包名冲突，例如同时使用 `wrapperspb` 和自定义的 `wrapperspb` 包。
+
+**解决方案**：protoc-gen-flags 会自动处理包名冲突，为冲突的包生成别名。生成的代码会自动使用别名导入，无需手动处理。
+
+#### 问题 6：Map 格式解析错误
+
+**错误信息**：
+```
+invalid map format: ...
+```
+
+**解决方案**：确保使用正确的格式：
+- **JSON 格式**：`--config='{"key": "value"}'`
+- **STRING_TO_STRING**：`--labels="key1=value1,key2=value2"`
+- **STRING_TO_INT**：`--limits="cpu=1000,memory=2048"`
+
+注意：STRING_TO_INT 只支持整数类型的值。
 
 ## 使用示例
 
