@@ -1,12 +1,14 @@
 syntax = "proto3";
 
 package tests.wrapperspb;
+import "flags/annotations.proto";
 
 option go_package = "github.com/kunstack/protoc-gen-flags/tests/wrapperspb;wrapperspb";
 
 // CustomWrapper is a test message to verify wrapperspb package name collision handling
 // This should conflict with google.protobuf.wrappers which also uses "wrapperspb" as package name in Go
 message CustomWrapper {
+  option (flags.allow_empty) = true;
   string custom_field = 1;
   int32 value = 2;
 }

@@ -158,7 +158,6 @@ func TestBytesHexSliceValue_MultipleSets(t *testing.T) {
 	}
 }
 
-
 func TestBytesHexSliceValue_SpecialCharacters(t *testing.T) {
 	// Test with special characters that need hex encoding
 	specialBytes := []byte{0, 1, 2, 255, 254, 253}
@@ -225,11 +224,11 @@ func TestBytesHexSlice_ConstructorNil(t *testing.T) {
 
 func TestBytesHexSliceValue_Append(t *testing.T) {
 	tests := []struct {
-		name     string
-		initial  string
-		append   string
-		want     []*wrapperspb.BytesValue
-		wantErr  bool
+		name    string
+		initial string
+		append  string
+		want    []*wrapperspb.BytesValue
+		wantErr bool
 	}{
 		{
 			name:    "append to empty slice",
@@ -259,7 +258,7 @@ func TestBytesHexSliceValue_Append(t *testing.T) {
 		},
 		{
 			name:    "append with whitespace",
-			initial: "48656C6C6F", // "Hello" in hex
+			initial: "48656C6C6F",     // "Hello" in hex
 			append:  "  576F726C64  ", // "World" in hex with spaces
 			want: []*wrapperspb.BytesValue{
 				wrapperspb.Bytes([]byte("Hello")),
@@ -307,11 +306,11 @@ func TestBytesHexSliceValue_Append(t *testing.T) {
 
 func TestBytesHexSliceValue_Replace(t *testing.T) {
 	tests := []struct {
-		name     string
-		initial  []string
-		replace  []string
-		want     []*wrapperspb.BytesValue
-		wantErr  bool
+		name    string
+		initial []string
+		replace []string
+		want    []*wrapperspb.BytesValue
+		wantErr bool
 	}{
 		{
 			name:    "replace empty with values",
@@ -325,7 +324,7 @@ func TestBytesHexSliceValue_Replace(t *testing.T) {
 		},
 		{
 			name:    "replace existing values",
-			initial: []string{"48656C6C6F"}, // "Hello"
+			initial: []string{"48656C6C6F"},             // "Hello"
 			replace: []string{"576F726C64", "54657374"}, // "World", "Test"
 			want: []*wrapperspb.BytesValue{
 				wrapperspb.Bytes([]byte("World")),
@@ -344,7 +343,7 @@ func TestBytesHexSliceValue_Replace(t *testing.T) {
 		},
 		{
 			name:    "replace with whitespace",
-			initial: []string{"48656C6C6F"}, // "Hello"
+			initial: []string{"48656C6C6F"},                     // "Hello"
 			replace: []string{"  576F726C64  ", "  54657374  "}, // "World", "Test" with spaces
 			want: []*wrapperspb.BytesValue{
 				wrapperspb.Bytes([]byte("World")),
@@ -399,9 +398,9 @@ func TestBytesHexSliceValue_Replace(t *testing.T) {
 
 func TestBytesHexSliceValue_GetSlice(t *testing.T) {
 	tests := []struct {
-		name     string
-		setup    func(*types.BytesHexSliceValue)
-		want     []string
+		name  string
+		setup func(*types.BytesHexSliceValue)
+		want  []string
 	}{
 		{
 			name: "get slice from empty",
@@ -550,11 +549,11 @@ func TestBytesHexSliceValue_LargeData(t *testing.T) {
 
 func TestBytesHexNativeSliceValue_Append(t *testing.T) {
 	tests := []struct {
-		name     string
-		initial  string
-		append   string
-		want     [][]byte
-		wantErr  bool
+		name    string
+		initial string
+		append  string
+		want    [][]byte
+		wantErr bool
 	}{
 		{
 			name:    "append to empty slice",
@@ -622,11 +621,11 @@ func TestBytesHexNativeSliceValue_Append(t *testing.T) {
 
 func TestBytesHexNativeSliceValue_Replace(t *testing.T) {
 	tests := []struct {
-		name     string
-		initial  []string
-		replace  []string
-		want     [][]byte
-		wantErr  bool
+		name    string
+		initial []string
+		replace []string
+		want    [][]byte
+		wantErr bool
 	}{
 		{
 			name:    "replace empty with values",
@@ -640,7 +639,7 @@ func TestBytesHexNativeSliceValue_Replace(t *testing.T) {
 		},
 		{
 			name:    "replace existing values",
-			initial: []string{"48656c6c6f"}, // "Hello"
+			initial: []string{"48656c6c6f"},             // "Hello"
 			replace: []string{"576f726c64", "54657374"}, // "World", "Test"
 			want: [][]byte{
 				[]byte("World"),
@@ -697,9 +696,9 @@ func TestBytesHexNativeSliceValue_Replace(t *testing.T) {
 
 func TestBytesHexNativeSliceValue_GetSlice(t *testing.T) {
 	tests := []struct {
-		name     string
-		setup    func(*types.BytesHexNativeSliceValue)
-		want     []string
+		name  string
+		setup func(*types.BytesHexNativeSliceValue)
+		want  []string
 	}{
 		{
 			name: "get slice from empty",
@@ -779,21 +778,21 @@ func TestBytesHexSliceValue_ErrorRecovery(t *testing.T) {
 
 func TestBytesHexSliceValue_Constructor(t *testing.T) {
 	tests := []struct {
-		name          string
-		initial       []*wrapperspb.BytesValue
-		expectedType  string
+		name           string
+		initial        []*wrapperspb.BytesValue
+		expectedType   string
 		expectedString string
 	}{
 		{
-			name:          "constructor with empty slice",
-			initial:       []*wrapperspb.BytesValue{},
-			expectedType:  "bytesHexSliceValue",
+			name:           "constructor with empty slice",
+			initial:        []*wrapperspb.BytesValue{},
+			expectedType:   "bytesHexSliceValue",
 			expectedString: "[]",
 		},
 		{
-			name:          "constructor with values",
-			initial:       []*wrapperspb.BytesValue{wrapperspb.Bytes([]byte("test"))},
-			expectedType:  "bytesHexSliceValue",
+			name:           "constructor with values",
+			initial:        []*wrapperspb.BytesValue{wrapperspb.Bytes([]byte("test"))},
+			expectedType:   "bytesHexSliceValue",
 			expectedString: "[74657374]",
 		},
 	}
@@ -819,21 +818,21 @@ func TestBytesHexSliceValue_Constructor(t *testing.T) {
 
 func TestBytesHexNativeSliceValue_Constructor(t *testing.T) {
 	tests := []struct {
-		name          string
-		initial       [][]byte
-		expectedType  string
+		name           string
+		initial        [][]byte
+		expectedType   string
 		expectedString string
 	}{
 		{
-			name:          "constructor with empty slice",
-			initial:       [][]byte{},
-			expectedType:  "BytesHexNativeSliceValue",
+			name:           "constructor with empty slice",
+			initial:        [][]byte{},
+			expectedType:   "BytesHexNativeSliceValue",
 			expectedString: "[]",
 		},
 		{
-			name:          "constructor with values",
-			initial:       [][]byte{[]byte("test")},
-			expectedType:  "BytesHexNativeSliceValue",
+			name:           "constructor with values",
+			initial:        [][]byte{[]byte("test")},
+			expectedType:   "BytesHexNativeSliceValue",
 			expectedString: "[74657374]",
 		},
 	}

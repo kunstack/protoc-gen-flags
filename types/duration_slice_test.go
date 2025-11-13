@@ -24,8 +24,8 @@ func TestDurationSliceValue_Set(t *testing.T) {
 			expected: []*durationpb.Duration{durationpb.New(5 * 1000000000)},
 		},
 		{
-			name:     "multiple durations",
-			input:    "1s,2m,3h",
+			name:  "multiple durations",
+			input: "1s,2m,3h",
 			expected: []*durationpb.Duration{
 				durationpb.New(1 * 1000000000),
 				durationpb.New(120 * 1000000000),
@@ -33,8 +33,8 @@ func TestDurationSliceValue_Set(t *testing.T) {
 			},
 		},
 		{
-			name:     "durations with spaces",
-			input:    " 1s , 2m , 3h ",
+			name:  "durations with spaces",
+			input: " 1s , 2m , 3h ",
 			expected: []*durationpb.Duration{
 				durationpb.New(1 * 1000000000),
 				durationpb.New(120 * 1000000000),
@@ -42,8 +42,8 @@ func TestDurationSliceValue_Set(t *testing.T) {
 			},
 		},
 		{
-			name:     "mixed time units",
-			input:    "500ms,100us,50ns",
+			name:  "mixed time units",
+			input: "500ms,100us,50ns",
 			expected: []*durationpb.Duration{
 				durationpb.New(500000000),
 				durationpb.New(100000),
@@ -51,16 +51,16 @@ func TestDurationSliceValue_Set(t *testing.T) {
 			},
 		},
 		{
-			name:     "fractional durations",
-			input:    "2.5s,1.5m",
+			name:  "fractional durations",
+			input: "2.5s,1.5m",
 			expected: []*durationpb.Duration{
 				durationpb.New(2500000000),
 				durationpb.New(90000000000),
 			},
 		},
 		{
-			name:     "negative durations",
-			input:    "-30s,-1m",
+			name:  "negative durations",
+			input: "-30s,-1m",
 			expected: []*durationpb.Duration{
 				durationpb.New(-30000000000),
 				durationpb.New(-60000000000),
@@ -111,11 +111,11 @@ func TestDurationSliceValue_Set(t *testing.T) {
 
 func TestDurationSliceValue_Append(t *testing.T) {
 	tests := []struct {
-		name         string
-		initial      []*durationpb.Duration
-		appendValue  string
-		expected     []*durationpb.Duration
-		expectError  bool
+		name        string
+		initial     []*durationpb.Duration
+		appendValue string
+		expected    []*durationpb.Duration
+		expectError bool
 	}{
 		{
 			name:        "append to empty slice",

@@ -235,10 +235,10 @@ func TestStringSliceValue_LongStrings(t *testing.T) {
 
 func TestStringSliceValue_Append(t *testing.T) {
 	tests := []struct {
-		name     string
-		initial  []string
-		append   string
-		want     []string
+		name    string
+		initial []string
+		append  string
+		want    []string
 	}{
 		{
 			name:    "append to empty slice",
@@ -490,7 +490,7 @@ func TestStringSliceValue_CSVSpecialCharacters(t *testing.T) {
 		want  string
 	}{
 		{
-			name:  "strings with commas",
+			name: "strings with commas",
 			input: []*wrapperspb.StringValue{
 				wrapperspb.String("hello, world"),
 				wrapperspb.String("test,123"),
@@ -498,7 +498,7 @@ func TestStringSliceValue_CSVSpecialCharacters(t *testing.T) {
 			want: "[\"hello, world\",\"test,123\"]",
 		},
 		{
-			name:  "strings with quotes",
+			name: "strings with quotes",
 			input: []*wrapperspb.StringValue{
 				wrapperspb.String(`say "hello"`),
 				wrapperspb.String(`it's "test"`),
@@ -506,7 +506,7 @@ func TestStringSliceValue_CSVSpecialCharacters(t *testing.T) {
 			want: `["say ""hello""","it's ""test"""]`,
 		},
 		{
-			name:  "strings with newlines",
+			name: "strings with newlines",
 			input: []*wrapperspb.StringValue{
 				wrapperspb.String("hello\nworld"),
 				wrapperspb.String("test\n123"),
@@ -514,7 +514,7 @@ func TestStringSliceValue_CSVSpecialCharacters(t *testing.T) {
 			want: "[\"hello\nworld\",\"test\n123\"]",
 		},
 		{
-			name:  "mixed special characters",
+			name: "mixed special characters",
 			input: []*wrapperspb.StringValue{
 				wrapperspb.String(`hello, "world"`),
 				wrapperspb.String("test\n123, abc"),

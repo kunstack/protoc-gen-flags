@@ -21,3 +21,11 @@ var (
 	_ = (*durationpb.Duration)(nil)
 	_ = (*timestamppb.Timestamp)(nil)
 )
+
+func (x *CustomWrapper) AddFlags(fs *pflag.FlagSet, opts ...flags.Option) {
+	builder := flags.NewNameBuilder(opts...)
+	_ = builder
+}
+
+func (x *CustomWrapper) SetDefaults() {
+}

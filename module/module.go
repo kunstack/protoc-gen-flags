@@ -120,7 +120,9 @@ func (m *Module) InitContext(c pgs.BuildContext) {
 
 func (m *Module) Execute(targets map[string]pgs.File, _ map[string]pgs.Package) []pgs.Artifact {
 	for _, f := range targets {
-		m.generate(f)
+		if m.shouldGenerate(f) {
+			m.generate(f)
+		}
 	}
 	return m.Artifacts()
 }

@@ -447,7 +447,7 @@ message Sfixed32Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -475,7 +475,7 @@ message Sfixed64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -503,7 +503,7 @@ message BoolFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -531,7 +531,7 @@ message StringFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -559,7 +559,7 @@ message RepeatedFloatFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -587,7 +587,7 @@ message RepeatedDoubleFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -615,7 +615,7 @@ message RepeatedInt32Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -643,7 +643,7 @@ message RepeatedInt64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -698,7 +698,7 @@ message RepeatedUint64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -726,7 +726,7 @@ message RepeatedSint32Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -754,7 +754,7 @@ message RepeatedSint64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -782,7 +782,7 @@ message RepeatedFixed32Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -810,7 +810,7 @@ message RepeatedFixed64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -865,7 +865,7 @@ message RepeatedSfixed64Flag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -893,7 +893,7 @@ message RepeatedBoolFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -921,7 +921,7 @@ message RepeatedStringFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -949,7 +949,7 @@ message RepeatedBytesFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -981,7 +981,7 @@ message RepeatedEnumFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -1009,7 +1009,7 @@ message RepeatedDurationFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -1037,7 +1037,7 @@ message RepeatedTimestampFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -1070,7 +1070,7 @@ message EnumFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -1113,7 +1113,7 @@ message MapFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -1145,7 +1145,7 @@ message DurationFlag {
   bool disabled = 1;
 
   // Name specifies a custom flag name. When empty, defaults to field name
-  
+
   string name = 2;
 
   // Short specifies a short flag alias (single character).
@@ -1258,7 +1258,6 @@ message RepeatedFlags {
     RepeatedTimestampFlag timestamp = 18; // Repeated timestamp values
   }
 }
-
 
 // FieldFlags encapsulates the flag configuration for each type of field.
 //

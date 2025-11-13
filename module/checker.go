@@ -3,6 +3,7 @@ package module
 import (
 	"github.com/kunstack/protoc-gen-flags/flags"
 	pgs "github.com/lyft/protoc-gen-star/v2"
+	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 // Heavily taken from https://github.com/envoyproxy/protoc-gen-validate/blob/main/module/checker.go
@@ -18,6 +19,69 @@ type Repeatable interface {
 
 type Element interface {
 	Element() pgs.FieldTypeElem
+}
+
+// shouldGenerate checks if a proto file contains any flag-related options
+// and determines whether a .flags.go file should be generated for it.
+// It returns true if any message in the file has flag configurations.
+func (m *Module) shouldGenerate(f pgs.File) bool {
+	if len(f.Messages()) == 0 {
+		return false
+	}
+
+	// Check each message in the file for flag configurations
+	for _, msg := range f.Messages() {
+		// Check message-level options: disabled, unexported, allow_empty
+		if m.hasMessageLevelOptions(msg) {
+			return true
+		}
+
+		// Check if message has any field-level flag configurations
+		if m.hasFieldLevelOptions(msg) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// hasMessageLevelOptions checks if a message has any message-level flag options.
+// Returns true if disabled, unexported, or allow_empty options are present.
+func (m *Module) hasMessageLevelOptions(msg pgs.Message) bool {
+	extensions := []*protoimpl.ExtensionInfo{
+		flags.E_Disabled,
+		flags.E_Unexported,
+		flags.E_AllowEmpty,
+	}
+
+	for _, ext := range extensions {
+		var val bool
+		ok, err := msg.Extension(ext, &val)
+		if err != nil {
+			m.CheckErr(err, "unable to read flags extension from message")
+		}
+		if ok {
+			return true
+		}
+	}
+
+	return false
+}
+
+// hasFieldLevelOptions checks if a message has any field-level flag configurations.
+// Returns true if any field has flags.E_Value extension.
+func (m *Module) hasFieldLevelOptions(msg pgs.Message) bool {
+	for _, field := range msg.Fields() {
+		var fieldFlags flags.FieldFlags
+		ok, err := field.Extension(flags.E_Value, &fieldFlags)
+		if err != nil {
+			m.CheckErr(err, "unable to read flags extension from field")
+		}
+		if ok {
+			return true
+		}
+	}
+	return false
 }
 
 func (m *Module) Check(msg pgs.Message) {
@@ -40,7 +104,8 @@ func (m *Module) Check(msg pgs.Message) {
 		m.Push(f.Name().String())
 
 		var field flags.FieldFlags
-		_, err = f.Extension(flags.E_Value, &field)
+		_, err := f.Extension(flags.E_Value, &field)
+
 		m.CheckErr(err, "unable to read flags from field")
 		m.CheckFieldRules(f, &field)
 		m.Pop()
