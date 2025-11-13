@@ -3,77 +3,79 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/kunstack/protoc-gen-flags)](https://goreportcard.com/report/github.com/kunstack/protoc-gen-flags)
 [![Go Reference](https://pkg.go.dev/badge/github.com/kunstack/protoc-gen-flags.svg)](https://pkg.go.dev/github.com/kunstack/protoc-gen-flags)
 
-protoc-gen-flags 是一个基于 Go 语言的 Protocol Buffer 编译器插件，用于为 protobuf 消息自动生成命令行标志绑定。它能够根据 protobuf 消息定义自动生成 `AddFlags` 方法，与 `spf13/pflag` 库无缝集成，为您的 protobuf 消息提供强大的命令行参数支持。
+[中文文档](README_zh.md) | English
 
-## 为什么使用 protoc-gen-flags
+protoc-gen-flags is a Go-based Protocol Buffer compiler plugin that automatically generates command-line flag bindings for protobuf messages. It generates `AddFlags` methods based on protobuf message definitions, seamlessly integrating with the `spf13/pflag` library to provide powerful command-line argument support for your protobuf messages.
 
-如果您的项目满足以下任一条件，protoc-gen-flags 将大大简化您的开发工作：
+## Why Use protoc-gen-flags
 
-- ✅ 使用 Protocol Buffers 定义配置结构
-- ✅ 需要为 CLI 应用提供命令行参数支持
-- ✅ 希望避免手动编写重复的标志绑定代码
-- ✅ 想要保持配置定义和 CLI 接口的一致性
-- ✅ 需要支持复杂的嵌套配置结构
+If your project meets any of the following criteria, protoc-gen-flags will greatly simplify your development workflow:
 
-**传统方式 vs protoc-gen-flags：**
+- ✅ Use Protocol Buffers to define configuration structures
+- ✅ Need command-line argument support for CLI applications
+- ✅ Want to avoid writing repetitive flag binding code manually
+- ✅ Maintain consistency between configuration definitions and CLI interfaces
+- ✅ Support complex nested configuration structures
 
-传统方式需要为每个配置字段手动编写标志绑定：
+**Traditional Approach vs protoc-gen-flags:**
+
+The traditional approach requires manually writing flag bindings for each configuration field:
 ```go
-// 手动方式：繁琐且容易出错
+// Manual approach: tedious and error-prone
 fs.StringVar(&config.Host, "host", "localhost", "Server host")
 fs.Int32Var(&config.Port, "port", 8080, "Server port")
 fs.BoolVar(&config.Verbose, "verbose", false, "Enable verbose")
-// ... 为每个字段重复编写
+// ... repeat for every field
 ```
 
-使用 protoc-gen-flags：
+With protoc-gen-flags:
 ```go
-// 自动生成：简洁且类型安全
+// Auto-generated: concise and type-safe
 config.AddFlags(fs)
 ```
 
-## 目录
+## Table of Contents
 
-- [为什么使用 protoc-gen-flags](#为什么使用-protoc-gen-flags)
-- [特性](#特性)
-- [快速开始](#快速开始)
-  - [前置要求](#前置要求)
-  - [安装](#安装)
-  - [基本用法](#基本用法)
-- [完整集成教程](#完整集成教程)
-  - [步骤 1：准备项目](#步骤-1准备项目)
-  - [步骤 2：添加标志注解依赖](#步骤-2添加标志注解依赖)
-  - [步骤 3：定义 Protobuf 消息](#步骤-3定义-protobuf-消息)
-  - [步骤 4：生成代码](#步骤-4生成代码)
-  - [步骤 5：在应用中使用](#步骤-5在应用中使用)
-- [使用示例](#使用示例)
-- [支持的类型](#支持的类型)
-- [配置选项](#配置选项)
-- [分层标志组织](#分层标志组织)
-- [常见问题](#常见问题)
-- [贡献](#贡献)
-- [许可证](#许可证)
+- [Why Use protoc-gen-flags](#why-use-protoc-gen-flags)
+- [Features](#features)
+- [Quick Start](#quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Basic Usage](#basic-usage)
+- [Complete Integration Tutorial](#complete-integration-tutorial)
+  - [Step 1: Prepare Your Project](#step-1-prepare-your-project)
+  - [Step 2: Add Flag Annotation Dependencies](#step-2-add-flag-annotation-dependencies)
+  - [Step 3: Define Protobuf Messages](#step-3-define-protobuf-messages)
+  - [Step 4: Generate Code](#step-4-generate-code)
+  - [Step 5: Use in Your Application](#step-5-use-in-your-application)
+- [Usage Examples](#usage-examples)
+- [Supported Types](#supported-types)
+- [Configuration Options](#configuration-options)
+- [Hierarchical Flag Organization](#hierarchical-flag-organization)
+- [FAQ](#faq)
+- [Contributing](#contributing)
+- [License](#license)
 
-## 特性
+## Features
 
-- 🚀 **自动化代码生成**：从 protobuf 消息自动生成命令行标志绑定
-- 🎯 **类型全覆盖**：支持所有 protobuf 类型（标量类型、枚举、repeated、map、消息等）
-- 🔧 **高度可配置**：支持自定义标志名称、简写、用法文本、默认值等
-- 📦 **嵌套消息支持**：为嵌套消息生成层级化标志
-- 🏗️ **分层组织**：通过前缀支持分层标志命名（支持点号、破折号、下划线、冒号分隔符）
-- 🔒 **最佳实践**：生成符合 Go 规范的代码，支持私有/公有方法
-- 💾 **默认值支持**：为所有类型提供默认值设置
-- 🚦 **废弃标志**：支持废弃标志和隐藏标志
-- 🔄 **包别名**：智能处理包名冲突，避免编译错误
+- 🚀 **Automated Code Generation**: Automatically generate command-line flag bindings from protobuf messages
+- 🎯 **Complete Type Coverage**: Support all protobuf types (scalar types, enums, repeated, map, messages, etc.)
+- 🔧 **Highly Configurable**: Support custom flag names, shortcuts, usage text, default values, and more
+- 📦 **Nested Message Support**: Generate hierarchical flags for nested messages
+- 🏗️ **Hierarchical Organization**: Support hierarchical flag naming through prefixes (dot, dash, underscore, colon separators)
+- 🔒 **Best Practices**: Generate Go-idiomatic code with support for private/public methods
+- 💾 **Default Value Support**: Provide default value settings for all types
+- 🚦 **Deprecated Flags**: Support deprecated and hidden flags
+- 🔄 **Package Aliasing**: Intelligently handle package name conflicts to avoid compilation errors
 
-## 快速开始
+## Quick Start
 
-### 前置要求
+### Prerequisites
 
-在开始之前，请确保您的开发环境满足以下要求：
+Before getting started, ensure your development environment meets the following requirements:
 
-- **Go 1.18+**：protoc-gen-flags 需要 Go 1.18 或更高版本
-- **Protocol Buffers 编译器（protoc）**：用于编译 .proto 文件
+- **Go 1.18+**: protoc-gen-flags requires Go 1.18 or higher
+- **Protocol Buffers Compiler (protoc)**: Used to compile .proto files
   ```bash
   # macOS
   brew install protobuf
@@ -81,29 +83,29 @@ config.AddFlags(fs)
   # Ubuntu/Debian
   apt-get install protobuf-compiler
 
-  # 或从官方下载: https://github.com/protocolbuffers/protobuf/releases
+  # Or download from official releases: https://github.com/protocolbuffers/protobuf/releases
   ```
-- **protoc-gen-go**：Go 的 protobuf 代码生成器
+- **protoc-gen-go**: Go protobuf code generator
   ```bash
   go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
   ```
 
-### 安装
+### Installation
 
-安装 protoc-gen-flags 插件：
+Install the protoc-gen-flags plugin:
 
 ```bash
 go install github.com/kunstack/protoc-gen-flags@latest
 ```
 
-验证安装：
+Verify installation:
 ```bash
 protoc-gen-flags --version
 ```
 
-### 基本用法
+### Basic Usage
 
-**1. 定义带有标志选项的 protobuf 消息：**
+**1. Define a protobuf message with flag options:**
 
 ```protobuf
 syntax = "proto3";
@@ -136,13 +138,13 @@ message Config {
 }
 ```
 
-**2. 生成代码：**
+**2. Generate code:**
 
 ```bash
 protoc -I. -I flags --go_out=paths=source_relative:. --flags_out=paths=source_relative:. config.proto
 ```
 
-**3. 在应用中使用：**
+**3. Use in your application:**
 
 ```go
 package main
@@ -158,53 +160,53 @@ import (
 func main() {
     var config pb.Config
 
-    // 创建标志集并添加标志
+    // Create flag set and add flags
     fs := pflag.NewFlagSet("myapp", pflag.ExitOnError)
     config.AddFlags(fs)
 
-    // 解析标志
+    // Parse flags
     fs.Parse(os.Args[1:])
 
-    // 使用配置（直接访问字段）
+    // Use configuration (directly access fields)
     fmt.Printf("Server: %s:%d (verbose: %v)\n",
         config.Host, config.Port, config.Verbose)
 }
 ```
 
-### AddFlags vs SetDefaults 的区别
+### AddFlags vs SetDefaults
 
-- **AddFlags 方法**：将配置字段注册为命令行标志，让用户可以通过 CLI 参数传入值
-- **SetDefaults 方法**：设置字段的默认值，在没有用户提供参数时使用
+- **AddFlags method**: Registers configuration fields as command-line flags, allowing users to pass values via CLI arguments
+- **SetDefaults method**: Sets default values for fields, used when no user-provided arguments are present
 
-**使用场景**：
-- 如果用户希望默认值在标志解析之前就生效，应该先调用 `SetDefaults()`
-- 如果只是希望从命令行读取配置，可以只使用 `AddFlags()`
-- 最佳实践是两者结合使用，既提供默认值，又允许用户覆盖
+**Usage scenarios**:
+- If you want default values to take effect before flag parsing, call `SetDefaults()` first
+- If you only want to read configuration from command-line, you can use only `AddFlags()`
+- Best practice is to combine both: provide defaults and allow user overrides
 
-**调用示例**：
+**Example calls**:
 
 ```go
 var config pb.Config
 
-// 方法1：只使用 AddFlags（用户必须提供所有值）
+// Method 1: Only use AddFlags (users must provide all values)
 config.AddFlags(fs)
 
-// 方法2：结合使用（推荐）
-config.SetDefaults()  // 先设置默认值
-config.AddFlags(fs)   // 再添加标志覆盖
+// Method 2: Combined usage (recommended)
+config.SetDefaults()  // Set defaults first
+config.AddFlags(fs)   // Then add flags for overrides
 
-// 方法3：在自定义标志集中使用
+// Method 3: Use with custom flag set
 customFS := pflag.NewFlagSet("custom", pflag.ExitOnError)
 config.AddFlags(customFS)
 ```
 
-## 集成教程
+## Complete Integration Tutorial
 
-本节提供完整的分步教程，帮助您在自己的项目中集成 protoc-gen-flags。
+This section provides a complete step-by-step tutorial to help you integrate protoc-gen-flags into your own projects.
 
-### 步骤 1：准备项目
+### Step 1: Prepare Your Project
 
-创建一个新的 Go 项目（或使用现有项目）：
+Create a new Go project (or use an existing one):
 
 ```bash
 mkdir myapp
@@ -212,36 +214,36 @@ cd myapp
 go mod init github.com/yourname/myapp
 ```
 
-安装必要的依赖：
+Install necessary dependencies:
 
 ```bash
-# 安装 pflag 库
+# Install pflag library
 go get github.com/spf13/pflag
 
-# 安装 protobuf 运行时
+# Install protobuf runtime
 go get google.golang.org/protobuf
 
-# 安装 protoc-gen-flags 运行时库
+# Install protoc-gen-flags runtime library
 go get github.com/kunstack/protoc-gen-flags/flags
 ```
 
-创建项目结构：
+Create project structure:
 
 ```bash
 myapp/
 ├── go.mod
-├── main.go          # 应用入口
+├── main.go          # Application entry point
 └── proto/
-    └── config.proto # protobuf 定义
+    └── config.proto # Protobuf definitions
 ```
 
-### 步骤 2：添加标志注解依赖
+### Step 2: Add Flag Annotation Dependencies
 
-您需要将 protoc-gen-flags 的注解文件添加到您的项目中。有两种方式：
+You need to add protoc-gen-flags annotation files to your project. There are two approaches:
 
-#### 方式 1：使用 Buf Schema Registry（推荐）
+#### Option 1: Use Buf Schema Registry (Recommended)
 
-在您的 `buf.yaml` 中添加依赖：
+Add the dependency in your `buf.yaml`:
 
 ```yaml
 version: v2
@@ -255,7 +257,7 @@ breaking:
     - FILE
 ```
 
-然后在 `buf.gen.yaml` 中配置代码生成：
+Then configure code generation in `buf.gen.yaml`:
 
 ```yaml
 version: v2
@@ -268,16 +270,16 @@ plugins:
     opt: paths=source_relative
 ```
 
-运行 buf 命令更新依赖并生成代码：
+Run buf commands to update dependencies and generate code:
 
 ```bash
 buf mod update
 buf generate
 ```
 
-#### 方式 2：直接复制文件
+#### Option 2: Copy Files Directly
 
-从 [protoc-gen-flags 仓库](https://github.com/kunstack/protoc-gen-flags/tree/main/flags) 下载 `annotations.proto` 文件到您的项目：
+Download the `annotations.proto` file from the [protoc-gen-flags repository](https://github.com/kunstack/protoc-gen-flags/tree/main/flags) to your project:
 
 ```bash
 mkdir -p proto/flags
@@ -285,7 +287,7 @@ curl -o proto/flags/annotations.proto \
   https://raw.githubusercontent.com/kunstack/protoc-gen-flags/main/flags/annotations.proto
 ```
 
-项目结构更新为：
+Updated project structure:
 
 ```bash
 myapp/
@@ -297,61 +299,61 @@ myapp/
         └── annotations.proto
 ```
 
-### 步骤 3：定义 Protobuf 消息
+### Step 3: Define Protobuf Messages
 
-在 `proto/config.proto` 中定义您的配置：
+Define your configuration in `proto/config.proto`:
 
 ```protobuf
 syntax = "proto3";
 
 package myapp.config;
 
-// 导入标志注解
+// Import flag annotations
 import "flags/annotations.proto";
 
 option go_package = "github.com/yourname/myapp/proto;config";
 
 message ServerConfig {
-    // 启用空消息生成
+    // Enable empty message generation
     option (flags.allow_empty) = true;
 
     string host = 1 [(flags.value).string = {
         name: "host"
         short: "H"
-        usage: "服务器主机地址"
+        usage: "Server host address"
         default: "localhost"
     }];
 
     int32 port = 2 [(flags.value).int32 = {
         name: "port"
         short: "p"
-        usage: "服务器端口"
+        usage: "Server port"
         default: 8080
     }];
 
     bool debug = 3 [(flags.value).bool = {
         name: "debug"
         short: "d"
-        usage: "启用调试模式"
+        usage: "Enable debug mode"
     }];
 }
 ```
 
-### 步骤 4：生成代码
+### Step 4: Generate Code
 
-根据您在步骤2中选择的方式，使用相应的命令生成代码：
+Based on the option you chose in Step 2, use the appropriate command to generate code:
 
-#### 使用 buf（如果选择了方式1）
+#### Using buf (if you chose Option 1)
 
-如果您在步骤2中选择了 Buf Schema Registry 方式，代码已经在运行 `buf generate` 时生成。
+If you chose the Buf Schema Registry approach in Step 2, the code was already generated when you ran `buf generate`.
 
-生成的文件：
-- `proto/config.pb.go` - 标准的 protobuf Go 代码
-- `proto/config.pb.flags.go` - 标志绑定代码
+Generated files:
+- `proto/config.pb.go` - Standard protobuf Go code
+- `proto/config.pb.flags.go` - Flag binding code
 
-#### 使用 protoc（如果选择了方式2）
+#### Using protoc (if you chose Option 2)
 
-如果您在步骤2中选择了直接复制文件方式，使用 protoc 命令生成：
+If you chose the direct file copy approach in Step 2, use the protoc command to generate:
 
 ```bash
 protoc \
@@ -364,13 +366,13 @@ protoc \
   proto/config.proto
 ```
 
-这将生成两个文件：
-- `proto/config.pb.go` - 标准的 protobuf Go 代码
-- `proto/config.pb.flags.go` - 标志绑定代码
+This generates two files:
+- `proto/config.pb.go` - Standard protobuf Go code
+- `proto/config.pb.flags.go` - Flag binding code
 
-### 步骤 5：在应用中使用
+### Step 5: Use in Your Application
 
-在 `main.go` 中使用生成的代码：
+Use the generated code in `main.go`:
 
 ```go
 package main
@@ -384,137 +386,137 @@ import (
 )
 
 func main() {
-    // 创建配置实例
+    // Create configuration instance
     config := &proto.ServerConfig{}
 
-    // 设置默认值（可选但推荐）
+    // Set defaults (optional but recommended)
     config.SetDefaults()
 
-    // 创建标志集
+    // Create flag set
     fs := pflag.NewFlagSet("myapp", pflag.ExitOnError)
 
-    // 添加标志
+    // Add flags
     config.AddFlags(fs)
 
-    // 解析命令行参数
+    // Parse command-line arguments
     if err := fs.Parse(os.Args[1:]); err != nil {
         fmt.Fprintf(os.Stderr, "Error parsing flags: %v\n", err)
         os.Exit(1)
     }
 
-    // 使用配置
+    // Use configuration
     fmt.Printf("Starting server...\n")
     fmt.Printf("  Host: %s\n", config.Host)
     fmt.Printf("  Port: %d\n", config.Port)
     fmt.Printf("  Debug: %v\n", config.Debug)
 
-    // 在这里启动您的应用...
+    // Start your application here...
 }
 ```
 
-### 步骤 6：编译和运行
+### Step 6: Build and Run
 
-编译应用：
+Build the application:
 
 ```bash
 go build -o myapp
 ```
 
-运行并测试命令行参数：
+Run and test command-line arguments:
 
 ```bash
-# 使用默认值
+# Use defaults
 ./myapp
 
-# 输出：
+# Output:
 # Starting server...
 #   Host: localhost
 #   Port: 8080
 #   Debug: false
 
-# 自定义参数
+# Custom parameters
 ./myapp --host 0.0.0.0 --port 3000 --debug
 
-# 输出：
+# Output:
 # Starting server...
 #   Host: 0.0.0.0
 #   Port: 3000
 #   Debug: true
 
-# 使用短选项
+# Use short options
 ./myapp -H 127.0.0.1 -p 9000 -d
 
-# 查看帮助
+# View help
 ./myapp --help
 ```
 
-### 完整项目示例
+### Complete Project Example
 
-根据您选择的方式，项目结构略有不同：
+Depending on which option you chose, the project structure will differ slightly:
 
-#### 使用 Buf Schema Registry 的项目结构
+#### Project Structure Using Buf Schema Registry
 
 ```bash
 myapp/
 ├── go.mod
 ├── go.sum
 ├── main.go
-├── buf.yaml              # Buf 配置
-├── buf.gen.yaml          # 代码生成配置
-├── buf.lock              # 依赖锁文件（生成）
-├── Makefile              # 可选：自动化构建
+├── buf.yaml              # Buf configuration
+├── buf.gen.yaml          # Code generation config
+├── buf.lock              # Dependency lock file (generated)
+├── Makefile              # Optional: automation
 └── proto/
     ├── config.proto
-    ├── config.pb.go          # 生成
-    └── config.pb.flags.go    # 生成
+    ├── config.pb.go          # Generated
+    └── config.pb.flags.go    # Generated
 ```
 
-**Makefile 示例**（使用 buf）：
+**Makefile example** (using buf):
 
 ```makefile
 .PHONY: generate build run clean
 
-# 生成 protobuf 代码
+# Generate protobuf code
 generate:
 	buf mod update
 	buf generate
 
-# 构建应用
+# Build application
 build: generate
 	go build -o bin/myapp .
 
-# 运行应用
+# Run application
 run: build
 	./bin/myapp
 
-# 清理生成的文件
+# Clean generated files
 clean:
 	rm -f proto/*.pb.go proto/*.pb.flags.go
 	rm -rf bin/
 ```
 
-#### 使用直接复制文件的项目结构
+#### Project Structure Using Direct File Copy
 
 ```bash
 myapp/
 ├── go.mod
 ├── go.sum
 ├── main.go
-├── Makefile              # 可选：自动化构建
+├── Makefile              # Optional: automation
 └── proto/
     ├── config.proto
-    ├── config.pb.go          # 生成
-    ├── config.pb.flags.go    # 生成
+    ├── config.pb.go          # Generated
+    ├── config.pb.flags.go    # Generated
     └── flags/
         └── annotations.proto
 ```
 
-**Makefile 示例**（使用 protoc）：
+**Makefile example** (using protoc):
 
 ```makefile
 .PHONY: generate build run clean
 
-# 生成 protobuf 代码
+# Generate protobuf code
 generate:
 	protoc \
 	  -I./proto \
@@ -525,39 +527,39 @@ generate:
 	  --flags_opt=paths=source_relative \
 	  proto/*.proto
 
-# 构建应用
+# Build application
 build: generate
 	go build -o bin/myapp .
 
-# 运行应用
+# Run application
 run: build
 	./bin/myapp
 
-# 清理生成的文件
+# Clean generated files
 clean:
 	rm -f proto/*.pb.go proto/*.pb.flags.go
 	rm -rf bin/
 ```
 
-使用 Makefile：
+Using the Makefile:
 
 ```bash
-# 生成代码
+# Generate code
 make generate
 
-# 构建
+# Build
 make build
 
-# 运行
+# Run
 make run
 
-# 清理
+# Clean
 make clean
 ```
 
-### 高级集成：嵌套配置
+### Advanced Integration: Nested Configuration
 
-对于复杂的应用，您可能需要嵌套配置：
+For complex applications, you may need nested configuration:
 
 ```protobuf
 syntax = "proto3";
@@ -571,13 +573,13 @@ option go_package = "github.com/yourname/myapp/proto;config";
 message DatabaseConfig {
     string host = 1 [(flags.value).string = {
         name: "db-host"
-        usage: "数据库主机"
+        usage: "Database host"
         default: "localhost"
     }];
 
     int32 port = 2 [(flags.value).int32 = {
         name: "db-port"
-        usage: "数据库端口"
+        usage: "Database port"
         default: 5432
     }];
 }
@@ -587,11 +589,11 @@ message AppConfig {
 
     string app_name = 1 [(flags.value).string = {
         name: "app-name"
-        usage: "应用名称"
+        usage: "Application name"
         default: "MyApp"
     }];
 
-    // 嵌套配置
+    // Nested configuration
     DatabaseConfig database = 2 [(flags.value).message = {
         name: "db"
         nested: true
@@ -599,7 +601,7 @@ message AppConfig {
 }
 ```
 
-使用嵌套配置：
+Using nested configuration:
 
 ```go
 config := &proto.AppConfig{}
@@ -613,105 +615,105 @@ fmt.Printf("App: %s\n", config.AppName)
 fmt.Printf("DB: %s:%d\n", config.Database.Host, config.Database.Port)
 ```
 
-命令行使用：
+Command-line usage:
 
 ```bash
 ./myapp --app-name "MyService" --db-db-host db.example.com --db-db-port 3306
 ```
 
-### 故障排除
+### Troubleshooting
 
-#### 问题 1：找不到 annotations.proto
+#### Issue 1: Cannot find annotations.proto
 
-**错误信息**：
+**Error message**:
 ```
 proto/config.proto:3:1: Import "flags/annotations.proto" was not found.
 ```
 
-**解决方案**：
+**Solution**:
 
-- **使用 buf 方式**：确保运行了 `buf mod update` 并且 `buf.yaml` 中正确配置了依赖：
+- **Using buf approach**: Ensure you ran `buf mod update` and that `buf.yaml` has the correct dependency:
   ```yaml
   deps:
     - buf.build/kunstack/flags
   ```
 
-- **使用 protoc 方式**：确保在 protoc 命令中包含正确的导入路径：
+- **Using protoc approach**: Ensure the protoc command includes the correct import path:
   ```bash
   protoc -I./proto -I./proto/flags ...
   ```
 
-#### 问题 2：生成的代码编译错误
+#### Issue 2: Generated code compilation errors
 
-**错误信息**：
+**Error message**:
 ```
 undefined: flags.Option
 undefined: types.Duration
 ```
 
-**解决方案**：确保已安装运行时库：
+**Solution**: Ensure you have installed the runtime libraries:
 ```bash
 go get github.com/kunstack/protoc-gen-flags/flags
 go get github.com/kunstack/protoc-gen-flags/types
 go get github.com/kunstack/protoc-gen-flags/utils
 ```
 
-生成的代码会自动导入这些包，无需手动导入。
+The generated code will automatically import these packages; no manual import needed.
 
-#### 问题 3：标志未生效
+#### Issue 3: Flags not taking effect
 
-**现象**：命令行参数没有被读取，配置使用的是零值。
+**Symptom**: Command-line arguments are not being read; configuration uses zero values.
 
-**原因**：可能忘记调用 `SetDefaults()` 或 `AddFlags()`。
+**Cause**: May have forgotten to call `SetDefaults()` or `AddFlags()`.
 
-**解决方案**：按正确顺序调用：
+**Solution**: Call in the correct order:
 ```go
 config := &proto.ServerConfig{}
-config.SetDefaults()  // 1. 设置默认值
-config.AddFlags(fs)   // 2. 注册标志
-fs.Parse(os.Args[1:]) // 3. 解析参数
+config.SetDefaults()  // 1. Set defaults
+config.AddFlags(fs)   // 2. Register flags
+fs.Parse(os.Args[1:]) // 3. Parse arguments
 ```
 
-#### 问题 4：buf generate 失败
+#### Issue 4: buf generate failure
 
-**错误信息**：
+**Error message**:
 ```
 Failure: plugin flags: not found
 ```
 
-**解决方案**：确保 protoc-gen-flags 已安装并在 PATH 中：
+**Solution**: Ensure protoc-gen-flags is installed and in PATH:
 ```bash
-# 安装插件
+# Install plugin
 go install github.com/kunstack/protoc-gen-flags@latest
 
-# 验证安装
+# Verify installation
 which protoc-gen-flags
 protoc-gen-flags --version
 ```
 
-#### 问题 5：包名冲突
+#### Issue 5: Package name conflicts
 
-**现象**：生成的代码中有包名冲突，例如同时使用 `wrapperspb` 和自定义的 `wrapperspb` 包。
+**Symptom**: Package name conflicts in generated code, such as using both `wrapperspb` and a custom `wrapperspb` package.
 
-**解决方案**：protoc-gen-flags 会自动处理包名冲突，为冲突的包生成别名。生成的代码会自动使用别名导入，无需手动处理。
+**Solution**: protoc-gen-flags automatically handles package name conflicts by generating aliases for conflicting packages. The generated code will automatically use aliased imports; no manual handling required.
 
-#### 问题 6：Map 格式解析错误
+#### Issue 6: Map format parsing errors
 
-**错误信息**：
+**Error message**:
 ```
 invalid map format: ...
 ```
 
-**解决方案**：确保使用正确的格式：
-- **JSON 格式**：`--config='{"key": "value"}'`
-- **STRING_TO_STRING**：`--labels="key1=value1,key2=value2"`
-- **STRING_TO_INT**：`--limits="cpu=1000,memory=2048"`
+**Solution**: Ensure you use the correct format:
+- **JSON format**: `--config='{"key": "value"}'`
+- **STRING_TO_STRING**: `--labels="key1=value1,key2=value2"`
+- **STRING_TO_INT**: `--limits="cpu=1000,memory=2048"`
 
-注意：STRING_TO_INT 只支持整数类型的值。
+Note: STRING_TO_INT only supports integer type values.
 
-## 使用示例
+## Usage Examples
 
-### 基本配置示例
+### Basic Configuration Example
 
 ```protobuf
 syntax = "proto3";
@@ -747,36 +749,36 @@ message ServerConfig {
 }
 ```
 
-### 分层标志（使用前缀）
+### Hierarchical Flags (Using Prefixes)
 
 ```go
-// 生成带前缀的标志
+// Generate flags with prefix
 fs := pflag.NewFlagSet("myapp", pflag.ExitOnError)
 config.AddFlags(fs, flags.WithPrefix("server"))
 fs.Parse(os.Args[1:])
 
-// 结果：
+// Result:
 // --server.host
 // --server.port
 // --server.https
 ```
 
-### 自定义分隔符
+### Custom Delimiters
 
 ```go
-// 使用破折号分隔符
+// Use dash delimiter
 fs := pflag.NewFlagSet("myapp", pflag.ExitOnError)
 config.AddFlags(fs,
     flags.WithPrefix("server"),
     flags.WithDelimiter("-"))
 
-// 结果：
+// Result:
 // --server-host
 // --server-port
 // --server-https
 ```
 
-### 嵌套消息
+### Nested Messages
 
 ```protobuf
 message DatabaseConfig {
@@ -794,10 +796,10 @@ message AppConfig {
 }
 ```
 
-生成的标志：
+Generated flags:
 - `--db.database-url`
 
-### 完整配置示例
+### Complete Configuration Example
 
 ```protobuf
 syntax = "proto3";
@@ -813,7 +815,7 @@ option go_package = "github.com/example/project;example";
 message Config {
     option (flags.allow_empty) = true;
 
-    // 基础类型
+    // Basic types
     string host = 1 [(flags.value).string = {
         name: "host"
         short: "H"
@@ -828,7 +830,7 @@ message Config {
         default: 8080
     }];
 
-    // 特殊类型
+    // Special types
     google.protobuf.Duration timeout = 3 [(flags.value).duration = {
         name: "timeout"
         short: "t"
@@ -843,7 +845,7 @@ message Config {
         default: "2024-01-01T00:00:00Z"
     }];
 
-    // 重复字段
+    // Repeated fields
     repeated string servers = 5 [(flags.value).repeated.string = {
         name: "servers"
         short: "s"
@@ -851,7 +853,7 @@ message Config {
         default: ["localhost:8080"]
     }];
 
-    // 映射字段
+    // Map fields
     map<string, int32> limits = 6 [(flags.value).map = {
         name: "limits"
         usage: "Resource limits"
@@ -859,7 +861,7 @@ message Config {
         default: "{\"cpu\": 1000, \"memory\": 2048}"
     }];
 
-    // 嵌套消息
+    // Nested messages
     DatabaseConfig database = 7 [(flags.value).message = {
         name: "database"
         nested: true
@@ -867,14 +869,14 @@ message Config {
 }
 ```
 
-## 支持的类型
+## Supported Types
 
-protoc-gen-flags 支持所有 Protocol Buffer 类型：
+protoc-gen-flags supports all Protocol Buffer types:
 
-### 标量类型
+### Scalar Types
 
-| 类型 | Go 类型 | 默认值支持 | 重复字段支持 | 示例 |
-|------|---------|------------|--------------|------|
+| Type | Go Type | Default Support | Repeated Support | Example |
+|------|---------|-----------------|------------------|---------|
 | `float` | `float32` | ✅ | ✅ | `3.14159` |
 | `double` | `float64` | ✅ | ✅ | `2.71828` |
 | `int32` | `int32` | ✅ | ✅ | `42` |
@@ -891,144 +893,144 @@ protoc-gen-flags 支持所有 Protocol Buffer 类型：
 | `string` | `string` | ✅ | ✅ | `"hello world"` |
 | `bytes` | `[]byte` | ✅ | ✅ | `"aGVsbG8="` (base64) |
 
-### 特殊类型
+### Special Types
 
-| 类型 | Go 类型 | 特性 | 示例 |
-|------|---------|------|------|
-| `enum` | 枚举类型 | 默认值支持，重复字段 | `1` (枚举值) |
-| `google.protobuf.Duration` | `*durationpb.Duration` | 默认值支持，重复字段 | `"30s"`, `"1h"` |
-| `google.protobuf.Timestamp` | `*timestamppb.Timestamp` | 多种格式，默认值支持，重复字段 | `"2024-01-01T00:00:00Z"` |
-| `google.protobuf.StringValue` | `*wrapperspb.StringValue` | 默认值支持，重复字段 | `"wrapper"` |
-| `google.protobuf.Int32Value` | `*wrapperspb.Int32Value` | 默认值支持，重复字段 | `42` |
-| `google.protobuf.BoolValue` | `*wrapperspb.BoolValue` | 默认值支持，重复字段 | `true` |
+| Type | Go Type | Features | Example |
+|------|---------|----------|---------|
+| `enum` | Enum type | Default support, repeated fields | `1` (enum value) |
+| `google.protobuf.Duration` | `*durationpb.Duration` | Default support, repeated fields | `"30s"`, `"1h"` |
+| `google.protobuf.Timestamp` | `*timestamppb.Timestamp` | Multiple formats, default support, repeated fields | `"2024-01-01T00:00:00Z"` |
+| `google.protobuf.StringValue` | `*wrapperspb.StringValue` | Default support, repeated fields | `"wrapper"` |
+| `google.protobuf.Int32Value` | `*wrapperspb.Int32Value` | Default support, repeated fields | `42` |
+| `google.protobuf.BoolValue` | `*wrapperspb.BoolValue` | Default support, repeated fields | `true` |
 
-### 复合类型
+### Composite Types
 
-| 类型 | 格式支持 | 默认值支持 | 示例 |
-|------|----------|------------|------|
-| `repeated` (所有标量类型) | - | ✅ | 切片类型 |
-| `map<string, string>` | JSON, 原生 | ✅ | `{"key": "value"}` |
-| `map<string, int32>` | JSON, 原生 | ✅ | `{"key": 123}` |
-| `map<string, int64>` | JSON, 原生 | ✅ | `{"key": 456}` |
+| Type | Format Support | Default Support | Example |
+|------|----------------|-----------------|---------|
+| `repeated` (all scalar types) | - | ✅ | Slice types |
+| `map<string, string>` | JSON, native | ✅ | `{"key": "value"}` |
+| `map<string, int32>` | JSON, native | ✅ | `{"key": 123}` |
+| `map<string, int64>` | JSON, native | ✅ | `{"key": 456}` |
 
-### 嵌套消息
+### Nested Messages
 
-支持为嵌套消息生成层级化标志，通过 `message` 标志类型配置。
+Support generating hierarchical flags for nested messages, configured via the `message` flag type.
 
-## 配置选项
+## Configuration Options
 
-### 消息级选项
+### Message-Level Options
 
-消息级选项控制整个消息的标志生成行为：
+Message-level options control flag generation behavior for the entire message:
 
 ```protobuf
 message MyMessage {
-  // 禁用标志生成
+  // Disable flag generation
   option (flags.disabled) = true;
 
-  // 生成未导出的标志方法（用于自定义包装）
+  // Generate unexported flag methods (for custom wrapping)
   option (flags.unexported) = true;
 
-  // 即使没有字段配置也允许生成标志方法
+  // Allow generating flag methods even without field configuration
   option (flags.allow_empty) = true;
 
-  // 字段定义...
+  // Field definitions...
 }
 ```
 
-| 选项 | 类型 | 描述 |
-|------|------|------|
-| `flags.disabled` | `bool` | 跳过为此消息生成标志 |
-| `flags.unexported` | `bool` | 生成未导出的标志方法 |
-| `flags.allow_empty` | `bool` | 即使没有字段配置也生成方法 |
+| Option | Type | Description |
+|--------|------|-------------|
+| `flags.disabled` | `bool` | Skip flag generation for this message |
+| `flags.unexported` | `bool` | Generate unexported flag methods |
+| `flags.allow_empty` | `bool` | Generate methods even without field configuration |
 
-### 字段级选项
+### Field-Level Options
 
-字段级选项为单个字段提供详细配置：
+Field-level options provide detailed configuration for individual fields:
 
 ```protobuf
 string name = 1 [(flags.value).string = {
-  name: "custom-name"           // 自定义标志名
-  short: "n"                    // 短标志（单字符）
-  usage: "Usage text"           // 用法说明
-  hidden: false                 // 隐藏标志（不在帮助中显示）
-  deprecated: true              // 标记为废弃
-  deprecated_usage: "Use --new-flag instead" // 废弃说明
-  default: "default-value"      // 默认值
+  name: "custom-name"           // Custom flag name
+  short: "n"                    // Short flag (single character)
+  usage: "Usage text"           // Usage description
+  hidden: false                 // Hide flag (not shown in help)
+  deprecated: true              // Mark as deprecated
+  deprecated_usage: "Use --new-flag instead" // Deprecation message
+  default: "default-value"      // Default value
 }];
 ```
 
-#### 通用字段选项
+#### Common Field Options
 
-所有字段类型都支持以下选项：
+All field types support the following options:
 
-| 选项 | 类型 | 描述 |
-|------|------|------|
-| `name` | `string` | 自定义标志名（默认为字段名） |
-| `short` | `string` | 短标志别名（单字符） |
-| `usage` | `string` | 帮助文本（必填） |
-| `hidden` | `bool` | 隐藏标志 |
-| `deprecated` | `bool` | 废弃标志 |
-| `deprecated_usage` | `string` | 废弃说明（废弃标志必填） |
+| Option | Type | Description |
+|--------|------|-------------|
+| `name` | `string` | Custom flag name (defaults to field name) |
+| `short` | `string` | Short flag alias (single character) |
+| `usage` | `string` | Help text (required) |
+| `hidden` | `bool` | Hide flag |
+| `deprecated` | `bool` | Deprecate flag |
+| `deprecated_usage` | `string` | Deprecation message (required for deprecated flags) |
 
-#### 字节类型（bytes）
+#### Bytes Type
 
-字节类型支持编码格式选择：
+Bytes type supports encoding format selection:
 
 ```protobuf
 bytes data = 1 [(flags.value).bytes = {
   name: "data"
   usage: "Binary data"
-  encoding: BYTES_ENCODING_TYPE_BASE64  // 或 BYTES_ENCODING_TYPE_HEX
+  encoding: BYTES_ENCODING_TYPE_BASE64  // Or BYTES_ENCODING_TYPE_HEX
   default: "aGVsbG8="
 }];
 ```
 
-支持的编码：
-- `BYTES_ENCODING_TYPE_BASE64` - 标准 base64 编码（默认）
-- `BYTES_ENCODING_TYPE_HEX` - 十六进制编码
+Supported encodings:
+- `BYTES_ENCODING_TYPE_BASE64` - Standard base64 encoding (default)
+- `BYTES_ENCODING_TYPE_HEX` - Hexadecimal encoding
 
-#### 时间戳类型（timestamp）
+#### Timestamp Type
 
-时间戳类型支持多种时间格式：
+Timestamp type supports multiple time formats:
 
 ```protobuf
 google.protobuf.Timestamp created_at = 1 [(flags.value).timestamp = {
   name: "created-at"
   usage: "Creation timestamp"
-  formats: ["RFC3339", "ISO8601"]  // 支持的格式
+  formats: ["RFC3339", "ISO8601"]  // Supported formats
   default: "2024-01-01T00:00:00Z"
 }];
 ```
 
-支持的时间格式：
+Supported time formats:
 
-| 格式名称 | Go 时间格式常量 | 示例 | 说明 |
-|---------|----------------|------|------|
-| `RFC3339` | `time.RFC3339` | `2024-01-01T15:04:05Z` 或 `2024-01-01T15:04:05+08:00` | RFC 3339 标准格式（推荐） |
-| `RFC3339Nano` | `time.RFC3339Nano` | `2024-01-01T15:04:05.999999999Z` | RFC 3339 纳秒精度 |
-| `RFC822` | `time.RFC822` | `01 Jan 24 15:04 MST` | RFC 822 格式 |
-| `RFC822Z` | `time.RFC822Z` | `01 Jan 24 15:04 -0700` | RFC 822 带数字时区 |
-| `RFC850` | `time.RFC850` | `Monday, 01-Jan-24 15:04:05 MST` | RFC 850 格式 |
-| `RFC1123` | `time.RFC1123` | `Mon, 01 Jan 2024 15:04:05 MST` | RFC 1123 格式 |
-| `RFC1123Z` | `time.RFC1123Z` | `Mon, 01 Jan 2024 15:04:05 -0700` | RFC 1123 带数字时区 |
-| `ISO8601` | 自定义 | `2024-01-01` | ISO 8601 日期格式 |
-| `ISO8601Time` | 自定义 | `2024-01-01T15:04:05` | ISO 8601 日期时间格式（无时区） |
-| `Kitchen` | `time.Kitchen` | `3:04PM` | 厨房时钟格式 |
-| `Stamp` | `time.Stamp` | `Jan  1 15:04:05` | 时间戳格式 |
-| `StampMilli` | `time.StampMilli` | `Jan  1 15:04:05.000` | 毫秒精度时间戳 |
-| `StampMicro` | `time.StampMicro` | `Jan  1 15:04:05.000000` | 微秒精度时间戳 |
-| `StampNano` | `time.StampNano` | `Jan  1 15:04:05.000000000` | 纳秒精度时间戳 |
-| `DateTime` | 自定义 | `2024-01-01 15:04:05` | 日期时间格式 |
-| `DateOnly` | 自定义 | `2024-01-01` | 仅日期格式 |
-| `TimeOnly` | 自定义 | `15:04:05` | 仅时间格式 |
+| Format Name | Go Time Format Constant | Example | Description |
+|-------------|------------------------|---------|-------------|
+| `RFC3339` | `time.RFC3339` | `2024-01-01T15:04:05Z` or `2024-01-01T15:04:05+08:00` | RFC 3339 standard format (recommended) |
+| `RFC3339Nano` | `time.RFC3339Nano` | `2024-01-01T15:04:05.999999999Z` | RFC 3339 with nanosecond precision |
+| `RFC822` | `time.RFC822` | `01 Jan 24 15:04 MST` | RFC 822 format |
+| `RFC822Z` | `time.RFC822Z` | `01 Jan 24 15:04 -0700` | RFC 822 with numeric timezone |
+| `RFC850` | `time.RFC850` | `Monday, 01-Jan-24 15:04:05 MST` | RFC 850 format |
+| `RFC1123` | `time.RFC1123` | `Mon, 01 Jan 2024 15:04:05 MST` | RFC 1123 format |
+| `RFC1123Z` | `time.RFC1123Z` | `Mon, 01 Jan 2024 15:04:05 -0700` | RFC 1123 with numeric timezone |
+| `ISO8601` | Custom | `2024-01-01` | ISO 8601 date format |
+| `ISO8601Time` | Custom | `2024-01-01T15:04:05` | ISO 8601 datetime format (no timezone) |
+| `Kitchen` | `time.Kitchen` | `3:04PM` | Kitchen clock format |
+| `Stamp` | `time.Stamp` | `Jan  1 15:04:05` | Timestamp format |
+| `StampMilli` | `time.StampMilli` | `Jan  1 15:04:05.000` | Millisecond precision timestamp |
+| `StampMicro` | `time.StampMicro` | `Jan  1 15:04:05.000000` | Microsecond precision timestamp |
+| `StampNano` | `time.StampNano` | `Jan  1 15:04:05.000000000` | Nanosecond precision timestamp |
+| `DateTime` | Custom | `2024-01-01 15:04:05` | Date-time format |
+| `DateOnly` | Custom | `2024-01-01` | Date only format |
+| `TimeOnly` | Custom | `15:04:05` | Time only format |
 
-> **注意**：
-> - 除了预定义格式外，您还可以使用任何有效的 Go 时间格式字符串
-> - 格式名称支持 `RFC339`（拼写错误）作为 `RFC3339` 的别名，向后兼容
-> - 在 `formats` 数组中可以指定多个格式，解析时会按顺序尝试匹配
+> **Note**:
+> - Besides predefined formats, you can use any valid Go time format string
+> - Format names support `RFC339` (typo) as an alias for `RFC3339` for backward compatibility
+> - In the `formats` array, you can specify multiple formats; parsing will try them in order
 
-#### 持续时间类型（duration）
+#### Duration Type
 
 ```protobuf
 google.protobuf.Duration timeout = 1 [(flags.value).duration = {
@@ -1038,13 +1040,13 @@ google.protobuf.Duration timeout = 1 [(flags.value).duration = {
 }];
 ```
 
-支持格式：秒数+单位（如 "30s", "5m", "1h"）
+Supported format: seconds + unit (e.g., "30s", "5m", "1h")
 
-#### 映射类型（map）
+#### Map Type
 
-映射类型支持多种格式，根据格式类型提供相应的默认值：
+Map types support multiple formats, with corresponding default values based on format type:
 
-**1. JSON 格式（默认）**
+**1. JSON Format (Default)**
 
 ```protobuf
 map<string, int32> config = 1 [(flags.value).map = {
@@ -1055,13 +1057,13 @@ map<string, int32> config = 1 [(flags.value).map = {
 }];
 ```
 
-命令行使用示例：
+Command-line usage example:
 ```bash
-# JSON 格式输入
+# JSON format input
 ./myapp --config='{"cpu": 1000, "memory": 2048}'
 ```
 
-**2. STRING_TO_STRING 格式**
+**2. STRING_TO_STRING Format**
 
 ```protobuf
 map<string, string> labels = 1 [(flags.value).map = {
@@ -1072,16 +1074,16 @@ map<string, string> labels = 1 [(flags.value).map = {
 }];
 ```
 
-命令行使用示例：
+Command-line usage example:
 ```bash
-# 使用逗号分隔的键值对
+# Use comma-separated key-value pairs
 ./myapp --labels="env=production,region=us-west"
 
-# 或分多次指定（会覆盖）
+# Or specify multiple times (will overwrite)
 ./myapp --labels="env=staging" --labels="region=eu-central"
 ```
 
-**3. STRING_TO_INT 格式**
+**3. STRING_TO_INT Format**
 
 ```protobuf
 map<string, int32> limits = 1 [(flags.value).map = {
@@ -1092,30 +1094,30 @@ map<string, int32> limits = 1 [(flags.value).map = {
 }];
 ```
 
-命令行使用示例：
+Command-line usage example:
 ```bash
-# 使用逗号分隔的整数键值对
+# Use comma-separated integer key-value pairs
 ./myapp --limits="cpu=1000,memory=2048,disk=10000"
 
-# 单个键值对
+# Single key-value pair
 ./myapp --limits="cpu=2000"
 
-# 多次指定会合并
+# Multiple specifications will merge
 ./myapp --limits="cpu=1000,memory=2048" --limits="disk=10000"
 ```
 
-支持的格式：
-- `MAP_FORMAT_TYPE_JSON` - JSON 格式（默认）
-  - 默认值示例：`"{\"key\": \"value\"}"`
-- `MAP_FORMAT_TYPE_STRING_TO_STRING` - 字符串键值对格式
-  - 默认值示例：`"key1=value1,key2=value2"`
-  - 使用逗号分隔多个键值对，每个键值对用等号连接
-- `MAP_FORMAT_TYPE_STRING_TO_INT` - 字符串键整数值对格式
-  - 默认值示例：`"key1=123,key2=456"`
-  - 使用逗号分隔多个键值对，值必须是整数
-  - **支持的整数类型**：`int32`, `sint32`, `sfixed32`, `int64`, `sint64`, `sfixed64`, `uint32`, `fixed32`, `uint64`, `fixed64`
+Supported formats:
+- `MAP_FORMAT_TYPE_JSON` - JSON format (default)
+  - Default value example: `"{\"key\": \"value\"}"`
+- `MAP_FORMAT_TYPE_STRING_TO_STRING` - String key-value pair format
+  - Default value example: `"key1=value1,key2=value2"`
+  - Use commas to separate multiple key-value pairs, each connected with equals
+- `MAP_FORMAT_TYPE_STRING_TO_INT` - String key to integer value format
+  - Default value example: `"key1=123,key2=456"`
+  - Use commas to separate multiple key-value pairs, values must be integers
+  - **Supported integer types**: `int32`, `sint32`, `sfixed32`, `int64`, `sint64`, `sfixed64`, `uint32`, `fixed32`, `uint64`, `fixed64`
 
-#### 重复字段（repeated）
+#### Repeated Fields
 
 ```protobuf
 syntax = "proto3";
@@ -1130,12 +1132,11 @@ message Example {
     default: ["server1"]
   }];
 }
-
 ```
 
-### 嵌套消息配置
+### Nested Message Configuration
 
-嵌套消息使用 `message` 标志类型：
+Nested messages use the `message` flag type:
 
 ```protobuf
 message NestedConfig {
@@ -1144,54 +1145,54 @@ message NestedConfig {
 
 message MainConfig {
   NestedConfig nested = 1 [(flags.value).message = {
-    name: "nested"     // 嵌套消息的前缀名
-    nested: true       // 启用嵌套标志生成
+    name: "nested"     // Prefix name for nested message
+    nested: true       // Enable nested flag generation
   }];
 }
 ```
 
-| 选项 | 类型 | 描述 |
-|------|------|------|
-| `name` | `string` | 嵌套消息的前缀名（默认为字段名） |
-| `nested` | `bool` | 是否生成嵌套标志 |
+| Option | Type | Description |
+|--------|------|-------------|
+| `name` | `string` | Prefix name for nested message (defaults to field name) |
+| `nested` | `bool` | Whether to generate nested flags |
 
-## 分层标志组织
+## Hierarchical Flag Organization
 
-protoc-gen-flags 支持分层组织标志，通过 `WithPrefix` 和 `WithDelimiter` 选项实现。
+protoc-gen-flags supports hierarchical flag organization through `WithPrefix` and `WithDelimiter` options.
 
-### 基本前缀
+### Basic Prefix
 
 ```go
 config.AddFlags(fs, flags.WithPrefix("server"))
 ```
 
-生成：`--server.host`, `--server.port`
+Generates: `--server.host`, `--server.port`
 
-### 多级前缀
+### Multi-level Prefix
 
 ```go
 config.AddFlags(fs, flags.WithPrefix("server", "database"))
 ```
 
-生成：`--server.database.host`, `--server.database.port`
+Generates: `--server.database.host`, `--server.database.port`
 
-### 自定义分隔符
+### Custom Delimiters
 
 ```go
 config.AddFlags(fs,
   flags.WithPrefix("server"),
-  flags.WithDelimiter("-"))  // 破折号
+  flags.WithDelimiter("-"))  // Dash
 ```
 
-生成：`--server-host`, `--server-port`
+Generates: `--server-host`, `--server-port`
 
-支持的定界符：
-- `flags.DelimiterDot` - 点号（默认）：`server.port`
-- `flags.DelimiterDash` - 破折号：`server-port`
-- `flags.DelimiterUnderscore` - 下划线：`server_port`
-- `flags.DelimiterColon` - 冒号：`server:port`
+Supported delimiters:
+- `flags.DelimiterDot` - Dot (default): `server.port`
+- `flags.DelimiterDash` - Dash: `server-port`
+- `flags.DelimiterUnderscore` - Underscore: `server_port`
+- `flags.DelimiterColon` - Colon: `server:port`
 
-### 自定义重命名函数
+### Custom Renaming Function
 
 ```go
 config.AddFlags(fs,
@@ -1199,24 +1200,24 @@ config.AddFlags(fs,
   flags.WithRenamer(strings.ToLower))
 ```
 
-生成：`--server-host`（转换为小写）
+Generates: `--server-host` (converted to lowercase)
 
-## 常见问题
+## FAQ
 
-### Q: 如何在现有项目中集成 protoc-gen-flags？
+### Q: How do I integrate protoc-gen-flags into an existing project?
 
-**A:** 按照以下步骤：
-1. 安装插件：`go install github.com/kunstack/protoc-gen-flags@latest`
-2. 复制 `annotations.proto` 到您的项目
-3. 在 `.proto` 文件中添加标志注解
-4. 运行 `protoc` 生成代码
-5. 在应用中使用生成的 `AddFlags()` 方法
+**A:** Follow these steps:
+1. Install the plugin: `go install github.com/kunstack/protoc-gen-flags@latest`
+2. Copy `annotations.proto` to your project
+3. Add flag annotations to your `.proto` files
+4. Run `protoc` to generate code
+5. Use the generated `AddFlags()` method in your application
 
-详细步骤请参阅[完整集成教程](#完整集成教程)。
+For detailed steps, see the [Complete Integration Tutorial](#complete-integration-tutorial).
 
-### Q: 如何处理复杂的嵌套配置？
+### Q: How do I handle complex nested configurations?
 
-**A:** 使用嵌套消息和 `message` 标志类型：
+**A:** Use nested messages and the `message` flag type:
 
 ```protobuf
 syntax = "proto3";
@@ -1227,7 +1228,7 @@ import "flags/annotations.proto";
 message DatabaseConfig {
     string url = 1 [(flags.value).string = {
         name: "url"
-        usage: "数据库连接 URL"
+        usage: "Database connection URL"
     }];
 }
 
@@ -1239,27 +1240,27 @@ message AppConfig {
 }
 ```
 
-这将生成如 `--db-url` 这样的层级标志。
+This generates hierarchical flags like `--db-url`.
 
-### Q: 如何自定义标志命名（使用前缀或分隔符）？
+### Q: How do I customize flag naming (using prefixes or delimiters)?
 
-**A:** 在调用 `AddFlags` 时使用选项：
+**A:** Use options when calling `AddFlags`:
 
 ```go
-// 使用前缀
+// With prefix
 config.AddFlags(fs, flags.WithPrefix("server"))
-// 生成：--server.host
+// Generates: --server.host
 
-// 自定义分隔符
+// Custom delimiter
 config.AddFlags(fs,
     flags.WithPrefix("server"),
     flags.WithDelimiter("-"))
-// 生成：--server-host
+// Generates: --server-host
 ```
 
-### Q: 生成的代码报错 "undefined: flags.Option"
+### Q: Generated code errors "undefined: flags.Option"
 
-**A:** 您需要安装并导入运行时库：
+**A:** You need to install and import the runtime library:
 
 ```bash
 go get github.com/kunstack/protoc-gen-flags/flags
@@ -1269,41 +1270,41 @@ go get github.com/kunstack/protoc-gen-flags/flags
 import "github.com/kunstack/protoc-gen-flags/flags"
 ```
 
-### Q: 如何跳过特定字段的标志生成？
+### Q: How do I skip flag generation for specific fields?
 
-**A:** 只需不为该字段添加标志注解即可。如果已添加注解，可以设置字段级选项：
+**A:** Simply don't add flag annotations to that field. If you already added annotations, you can omit the field-level option:
 
 ```protobuf
-string internal_field = 1;  // 不添加标志注解，该字段不会生成标志
+string internal_field = 1;  // No flag annotation; no flag will be generated
 ```
 
-### Q: 如何设置字段的默认值？
+### Q: How do I set default values for fields?
 
-**A:** 在标志注解中使用 `default` 选项：
+**A:** Use the `default` option in the flag annotation:
 
 ```protobuf
 int32 port = 1 [(flags.value).int32 = {
     name: "port"
-    usage: "服务器端口"
-    default: 8080  // 设置默认值
+    usage: "Server port"
+    default: 8080  // Set default value
 }];
 ```
 
-然后在应用中调用 `config.SetDefaults()` 来应用默认值。
+Then call `config.SetDefaults()` in your application to apply defaults.
 
-### Q: 支持哪些 protobuf 类型？
+### Q: Which protobuf types are supported?
 
-**A:** protoc-gen-flags 支持所有标准 protobuf 类型：
-- 标量类型：string, int32, int64, bool, float, double 等
-- 特殊类型：google.protobuf.Duration, Timestamp
-- 复合类型：repeated（数组）、map（映射）
-- 嵌套消息
+**A:** protoc-gen-flags supports all standard protobuf types:
+- Scalar types: string, int32, int64, bool, float, double, etc.
+- Special types: google.protobuf.Duration, Timestamp
+- Composite types: repeated (arrays), map (maps)
+- Nested messages
 
-详细列表请参阅[支持的类型](#支持的类型)部分。
+For a detailed list, see the [Supported Types](#supported-types) section.
 
-### Q: 如何在标志中使用环境变量？
+### Q: How do I use environment variables with flags?
 
-**A:** protoc-gen-flags 专注于命令行标志绑定。如需环境变量支持，建议结合使用 [viper](https://github.com/spf13/viper) 等配置管理库：
+**A:** protoc-gen-flags focuses on command-line flag binding. For environment variable support, combine with configuration management libraries like [viper](https://github.com/spf13/viper):
 
 ```go
 import (
@@ -1315,22 +1316,22 @@ config := &proto.Config{}
 fs := pflag.NewFlagSet("myapp", pflag.ExitOnError)
 config.AddFlags(fs)
 
-// 绑定到 viper（支持环境变量）
+// Bind to viper (supports environment variables)
 viper.BindPFlags(fs)
 viper.AutomaticEnv()
 
 fs.Parse(os.Args[1:])
 ```
 
-### Q: 生成的文件命名规则是什么？
+### Q: What is the naming convention for generated files?
 
-**A:** 对于 `.proto` 文件，会生成对应的 `.pb.flags.go` 文件：
+**A:** For `.proto` files, corresponding `.pb.flags.go` files are generated:
 - `config.proto` → `config.pb.go` + `config.pb.flags.go`
 - `server.proto` → `server.pb.go` + `server.pb.flags.go`
 
-### Q: 是否支持 gRPC？
+### Q: Does it support gRPC?
 
-**A:** protoc-gen-flags 与 gRPC 完全兼容。您可以在同一个 `.proto` 文件中同时定义 gRPC 服务和标志配置：
+**A:** protoc-gen-flags is fully compatible with gRPC. You can define both gRPC services and flag configurations in the same `.proto` file:
 
 ```bash
 protoc \
@@ -1340,20 +1341,20 @@ protoc \
     your_service.proto
 ```
 
-## 贡献
+## Contributing
 
-欢迎贡献！如果您有建议或发现问题，请：
+Contributions are welcome! If you have suggestions or find issues, please:
 
-- 提交 Issue：[GitHub Issues](https://github.com/kunstack/protoc-gen-flags/issues)
-- 提交 Pull Request：Fork 项目并创建 PR
-- 改进文档：帮助完善文档和示例
+- Submit an issue: [GitHub Issues](https://github.com/kunstack/protoc-gen-flags/issues)
+- Submit a pull request: Fork the project and create a PR
+- Improve documentation: Help enhance documentation and examples
 
-## 许可证
+## License
 
-本项目采用 Apache 2.0 许可证。详情请参阅 [LICENSE](LICENSE) 文件。
+This project is licensed under the Apache 2.0 License. See the [LICENSE](LICENSE) file for details.
 
-## 致谢
+## Acknowledgments
 
-- [protoc-gen-star](https://github.com/lyft/protoc-gen-star) - 代码生成框架
-- [spf13/pflag](https://github.com/spf13/pflag) - 命令行标志库
-- [Google Protocol Buffers](https://protobuf.dev/) - 数据序列化协议
+- [protoc-gen-star](https://github.com/lyft/protoc-gen-star) - Code generation framework
+- [spf13/pflag](https://github.com/spf13/pflag) - Command-line flag library
+- [Google Protocol Buffers](https://protobuf.dev/) - Data serialization protocol
