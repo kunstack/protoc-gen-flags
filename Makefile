@@ -69,6 +69,12 @@ generate: deps ## Run generate command to generate Go files and docs by processi
 	$(BUF_GEN) generate
 	go generate ./...
 
+##@ Publishing
+
+.PHONY: push
+push: generate ## Push protobuf definitions to buf.build registry
+	$(BUF_GEN) push --tag $(VERSION)
+
 ##@ Build Dependencies
 
 ## Tool Versions
