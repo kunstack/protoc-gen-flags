@@ -940,28 +940,95 @@ google.protobuf.Duration timeout = 1 [(flags.value).duration = {
 
 #### 映射类型（map）
 
+映射类型支持多种格式，根据格式类型提供相应的默认值：
+
+**1. JSON 格式（默认）**
+
 ```protobuf
 map<string, int32> config = 1 [(flags.value).map = {
   name: "config"
   usage: "Configuration key-value pairs"
-  format: MAP_FORMAT_TYPE_JSON  // 或 MAP_FORMAT_TYPE_STRING_TO_STRING, MAP_FORMAT_TYPE_STRING_TO_INT
-  default: "{\"key\": 1}"
+  format: MAP_FORMAT_TYPE_JSON
+  default: "{\"cpu\": 1000, \"memory\": 2048}"
 }];
+```
+
+命令行使用示例：
+```bash
+# JSON 格式输入
+./myapp --config='{"cpu": 1000, "memory": 2048}'
+```
+
+**2. STRING_TO_STRING 格式**
+
+```protobuf
+map<string, string> labels = 1 [(flags.value).map = {
+  name: "labels"
+  usage: "Key-value labels"
+  format: MAP_FORMAT_TYPE_STRING_TO_STRING
+  default: "env=production,region=us-west"
+}];
+```
+
+命令行使用示例：
+```bash
+# 使用逗号分隔的键值对
+./myapp --labels="env=production,region=us-west"
+
+# 或分多次指定（会覆盖）
+./myapp --labels="env=staging" --labels="region=eu-central"
+```
+
+**3. STRING_TO_INT 格式**
+
+```protobuf
+map<string, int32> limits = 1 [(flags.value).map = {
+  name: "limits"
+  usage: "Resource limits"
+  format: MAP_FORMAT_TYPE_STRING_TO_INT
+  default: "cpu=1000,memory=2048,disk=10000"
+}];
+```
+
+命令行使用示例：
+```bash
+# 使用逗号分隔的整数键值对
+./myapp --limits="cpu=1000,memory=2048,disk=10000"
+
+# 单个键值对
+./myapp --limits="cpu=2000"
+
+# 多次指定会合并
+./myapp --limits="cpu=1000,memory=2048" --limits="disk=10000"
 ```
 
 支持的格式：
 - `MAP_FORMAT_TYPE_JSON` - JSON 格式（默认）
-- `MAP_FORMAT_TYPE_STRING_TO_STRING` - 字符串键值对
-- `MAP_FORMAT_TYPE_STRING_TO_INT` - 字符串键整数值对
+  - 默认值示例：`"{\"key\": \"value\"}"`
+- `MAP_FORMAT_TYPE_STRING_TO_STRING` - 字符串键值对格式
+  - 默认值示例：`"key1=value1,key2=value2"`
+  - 使用逗号分隔多个键值对，每个键值对用等号连接
+- `MAP_FORMAT_TYPE_STRING_TO_INT` - 字符串键整数值对格式
+  - 默认值示例：`"key1=123,key2=456"`
+  - 使用逗号分隔多个键值对，值必须是整数
+  - **支持的整数类型**：`int32`, `sint32`, `sfixed32`, `int64`, `sint64`, `sfixed64`, `uint32`, `fixed32`, `uint64`, `fixed64`
 
 #### 重复字段（repeated）
 
 ```protobuf
-repeated string servers = 1 [(flags.value).repeated.string = {
-  name: "servers"
-  usage: "Server addresses (can be specified multiple times)"
-  default: "server1"
-}];
+syntax = "proto3";
+package tests;
+
+import "flags/annotations.proto";
+
+message Example {
+  repeated string servers = 1 [(flags.value).repeated.string = {
+    name: "servers"
+    usage: "Server addresses (can be specified multiple times)"
+    default: ["server1"]
+  }];
+}
+
 ```
 
 ### 嵌套消息配置
