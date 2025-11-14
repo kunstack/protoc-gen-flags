@@ -1,0 +1,24 @@
+# Generated protobuf files
+*.pb.go
+*.pb.flags.go
+
+# Compiled binaries
+*/bin/
+bin/
+
+# Buf lock files
+buf.lock
+
+# Go module cache
+go.sum
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package example.basic;
+
+// Import flag annotations from buf.build registry
+import "flags/annotations.proto";
+
+option go_package = "github.com/kunstack/protoc-gen-flags/examples/basic/proto;proto";
+
+// ServerConfig represents a simple server configuration with basic field types.
+message ServerConfig {
+  // Enable empty message generation (required for messages without nested messages)
+  option (flags.allow_empty) = true;
+
+  // Server host address
+  string host = 1 [(flags.value).string = {
+    name: "host"
+    short: "H"
+    usage: "Server host address"
+    default: "localhost"
+  }];
+
+  // Server port number
+  int32 port = 2 [(flags.value).int32 = {
+    name: "port"
+    short: "p"
+    usage: "Server port number"
+    default: 8080
+  }];
+
+  // Enable debug mode
+  bool debug = 3 [(flags.value).bool = {
+    name: "debug"
+    short: "d"
+    usage: "Enable debug mode"
+  }];
+}

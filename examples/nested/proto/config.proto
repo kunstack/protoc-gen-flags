@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package example.nested;
+
+import "flags/annotations.proto";
+
+option go_package = "github.com/kunstack/protoc-gen-flags/examples/nested/proto;proto";
+
+// ServerConfig contains server-related configuration.
+message ServerConfig {
+  string host = 1 [(flags.value).string = {
+    name: "host"
+    short: "H"
+    usage: "Server host address"
+    default: "localhost"
+  }];
+
+  int32 port = 2 [(flags.value).int32 = {
+    name: "port"
+    short: "p"
+    usage: "Server port number"
+    default: 8080
+  }];
+
+  bool https = 3 [(flags.value).bool = {
+    name: "https"
+    short: "s"
+    usage: "Enable HTTPS"
+  }];
+}
+
+// DatabaseConfig contains database connection settings.
+message DatabaseConfig {
+  string url = 1 [(flags.value).string = {
+    name: "database-url"
+    short: "u"
+    usage: "Database connection URL"
+    default: "postgres://localhost:5432/defaultdb"
+  }];
+
+  int32 max_connections = 2 [(flags.value).int32 = {
+    name: "database-max-connections"
+    usage: "Maximum number of database connections"
+    default: 10
+  }];
+}
+
+// LoggingConfig contains logging configuration.
+message LoggingConfig {
+  string level = 1 [(flags.value).string = {
+    name: "logging-level"
+    short: "l"
+    usage: "Log level (debug, info, warn, error)"
+    default: "info"
+  }];
+
+  string format = 2 [(flags.value).string = {
+    name: "logging-format"
+    usage: "Log format (json or text)"
+    default: "text"
+  }];
+}
+
+// AppConfig is the root configuration with nested sections.
+message AppConfig {
+  option (flags.allow_empty) = true;
+
+  // Server configuration section
+  ServerConfig server = 1 [(flags.value).message = {
+    name: "server"
+    nested: true
+  }];
+
+  // Database configuration section
+  DatabaseConfig database = 2 [(flags.value).message = {
+    name: "db"
+    nested: true
+  }];
+
+  // Logging configuration section
+  LoggingConfig logging = 3 [(flags.value).message = {
+    name: "log"
+    nested: true
+  }];
+}

@@ -62,10 +62,10 @@ func (e *EnumValue) Set(s string) error {
 			elem.Set(reflect.ValueOf(newEnum))
 			return nil
 		}
-		return fmt.Errorf("invalid enum number %q, allowed values are: %s", enumVal, strings.Join(e.allowedTypes, ", "))
+		return fmt.Errorf("invalid enum number %q, allowed values are: %s", s, strings.Join(e.allowedTypes, ", "))
 	}
 
-	return fmt.Errorf("invalid enum value %q, allowed values are: %s", val, strings.Join(e.allowedTypes, ", "))
+	return fmt.Errorf("invalid enum value %q, allowed values are: %s", s, strings.Join(e.allowedTypes, ", "))
 }
 
 // Type returns the data type name of the enum value.

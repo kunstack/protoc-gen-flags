@@ -1,0 +1,9 @@
+version: v2
+deps:
+  - buf.build/kunstack/flags
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE

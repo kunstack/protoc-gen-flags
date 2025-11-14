@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package example.advanced;
+
+import "flags/annotations.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/kunstack/protoc-gen-flags/examples/advanced/proto;proto";
+
+// LogLevel represents the logging level
+enum LogLevel {
+  LOG_LEVEL_UNSPECIFIED = 0;
+  LOG_LEVEL_DEBUG = 1;
+  LOG_LEVEL_INFO = 2;
+  LOG_LEVEL_WARN = 3;
+  LOG_LEVEL_ERROR = 4;
+}
+
+// AdvancedConfig demonstrates all supported protobuf types and features.
+message AdvancedConfig {
+  option (flags.allow_empty) = true;
+
+  // ============= Scalar Types =============
+
+  // Application name
+  string name = 1 [(flags.value).string = {
+    name: "name"
+    short: "n"
+    usage: "Application name"
+    default: "AdvancedApp"
+  }];
+
+  // Number of worker threads
+  int32 worker_count = 2 [(flags.value).int32 = {
+    name: "workers"
+    short: "w"
+    usage: "Number of worker threads"
+    default: 4
+  }];
+
+  // Maximum memory in bytes
+  int64 max_memory = 3 [(flags.value).int64 = {
+    name: "max-memory"
+    usage: "Maximum memory in bytes"
+    default: 1073741824  // 1GB
+  }];
+
+  // Rate limit per second
+  uint32 rate_limit = 4 [(flags.value).uint32 = {
+    name: "rate-limit"
+    usage: "Maximum requests per second"
+    default: 100
+  }];
+
+  // Processing ratio (0.0 to 1.0)
+  float ratio = 5 [(flags.value).float = {
+    name: "ratio"
+    usage: "Processing ratio (0.0 to 1.0)"
+    default: 0.8
+  }];
+
+  // Feature enabled flag
+  bool enabled = 6 [(flags.value).bool = {
+    name: "enabled"
+    short: "e"
+    usage: "Enable the feature"
+  }];
+
+  // API key in base64 encoding
+  bytes api_key = 7 [(flags.value).bytes = {
+    name: "api-key"
+    usage: "API key (base64 encoded)"
+    encoding: BYTES_ENCODING_TYPE_BASE64
+    default: "ZGVmYXVsdGtleQ=="  // "defaultkey" in base64
+  }];
+
+  // ============= Special Types =============
+
+  // Connection timeout
+  google.protobuf.Duration timeout = 10 [(flags.value).duration = {
+    name: "timeout"
+    short: "t"
+    usage: "Connection timeout (e.g., 30s, 5m, 1h)"
+    default: "30s"
+  }];
+
+  // Creation timestamp
+  google.protobuf.Timestamp created_at = 11 [(flags.value).timestamp = {
+    name: "created-at"
+    usage: "Creation timestamp (RFC3339 format)"
+    formats: ["RFC3339", "ISO8601"]
+    default: "2024-01-01T00:00:00Z"
+  }];
+
+  // ============= Repeated Fields =============
+
+  // List of server addresses
+  repeated string servers = 20 [(flags.value).repeated.string = {
+    name: "servers"
+    short: "s"
+    usage: "List of server addresses (comma-separated or multiple flags)"
+    default: ["localhost:8080"]
+  }];
+
+  // List of port numbers
+  repeated int32 ports = 21 [(flags.value).repeated.int32 = {
+    name: "ports"
+    usage: "List of port numbers"
+    default: [8080, 8081]
+  }];
+
+  // ============= Map Fields =============
+
+  // Key-value labels
+  map<string, string> labels = 30 [(flags.value).map = {
+    name: "labels"
+    short: "l"
+    usage: "Key-value labels (JSON or key=value,key2=value2 format)"
+    format: MAP_FORMAT_TYPE_STRING_TO_STRING
+    default: "env=development,region=local"
+  }];
+
+  // Resource limits
+  map<string, int32> limits = 31 [(flags.value).map = {
+    name: "limits"
+    usage: "Resource limits (e.g., cpu=1000,memory=2048)"
+    format: MAP_FORMAT_TYPE_STRING_TO_INT
+    default: "cpu=1000,memory=2048"
+  }];
+
+  // ============= Enum Type =============
+
+  // Log level
+  LogLevel log_level = 40 [(flags.value).enum = {
+    name: "log-level"
+    usage: "Logging level ( LOG_LEVEL_DEBUG, LOG_LEVEL_INFO, LOG_LEVEL_WARN, LOG_LEVEL_ERROR)"
+    default: 2  // INFO
+  }];
+
+  // ============= Advanced Features =============
+
+  // Deprecated flag (will show warning when used)
+  bool deprecated_flag = 50 [(flags.value).bool = {
+    name: "old-feature"
+    usage: "Old feature flag"
+    deprecated: true
+    deprecated_usage: "Use --enabled instead"
+  }];
+
+  // Hidden flag (not shown in help)
+  string internal_token = 51 [(flags.value).string = {
+    name: "internal-token"
+    usage: "Internal authentication token"
+    hidden: true
+    default: "secret"
+  }];
+}

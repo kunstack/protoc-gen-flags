@@ -53,6 +53,12 @@ type Options struct {
 // flag generation behavior.
 type Option func(*Options)
 
+// Renamer is a function type that transforms flag names. It takes a flag name
+// as input and returns the transformed name. Common use cases include case
+// conversion (ToLower, ToUpper), adding prefixes/suffixes, or applying custom
+// naming conventions.
+type Renamer func(string) string
+
 // This package provides protobuf extensions for generating AddFlags methods
 // using the protoc-gen-flags plugin.
 
@@ -96,7 +102,7 @@ func WithDelimiter(delimiter string) Option {
 // Example:
 //
 //	WithRenamer(strings.ToLower) would convert all flag names to lowercase
-func WithRenamer(renamer func(name string) string) Option {
+func WithRenamer(renamer Renamer) Option {
 	return func(o *Options) {
 		o.Renamer = renamer
 	}
@@ -104,8 +110,8 @@ func WithRenamer(renamer func(name string) string) Option {
 
 // WithPrefix returns an Option that adds prefix segments to flag names.
 // Prefixes are useful for organizing flags hierarchically, such as by service
-// or module name. Leading and trailing dots are automatically trimmed from
-// each prefix segment to ensure consistent formatting.
+// or module name. Empty strings are filtered out, and trimming of delimiter
+// characters is handled during the Build phase.
 //
 // Example:
 //
@@ -113,10 +119,8 @@ func WithRenamer(renamer func(name string) string) Option {
 func WithPrefix(prefix ...string) Option {
 	var nonEmpty []string
 	for _, part := range prefix {
-		// Remove leading and trailing dots
-		trimmed := strings.Trim(part, ".")
-		if trimmed != "" {
-			nonEmpty = append(nonEmpty, trimmed)
+		if part != "" {
+			nonEmpty = append(nonEmpty, part)
 		}
 	}
 	return func(o *Options) {
@@ -142,13 +146,21 @@ type NameBuilder struct {
 //
 //	The fully qualified flag name including prefixes and transformations
 func (n NameBuilder) Build(name string) string {
-	renamer := func(name string) string {
-		if n.options.Renamer == nil {
-			return name
+	// Trim delimiter characters from prefix segments
+	var trimmedPrefix []string
+	for _, part := range n.options.Prefix {
+		trimmed := strings.Trim(part, n.options.Delimiter)
+		if trimmed != "" {
+			trimmedPrefix = append(trimmedPrefix, trimmed)
 		}
-		return n.options.Renamer(name)
 	}
-	return renamer(strings.Join(append(n.options.Prefix, name), n.options.Delimiter))
+
+	// Join prefix and name with delimiter, then apply renamer
+	flagName := strings.Join(append(trimmedPrefix, name), n.options.Delimiter)
+	if n.options.Renamer != nil {
+		return n.options.Renamer(flagName)
+	}
+	return flagName
 }
 
 // NewNameBuilder creates a new NameBuilder with the provided configuration options.

@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package example.hierarchical;
+
+import "flags/annotations.proto";
+import "google/protobuf/duration.proto";
+
+option go_package = "github.com/kunstack/protoc-gen-flags/examples/hierarchical/proto;proto";
+
+// ServiceConfig represents a simple service configuration
+// used to demonstrate hierarchical flag organization.
+message ServiceConfig {
+  option (flags.allow_empty) = true;
+
+  // Service host address
+  string host = 1 [(flags.value).string = {
+    name: "host"
+    usage: "Service host address"
+    default: "localhost"
+  }];
+
+  // Service port number
+  int32 port = 2 [(flags.value).int32 = {
+    name: "port"
+    usage: "Service port number"
+    default: 8080
+  }];
+
+  // Connection timeout
+  google.protobuf.Duration timeout = 3 [(flags.value).duration = {
+    name: "timeout"
+    usage: "Connection timeout"
+    default: "30s"
+  }];
+
+  // Maximum connections
+  int32 max_connections = 4 [(flags.value).int32 = {
+    name: "max-connections"
+    usage: "Maximum number of connections"
+    default: 100
+  }];
+
+  // Enable TLS
+  bool tls_enabled = 5 [(flags.value).bool = {
+    name: "tls"
+    usage: "Enable TLS"
+  }];
+}

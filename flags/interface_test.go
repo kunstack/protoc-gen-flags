@@ -135,10 +135,17 @@ func TestWithPrefix(t *testing.T) {
 		assert.Equal(t, []string{"server", "database"}, opts.Prefix)
 	})
 
-	t.Run("prefix with dots", func(t *testing.T) {
+	t.Run("prefix with dots preserved until Build", func(t *testing.T) {
+		// WithPrefix no longer trims - it's deferred to Build()
 		opts := &Options{}
 		WithPrefix(".server.", ".database.")(opts)
-		assert.Equal(t, []string{"server", "database"}, opts.Prefix)
+		// Dots are preserved in Options
+		assert.Equal(t, []string{".server.", ".database."}, opts.Prefix)
+
+		// But Build() will trim them based on delimiter
+		builder := NewNameBuilder(WithPrefix(".server."), WithDelimiter(DelimiterDot))
+		result := builder.Build("port")
+		assert.Equal(t, "server.port", result)
 	})
 
 	t.Run("empty prefix removed", func(t *testing.T) {

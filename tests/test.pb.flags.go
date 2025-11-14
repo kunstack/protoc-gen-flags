@@ -12,8 +12,8 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	types1 "github.com/kunstack/protoc-gen-flags/tests/types"
-	utils2 "github.com/kunstack/protoc-gen-flags/tests/utils"
-	utils1 "github.com/kunstack/protoc-gen-flags/tests/utils/utils"
+	utils1 "github.com/kunstack/protoc-gen-flags/tests/utils"
+	utils2 "github.com/kunstack/protoc-gen-flags/tests/utils/utils"
 	wrapperspb1 "github.com/kunstack/protoc-gen-flags/tests/wrapperspb"
 )
 
@@ -39,7 +39,7 @@ func (x *TestForMessage) AddFlags(fs *pflag.FlagSet, opts ...flags.Option) {
 	}
 
 	if x.SimpleMessage == nil {
-		x.SimpleMessage = new(utils2.SimpleMessage)
+		x.SimpleMessage = new(utils1.SimpleMessage)
 	}
 
 	if v, ok := interface{}(x.SimpleMessage).(flags.Flagger); ok {
@@ -143,7 +143,7 @@ func (x *TestForMessage) AddFlags(fs *pflag.FlagSet, opts ...flags.Option) {
 	fs.VarP(types.DurationSlice(&x.Timeouts), builder.Build("timeouts"), "t", "Timeout durations for operations")
 
 	if x.NestedTest == nil {
-		x.NestedTest = new(utils1.NestedMessage)
+		x.NestedTest = new(utils2.NestedMessage)
 	}
 
 	if v, ok := interface{}(x.NestedTest).(flags.Flagger); ok {
@@ -170,7 +170,7 @@ func (x *TestForMessage) SetDefaults() {
 	}
 
 	if x.SimpleMessage == nil {
-		x.SimpleMessage = new(utils2.SimpleMessage)
+		x.SimpleMessage = new(utils1.SimpleMessage)
 	}
 
 	if v, ok := interface{}(x.SimpleMessage).(flags.Defaulter); ok {
@@ -205,7 +205,7 @@ func (x *TestForMessage) SetDefaults() {
 	}
 
 	if x.NestedTest == nil {
-		x.NestedTest = new(utils1.NestedMessage)
+		x.NestedTest = new(utils2.NestedMessage)
 	}
 
 	if v, ok := interface{}(x.NestedTest).(flags.Defaulter); ok {
